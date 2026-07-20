@@ -1,6 +1,7 @@
 import type { ShopifyClient } from "./client";
 import type { ManagerRequest, ProductInfo } from "../types";
 import { categoryTags } from "./categorize";
+import { NEW_TAG } from "./expireNew";
 
 /** Данные для черновика товара в Shopify. */
 export interface DraftInput {
@@ -77,6 +78,8 @@ export function buildDraftInput(
     vendor: info.brand ?? req.designer,
     tags: [
       "tg-bot",
+      // Метка «новинка» — её снимает задача shopify-expire-new через 14 дней.
+      NEW_TAG,
       TG_COLLECTION_TAG,
       TG_DELIVERY_TAG,
       `designer:${(info.brand ?? req.designer).toLowerCase()}`,

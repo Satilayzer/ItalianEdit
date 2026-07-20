@@ -9,6 +9,7 @@ import { ShopifyClient } from "./shopify/client";
 import { importCatalog, syncStockStatuses } from "./bg/sync";
 import { forwardShopifyOrder, pollTracking } from "./bg/orders";
 import { pushPendingProducts } from "./shopify/products";
+import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 
 const config = loadConfig();
 const shopifyClient = config.shopify ? new ShopifyClient(config.shopify) : undefined;
@@ -116,6 +117,29 @@ if (shopifyClient && isDbReady()) {
     },
   });
 }
+// Снятие метки «новинка»: нужен только Shopify, БД не участвует.
+// Раз в 6 часов — TTL измеряется днями, чаще смысла нет.
+if (shopifyClient) {
+  jobs.push({
+    name: "shopify-expire-new",
+    intervalMs: 6 * 60 * 60_000,
+    run: async () => {
+      const stats = await expireNewProducts(shopifyClient);
+      if (stats.expired > 0) {
+        console.log(
+          `shopify-expire-new: снята метка «новинка» с ${stats.expired} товаров ` +
+            `(старше ${NEW_TTL_DAYS} дней)`
+        );
+      }
+      if (stats.errors.length > 0) {
+        throw new Error(
+          `не снялась метка у ${stats.errors.length} товаров, например: ${stats.errors[0]}`
+        );
+      }
+    },
+  });
+}
+
 const stopJobs = startJobs(jobs, (name, err) => {
   console.error(`Задача ${name} упала:`, err);
   void alert(`🔴 Фоновая задача <b>${name}</b> упала: ${String(err)}`);
