@@ -1,5 +1,6 @@
 import type { ShopifyClient } from "./client";
 import type { ManagerRequest, ProductInfo } from "../types";
+import { categoryTags } from "./categorize";
 
 /** Данные для черновика товара в Shopify. */
 export interface DraftInput {
@@ -79,6 +80,9 @@ export function buildDraftInput(
       TG_COLLECTION_TAG,
       TG_DELIVERY_TAG,
       `designer:${(info.brand ?? req.designer).toLowerCase()}`,
+      // Категорию менеджер не присылает — выводим из названия и URL бренда.
+      // Не определилась — товар остаётся только в New, категорию ставит менеджер.
+      ...categoryTags(info.title, info.url),
     ],
     imageUrls: info.images.slice(0, MAX_IMAGES),
     price: req.ourPrice,
