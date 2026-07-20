@@ -29,6 +29,9 @@ export function formatCard(req: ManagerRequest, info: ProductInfo): string {
   const lines: string[] = [];
 
   lines.push(`🛍 <b>${esc(info.title)}</b>`);
+  if (req.variation) {
+    lines.push(`🧵 Вариация: <b>${esc(req.variation)}</b>`);
+  }
   lines.push(`🎨 Дизайнер: <b>${esc(brand)}</b>`);
   lines.push("");
 
@@ -68,12 +71,19 @@ export function formatCard(req: ManagerRequest, info: ProductInfo): string {
 }
 
 export const HELP_TEXT = [
-  "Пришлите запрос в формате:",
+  "Пришлите запрос — каждая часть с новой строки:",
   "",
-  "<code>Название товара | Наша цена | Дизайнер</code>",
+  "<code>Название товара",
+  "Вариация (цвет/модель)",
+  "Дизайнер",
+  "Наша цена</code>",
   "",
   "Пример:",
-  "<code>GG Marmont small shoulder bag | 1490€ | Gucci</code>",
+  "<code>Ophidia mini bag",
+  "beige and ebony Supreme",
+  "Gucci",
+  "1200</code>",
   "",
-  "Можно и командой: <code>/check Название | Цена | Дизайнер</code>",
+  "Без вариации — три строки: Название / Дизайнер / Цена.",
+  "Цена всегда последней. Работает и с «|» вместо переносов строк.",
 ].join("\n");

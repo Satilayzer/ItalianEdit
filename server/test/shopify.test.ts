@@ -37,6 +37,17 @@ describe("buildDraftInput", () => {
     expect(d.tags).toContain("tg-bot");
   });
 
+  it("вариация попадает в название черновика", () => {
+    const withVar = buildDraftInput(
+      { ...req, variation: "beige and ebony Supreme" },
+      info(),
+      "EUR"
+    );
+    expect(withVar.title).toBe("GG Marmont small shoulder bag — beige and ebony Supreme");
+    const without = buildDraftInput(req, info(), "EUR");
+    expect(without.title).toBe("GG Marmont small shoulder bag");
+  });
+
   it("пометка о доставке из Италии в описании", () => {
     const d = buildDraftInput(req, info(), "EUR");
     expect(d.descriptionHtml).toContain("Shipped directly from Italy");
@@ -97,7 +108,8 @@ describe("createDraftProduct", () => {
 
     const createBody = JSON.parse(fetchFn.mock.calls[0][1].body);
     expect(createBody.variables.product.status).toBe("DRAFT");
-    expect(createBody.variables.media).toHaveLength(8);
+    // фото прикрепляются отдельно через uploadProductImages, не в productCreate
+    expect(createBody.variables.media).toBeUndefined();
 
     const priceBody = JSON.parse(fetchFn.mock.calls[1][1].body);
     expect(priceBody.variables.variants[0].price).toBe("1490.00");

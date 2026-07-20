@@ -25,6 +25,23 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/** Секции со страницы бренда → HTML для описания Shopify (списки построчно). */
+export function sectionsToHtml(
+  sections?: { heading: string; text: string }[]
+): string {
+  if (!sections || sections.length === 0) return "";
+  return sections
+    .map((s) => {
+      const lines = s.text.split("\n").map((l) => escapeHtml(l.trim())).filter(Boolean);
+      const body =
+        lines.length > 1
+          ? `<ul>${lines.map((l) => `<li>${l}</li>`).join("")}</ul>`
+          : `<p>${lines[0] ?? ""}</p>`;
+      return `<h4>${escapeHtml(s.heading)}</h4>${body}`;
+    })
+    .join("");
+}
+
 /** Тег, по которому автоколлекция «Italian Edit» собирает товары из ТГ-группы. */
 export const TG_COLLECTION_TAG = "italian-edit";
 /** Тег для машинной обработки: доставка ручная, из Италии (не через BrandsGateway). */
@@ -53,8 +70,9 @@ export function buildDraftInput(
     : "";
 
   return {
-    title: info.title,
-    descriptionHtml: description + DELIVERY_NOTE_HTML,
+    // Вариация в названии: у каждой расцветки — свой товар в магазине
+    title: req.variation ? `${info.title} — ${req.variation}` : info.title,
+    descriptionHtml: description + sectionsToHtml(info.sections) + DELIVERY_NOTE_HTML,
     vendor: info.brand ?? req.designer,
     tags: [
       "tg-bot",
@@ -70,8 +88,8 @@ export function buildDraftInput(
 }
 
 const CREATE_PRODUCT = /* GraphQL */ `
-  mutation CreateDraftProduct($product: ProductCreateInput!, $media: [CreateMediaInput!]) {
-    productCreate(product: $product, media: $media) {
+  mutation CreateDraftProduct($product: ProductCreateInput!) {
+    productCreate(product: $product) {
       product {
         id
         variants(first: 1) { nodes { id } }
@@ -104,8 +122,9 @@ interface UpdateVariantData {
 
 /**
  * Создаёт ЧЕРНОВИК товара (status DRAFT — на витрине не виден, пока менеджер
- * не опубликует): название/описание/фото с сайта бренда, наша цена,
- * цена бренда — как compare-at (зачёркнутая).
+ * не опубликует): название/описание, наша цена, цена бренда — как compare-at.
+ * Фото НЕ прикрепляются здесь — их грузит uploadProductImages (скачиваем сами,
+ * т.к. CDN брендов блокируют серверы Shopify).
  */
 export async function createDraftProduct(
   client: ShopifyClient,
@@ -119,10 +138,6 @@ export async function createDraftProduct(
       tags: input.tags,
       status: "DRAFT",
     },
-    media: input.imageUrls.map((url) => ({
-      originalSource: url,
-      mediaContentType: "IMAGE",
-    })),
   });
 
   const errors = created.productCreate.userErrors;

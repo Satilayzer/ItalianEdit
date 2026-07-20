@@ -1,10 +1,13 @@
 import type { ManagerRequest } from "../types";
 
 /**
- * Формат сообщения менеджера (три части, разделитель «|» или перенос строки):
- *   Название товара | Наша цена | Дизайнер
- * Пример:
- *   GG Marmont small shoulder bag | 1490€ | Gucci
+ * Формат сообщения менеджера — 4 строки (или части через «|»):
+ *   Название товара
+ *   Вариация (цвет/модель)
+ *   Дизайнер
+ *   Наша цена
+ * Без вариации допустимы 3 строки: Название / Дизайнер / Цена.
+ * Цена всегда последней — по ней и различаем форматы.
  */
 const SEPARATOR = /\s*(?:\||\n)\s*/;
 
@@ -42,15 +45,32 @@ export function parseManagerMessage(
   const parts = cleaned.split(SEPARATOR).map((p) => p.trim()).filter(Boolean);
   if (parts.length < 3) return null;
 
-  const [title, priceRaw, ...rest] = parts;
-  const designer = rest.join(" ").trim();
-  const price = parsePrice(priceRaw, defaultCurrency);
-  if (!title || !designer || !price) return null;
+  const price = parsePrice(parts[parts.length - 1], defaultCurrency);
+  if (!price) return null;
 
-  return { title, ourPrice: price.amount, currency: price.currency, designer };
+  const title = parts[0];
+  let variation: string | undefined;
+  let designer: string;
+  if (parts.length === 3) {
+    designer = parts[1];
+  } else {
+    variation = parts[1];
+    designer = parts.slice(2, -1).join(" ").trim();
+  }
+  if (!title || !designer) return null;
+
+  return {
+    title,
+    variation,
+    ourPrice: price.amount,
+    currency: price.currency,
+    designer,
+  };
 }
 
 /** Похоже ли обычное сообщение (без команды) на запрос по нашему формату. */
 export function looksLikeRequest(text: string): boolean {
-  return (text.match(/\|/g) ?? []).length >= 2;
+  if ((text.match(/\|/g) ?? []).length >= 2) return true;
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  return lines.length >= 3 && lines.length <= 6 && /\d/.test(lines[lines.length - 1]);
 }

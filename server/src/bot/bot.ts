@@ -6,6 +6,7 @@ import { formatCard, HELP_TEXT, esc } from "./format";
 import { findProduct } from "../search/findProduct";
 import { ShopifyClient } from "../shopify/client";
 import { buildDraftInput, createDraftProduct } from "../shopify/draftProduct";
+import { uploadProductImages } from "../shopify/uploadImages";
 
 export interface BotDeps {
   /** Единый клиент Shopify (создаётся один раз — держит кэш 24-часового токена). */
@@ -28,11 +29,16 @@ async function tryCreateDraft(
   try {
     const input = buildDraftInput(req, info, config.defaultCurrency);
     const draft = await createDraftProduct(client, input);
+    const images = await uploadProductImages(client, draft.productId, input.imageUrls);
     const compareNote =
       input.compareAtPrice === undefined && info.price
         ? "\n⚠️ Цена бренда в другой валюте — зачёркнутую цену не поставил, проверьте в черновике."
         : "";
-    return `📝 <a href="${draft.adminUrl}">Черновик создан в Shopify</a> — проверьте и опубликуйте.${compareNote}`;
+    const imageNote =
+      images.failed > 0
+        ? `\n⚠️ Фото загружено ${images.uploaded} из ${images.uploaded + images.failed} — остальные не отдал сайт бренда.`
+        : "";
+    return `📝 <a href="${draft.adminUrl}">Черновик создан в Shopify</a> — проверьте и опубликуйте.${compareNote}${imageNote}`;
   } catch (err) {
     console.error("Ошибка создания черновика в Shopify:", err);
     return "⚠️ Не удалось создать черновик в Shopify — детали в логах сервера.";
@@ -51,8 +57,9 @@ async function handleRequest(
     return;
   }
 
+  const variationNote = req.variation ? ` (${req.variation})` : "";
   const progress = await ctx.reply(
-    `🔎 Ищу «${req.title}» от ${req.designer} на сайте бренда…`,
+    `🔎 Ищу «${req.title}»${variationNote} от ${req.designer} на сайте бренда…`,
     { reply_parameters: { message_id: ctx.msg!.message_id } }
   );
 

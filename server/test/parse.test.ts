@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { parseManagerMessage, parsePrice, looksLikeRequest } from "../src/bot/parse";
-import { titleMatchScore } from "../src/search/findProduct";
+import { titleMatchScore, variationMatchScore } from "../src/search/findProduct";
 import { parseJsonLd } from "../src/scrape/jsonld";
+import type { ProductInfo } from "../src/types";
 
 describe("parsePrice", () => {
   it("простое число — валюта по умолчанию", () => {
@@ -24,42 +25,61 @@ describe("parsePrice", () => {
 });
 
 describe("parseManagerMessage", () => {
-  it("формат с | ", () => {
+  it("основной формат — 4 строки с вариацией", () => {
     expect(
-      parseManagerMessage("GG Marmont small shoulder bag | 1490€ | Gucci")
+      parseManagerMessage("Ophidia mini bag\nbeige and ebony Supreme\nGucci\n1200")
     ).toEqual({
-      title: "GG Marmont small shoulder bag",
-      ourPrice: 1490,
-      currency: "EUR",
+      title: "Ophidia mini bag",
+      variation: "beige and ebony Supreme",
       designer: "Gucci",
+      ourPrice: 1200,
+      currency: "EUR",
     });
   });
+  it("без вариации — 3 строки", () => {
+    const r = parseManagerMessage("Re-Nylon backpack\nPrada\n990");
+    expect(r?.designer).toBe("Prada");
+    expect(r?.variation).toBeUndefined();
+    expect(r?.ourPrice).toBe(990);
+  });
+  it("работает и через |", () => {
+    const r = parseManagerMessage(
+      "Plume technical fabric and suede sneakers | Navy | Miu Miu | 650$"
+    );
+    expect(r?.variation).toBe("Navy");
+    expect(r?.designer).toBe("Miu Miu");
+    expect(r?.currency).toBe("USD");
+  });
   it("команда /check", () => {
-    const r = parseManagerMessage("/check Re-Nylon backpack | 990 | Prada");
+    const r = parseManagerMessage("/check Re-Nylon backpack\nPrada\n990");
     expect(r?.designer).toBe("Prada");
     expect(r?.ourPrice).toBe(990);
   });
-  it("построчный формат", () => {
-    const r = parseManagerMessage("Triple S sneakers\n850$\nBalenciaga");
-    expect(r?.title).toBe("Triple S sneakers");
-    expect(r?.currency).toBe("USD");
-  });
-  it("дизайнер из нескольких слов", () => {
-    const r = parseManagerMessage("Sicily bag | 1200 | Dolce | Gabbana");
+  it("дизайнер из нескольких частей (лишний |)", () => {
+    const r = parseManagerMessage("Sicily bag | red | Dolce | Gabbana | 1200");
+    expect(r?.variation).toBe("red");
     expect(r?.designer).toBe("Dolce Gabbana");
+  });
+  it("цена не последней (старый формат) — null, а не тихий мусор", () => {
+    expect(parseManagerMessage("Сумка | 1200 | Gucci")).toBeNull();
   });
   it("неполное сообщение — null", () => {
     expect(parseManagerMessage("просто текст")).toBeNull();
-    expect(parseManagerMessage("Сумка | 100")).toBeNull();
+    expect(parseManagerMessage("Сумка\n100")).toBeNull();
   });
 });
 
 describe("looksLikeRequest", () => {
-  it("два разделителя — похоже", () => {
+  it("два разделителя | — похоже", () => {
     expect(looksLikeRequest("a | b | c")).toBe(true);
+  });
+  it("3–4 строки с цифрой в конце — похоже", () => {
+    expect(looksLikeRequest("Ophidia mini bag\nbeige Supreme\nGucci\n1200")).toBe(true);
+    expect(looksLikeRequest("Re-Nylon backpack\nPrada\n990")).toBe(true);
   });
   it("обычное сообщение — нет", () => {
     expect(looksLikeRequest("привет, как дела?")).toBe(false);
+    expect(looksLikeRequest("привет\nкак дела\nвсё ок?")).toBe(false);
   });
 });
 
@@ -71,6 +91,48 @@ describe("titleMatchScore", () => {
   });
   it("нет совпадения", () => {
     expect(titleMatchScore("Triple S sneakers", "Silk scarf with logo")).toBeLessThan(0.4);
+  });
+});
+
+describe("variationMatchScore", () => {
+  const info = (over: Partial<ProductInfo>): ProductInfo => ({
+    title: "Ophidia mini bag",
+    url: "https://www.gucci.com/us/en/pr/ophidia-mini-bag-p-1",
+    images: [],
+    source: "jsonld",
+    ...over,
+  });
+
+  it("вариация в поле color", () => {
+    const score = variationMatchScore(
+      "beige and ebony Supreme",
+      info({ color: "Beige and ebony GG Supreme canvas" })
+    );
+    expect(score).toBeGreaterThanOrEqual(0.5);
+  });
+
+  it("вариация в описании", () => {
+    const score = variationMatchScore(
+      "Navy",
+      info({ description: "Plume sneakers in navy technical fabric and suede" })
+    );
+    expect(score).toBe(1);
+  });
+
+  it("вариация в URL", () => {
+    const score = variationMatchScore(
+      "white",
+      info({ url: "https://www.miumiu.com/p/plume-sneakers-white/X.html" })
+    );
+    expect(score).toBe(1);
+  });
+
+  it("не та расцветка — низкий балл", () => {
+    const score = variationMatchScore(
+      "beige and white Supreme",
+      info({ color: "Black leather", description: "Black Ophidia bag" })
+    );
+    expect(score).toBeLessThan(0.5);
   });
 });
 

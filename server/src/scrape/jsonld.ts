@@ -116,6 +116,7 @@ export function parseJsonLd(html: string, url: string): ProductInfo | null {
         typeof product.description === "string"
           ? product.description.trim()
           : undefined,
+      color: typeof product.color === "string" ? product.color.trim() : undefined,
       images: resolveImageUrls(extractImages(product.image), url),
       ...extractOffer(product.offers),
       source: "jsonld",
