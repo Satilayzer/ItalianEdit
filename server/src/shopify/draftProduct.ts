@@ -2,6 +2,7 @@ import type { ShopifyClient } from "./client";
 import type { ManagerRequest, ProductInfo } from "../types";
 import { categoryTags } from "./categorize";
 import { NEW_TAG } from "./expireNew";
+import { warehouseTag, TG_WAREHOUSE } from "./warehouse";
 
 /** Данные для черновика товара в Shopify. */
 export interface DraftInput {
@@ -82,6 +83,9 @@ export function buildDraftInput(
       NEW_TAG,
       TG_COLLECTION_TAG,
       TG_DELIVERY_TAG,
+      // Склад отгрузки — на нём держится фильтр «откуда едет».
+      // Товары из ТГ менеджер везёт из Италии, то есть с европейской стороны.
+      warehouseTag(TG_WAREHOUSE),
       `designer:${(info.brand ?? req.designer).toLowerCase()}`,
       // Категорию менеджер не присылает — выводим из названия и URL бренда.
       // Не определилась — товар остаётся только в New, категорию ставит менеджер.

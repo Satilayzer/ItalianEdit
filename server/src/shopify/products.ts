@@ -3,6 +3,7 @@ import type { ShopifyClient } from "./client";
 import type { PushRow } from "../db/products";
 import { productsToPush, markPushed, markPushError } from "../db/products";
 import { logSync } from "../db/syncLog";
+import { warehouseTag } from "./warehouse";
 
 const MAX_IMAGES = 8;
 
@@ -21,9 +22,9 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/** Теги товара BG в Shopify: источник + склад (для кнопки EU/US) + дизайнер. */
+/** Теги товара BG в Shopify: источник + склад (для фильтра EU/US) + дизайнер. */
 export function buildTags(row: Pick<PushRow, "brand" | "warehouse">): string[] {
-  const tags = ["bg", `warehouse:${row.warehouse ?? "eu"}`];
+  const tags = ["bg", warehouseTag(row.warehouse)];
   if (row.brand) tags.push(`designer:${row.brand.toLowerCase()}`);
   return tags;
 }
