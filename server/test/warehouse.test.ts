@@ -38,7 +38,7 @@ describe("тег склада", () => {
 
 describe("теги товара BrandsGateway", () => {
   it("склад US попадает в теги", () => {
-    expect(buildTags({ brand: "Gucci", warehouse: "us" })).toEqual([
+    expect(buildTags({ brand: "Gucci", warehouse: "us", gender: null })).toEqual([
       "bg",
       "warehouse:us",
       "designer:gucci",
@@ -46,6 +46,19 @@ describe("теги товара BrandsGateway", () => {
   });
 
   it("склад не определён — едет европейский", () => {
-    expect(buildTags({ brand: null, warehouse: null })).toEqual(["bg", "warehouse:eu"]);
+    expect(buildTags({ brand: null, warehouse: null, gender: null })).toEqual([
+      "bg",
+      "warehouse:eu",
+    ]);
+  });
+
+  it("унисекс добавляет три тега пола рядом со складом", () => {
+    expect(buildTags({ brand: null, warehouse: "us", gender: "unisex" })).toEqual([
+      "bg",
+      "warehouse:us",
+      "gender:unisex",
+      "gender:women",
+      "gender:men",
+    ]);
   });
 });

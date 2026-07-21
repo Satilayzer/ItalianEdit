@@ -22,6 +22,9 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS images JSONB;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS shopify_synced_at TIMESTAMPTZ;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS push_error TEXT;
+-- Пол товара из BrandsGateway — для переключателя Women/Men/Unisex на витрине
+ALTER TABLE products ADD COLUMN IF NOT EXISTS gender TEXT
+  CHECK (gender IN ('women', 'men', 'unisex'));
 
 CREATE INDEX IF NOT EXISTS idx_products_sku ON products (sku);
 CREATE INDEX IF NOT EXISTS idx_products_warehouse ON products (warehouse);

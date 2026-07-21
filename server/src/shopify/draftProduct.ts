@@ -3,6 +3,7 @@ import type { ManagerRequest, ProductInfo } from "../types";
 import { categoryTags } from "./categorize";
 import { NEW_TAG } from "./expireNew";
 import { warehouseTag, TG_WAREHOUSE } from "./warehouse";
+import { detectGender, genderTags } from "./gender";
 
 /** Данные для черновика товара в Shopify. */
 export interface DraftInput {
@@ -90,6 +91,9 @@ export function buildDraftInput(
       // Категорию менеджер не присылает — выводим из названия и URL бренда.
       // Не определилась — товар остаётся только в New, категорию ставит менеджер.
       ...categoryTags(info.title, info.url),
+      // Пол — по разделу на сайте бренда. Не определился — тега нет,
+      // и товар виден при любом положении переключателя.
+      ...genderTags(detectGender(info.url)),
     ],
     imageUrls: info.images.slice(0, MAX_IMAGES),
     price: req.ourPrice,

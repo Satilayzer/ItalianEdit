@@ -9,8 +9,8 @@ export async function upsertProduct(pool: Pool, row: ProductRow): Promise<void> 
   await pool.query(
     `INSERT INTO products
        (bg_id, sku, name, brand, description, images, wholesale_price, sale_price,
-        our_price, stock, warehouse, bg_updated_at, status, synced_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'active', now())
+        our_price, stock, warehouse, gender, bg_updated_at, status, synced_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'active', now())
      ON CONFLICT (bg_id) DO UPDATE SET
        sku = EXCLUDED.sku,
        name = EXCLUDED.name,
@@ -23,6 +23,7 @@ export async function upsertProduct(pool: Pool, row: ProductRow): Promise<void> 
                         THEN products.our_price ELSE EXCLUDED.our_price END,
        stock = EXCLUDED.stock,
        warehouse = EXCLUDED.warehouse,
+       gender = EXCLUDED.gender,
        bg_updated_at = EXCLUDED.bg_updated_at,
        status = 'active',
        synced_at = now()`,
@@ -38,6 +39,7 @@ export async function upsertProduct(pool: Pool, row: ProductRow): Promise<void> 
       row.our_price,
       row.stock,
       row.warehouse,
+      row.gender,
       row.bg_updated_at,
     ]
   );
@@ -91,6 +93,7 @@ export interface PushRow {
   our_price: number;
   stock: number;
   warehouse: "eu" | "us" | null;
+  gender: "women" | "men" | "unisex" | null;
   status: string;
   shopify_product_id: string | null;
   shopify_variant_map: { variantId: string; inventoryItemId: string } | null;
@@ -103,7 +106,7 @@ export interface PushRow {
 export async function productsToPush(pool: Pool, limit: number): Promise<PushRow[]> {
   const { rows } = await pool.query(
     `SELECT bg_id, sku, name, brand, description, images, our_price, stock,
-            warehouse, status, shopify_product_id, shopify_variant_map
+            warehouse, gender, status, shopify_product_id, shopify_variant_map
      FROM products
      WHERE (shopify_synced_at IS NULL OR shopify_synced_at < synced_at)
        AND NOT (shopify_product_id IS NULL AND status <> 'active')

@@ -1,5 +1,6 @@
 import type { BgProduct, BgMeta } from "./types";
 import { computeOurPrice, type PricingRules, DEFAULT_PRICING } from "./pricing";
+import { normalizeGender, type Gender } from "../shopify/gender";
 
 export type Warehouse = "eu" | "us";
 
@@ -16,6 +17,7 @@ export interface ProductRow {
   our_price: number | null;
   stock: number;
   warehouse: Warehouse | null;
+  gender: Gender | null;
   bg_updated_at: string | null;
 }
 
@@ -91,6 +93,7 @@ export function mapProduct(p: BgProduct, opts: MapOptions = {}): ProductRow {
     our_price: wholesale ? computeOurPrice(wholesale, brand ?? undefined, rules) : null,
     stock,
     warehouse: detectWarehouse(p),
+    gender: normalizeGender(p.gender?.name),
     bg_updated_at: p.updated_at ?? null,
   };
 }

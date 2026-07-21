@@ -15,6 +15,7 @@ const row = (over: Partial<PushRow> = {}): PushRow => ({
   our_price: 1490,
   stock: 1,
   warehouse: "eu",
+  gender: "women",
   status: "active",
   shopify_product_id: null,
   shopify_variant_map: null,
@@ -57,15 +58,19 @@ const qtyOk = { inventorySetQuantities: { userErrors: [] } };
 const updateOk = { productUpdate: { product: { id: "gid://shopify/Product/1" }, userErrors: [] } };
 
 describe("buildTags", () => {
-  it("склад и дизайнер", () => {
-    expect(buildTags({ brand: "Gucci", warehouse: "us" })).toEqual([
+  it("склад, пол и дизайнер", () => {
+    expect(buildTags({ brand: "Gucci", warehouse: "us", gender: "women" })).toEqual([
       "bg",
       "warehouse:us",
+      "gender:women",
       "designer:gucci",
     ]);
   });
-  it("без склада — eu по умолчанию, без бренда — без тега дизайнера", () => {
-    expect(buildTags({ brand: null, warehouse: null })).toEqual(["bg", "warehouse:eu"]);
+  it("без склада — eu по умолчанию, без бренда и пола — без их тегов", () => {
+    expect(buildTags({ brand: null, warehouse: null, gender: null })).toEqual([
+      "bg",
+      "warehouse:eu",
+    ]);
   });
 });
 
