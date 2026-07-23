@@ -20,9 +20,8 @@ const collections: { title: string; tag: string }[] = [
   { title: "Italian Edit", tag: TG_COLLECTION_TAG }, // товары из ТГ-бота
   { title: "Ships from Europe", tag: "warehouse:eu" }, // переключатель склада
   { title: "Ships from USA", tag: "warehouse:us" },
-  { title: "Women", tag: "gender:women" }, // переключатель пола
+  { title: "Women", tag: "gender:women" }, // переключатель пола (унисекс = оба тега)
   { title: "Men", tag: "gender:men" },
-  { title: "Unisex", tag: "gender:unisex" },
 ];
 
 for (const c of collections) {

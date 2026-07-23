@@ -52,11 +52,10 @@ describe("теги товара BrandsGateway", () => {
     ]);
   });
 
-  it("унисекс добавляет три тега пола рядом со складом", () => {
+  it("унисекс добавляет женский и мужской тег рядом со складом", () => {
     expect(buildTags({ brand: null, warehouse: "us", gender: "unisex" })).toEqual([
       "bg",
       "warehouse:us",
-      "gender:unisex",
       "gender:women",
       "gender:men",
     ]);

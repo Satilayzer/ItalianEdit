@@ -13,25 +13,20 @@ export type Gender = "women" | "men" | "unisex";
 /**
  * Теги для Shopify.
  *
- * Унисекс получает все три тега намеренно. Фильтр на витрине — это встроенный
- * маршрут Shopify /collections/<handle>/<tag>, который отбирает по одному тегу
- * без ИЛИ. С одним тегом `gender:unisex` покупатель, выбравший Women, унисекс
- * бы не увидел — хотя ожидает обратного. Три тега решают это без усложнения
- * фильтрации: Women отдаёт женское + унисекс, Unisex — только унисекс.
+ * Отдельного тега `gender:unisex` нет — на витрине только Women и Men.
+ * Унисекс-товар получает оба тега (women + men), поэтому виден в обоих
+ * фильтрах: встроенный маршрут Shopify /collections/<handle>/<tag> отбирает
+ * по одному тегу без ИЛИ, а унисекс должен показываться и там, и там.
  */
 export function genderTags(gender: Gender | null | undefined): string[] {
   if (!gender) return [];
   if (gender === "unisex") {
-    return [
-      `${GENDER_TAG_PREFIX}unisex`,
-      `${GENDER_TAG_PREFIX}women`,
-      `${GENDER_TAG_PREFIX}men`,
-    ];
+    return [`${GENDER_TAG_PREFIX}women`, `${GENDER_TAG_PREFIX}men`];
   }
   return [`${GENDER_TAG_PREFIX}${gender}`];
 }
 
-/** Достаёт пол из тегов товара. Унисекс отличаем по своему тегу. */
+/** Достаёт пол из тегов товара. Оба тега (women+men) — значит унисекс. */
 export function genderFromTags(tags: string[]): Gender | null {
   const values = new Set(
     tags
@@ -39,7 +34,7 @@ export function genderFromTags(tags: string[]): Gender | null {
       .filter((t) => t.startsWith(GENDER_TAG_PREFIX))
       .map((t) => t.slice(GENDER_TAG_PREFIX.length))
   );
-  if (values.has("unisex")) return "unisex";
+  if (values.has("women") && values.has("men")) return "unisex";
   if (values.has("women")) return "women";
   if (values.has("men")) return "men";
   return null;

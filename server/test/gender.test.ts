@@ -45,14 +45,10 @@ describe("теги пола", () => {
     expect(genderTags("men")).toEqual(["gender:men"]);
   });
 
-  it("унисекс получает все три тега", () => {
-    // Иначе выбор Women не показал бы унисекс: маршрут тегов Shopify
-    // отбирает по одному тегу, без ИЛИ.
-    expect(genderTags("unisex")).toEqual([
-      "gender:unisex",
-      "gender:women",
-      "gender:men",
-    ]);
+  it("унисекс — женский + мужской тег (без отдельного gender:unisex)", () => {
+    // Отдельного унисекс-тега нет; товар виден и в Women, и в Men.
+    expect(genderTags("unisex")).toEqual(["gender:women", "gender:men"]);
+    expect(genderTags("unisex")).not.toContain("gender:unisex");
   });
 
   it("пол не определён — тегов нет", () => {
@@ -68,7 +64,7 @@ describe("теги пола", () => {
 });
 
 describe("чтение пола из тегов", () => {
-  it("унисекс важнее женского и мужского", () => {
+  it("оба тега (women+men) читаются как унисекс", () => {
     expect(genderFromTags(genderTags("unisex"))).toBe("unisex");
   });
 
