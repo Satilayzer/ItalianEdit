@@ -14,6 +14,14 @@ export interface ShopifyEnvConfig {
   clientSecret?: string;
 }
 
+/**
+ * Как импортируются 90% товаров BrandsGateway:
+ *  - "app" — базовый тариф BG (GROW): импорт/остатки/заказы делает приложение BG
+ *    прямо в Shopify. Наш сервер только дотегирует товары для фильтров витрины.
+ *  - "api" — тариф REST API/CSV: импорт/синк/заказы делает наш сервер через API BG.
+ */
+export type ImportMode = "app" | "api";
+
 export interface Config {
   botToken: string;
   serperApiKey?: string;
@@ -29,6 +37,7 @@ export interface Config {
   inventoryCap: number;
   /** Сколько товаров заливать в Shopify за один проход (раз в минуту). */
   pushBatch: number;
+  importMode: ImportMode;
 }
 
 export function loadConfig(): Config {
@@ -77,5 +86,6 @@ export function loadConfig(): Config {
     alertChatId: process.env.ALERT_CHAT_ID || undefined,
     inventoryCap: Number(process.env.INVENTORY_CAP ?? 1),
     pushBatch: Number(process.env.SHOPIFY_PUSH_BATCH ?? 25),
+    importMode: process.env.IMPORT_MODE === "api" ? "api" : "app",
   };
 }

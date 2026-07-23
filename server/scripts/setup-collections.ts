@@ -15,9 +15,21 @@ if (!config.shopify) {
 }
 const client = new ShopifyClient(config.shopify);
 
-const italianEdit = await ensureSmartCollection(client, "Italian Edit", TG_COLLECTION_TAG);
-console.log(
-  italianEdit.created
-    ? `Коллекция «Italian Edit» создана (${italianEdit.id}) — собирает товары с тегом ${TG_COLLECTION_TAG}`
-    : `Коллекция «Italian Edit» уже существует (${italianEdit.id})`
-);
+// Автоколлекции, на которых держатся фильтры витрины (собираются по тегам).
+const collections: { title: string; tag: string }[] = [
+  { title: "Italian Edit", tag: TG_COLLECTION_TAG }, // товары из ТГ-бота
+  { title: "Ships from Europe", tag: "warehouse:eu" }, // переключатель склада
+  { title: "Ships from USA", tag: "warehouse:us" },
+  { title: "Women", tag: "gender:women" }, // переключатель пола
+  { title: "Men", tag: "gender:men" },
+  { title: "Unisex", tag: "gender:unisex" },
+];
+
+for (const c of collections) {
+  const res = await ensureSmartCollection(client, c.title, c.tag);
+  console.log(
+    res.created
+      ? `Коллекция «${c.title}» создана (${res.id}) — тег ${c.tag}`
+      : `Коллекция «${c.title}» уже существует (${res.id})`
+  );
+}

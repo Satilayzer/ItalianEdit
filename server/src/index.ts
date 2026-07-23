@@ -9,6 +9,7 @@ import { ShopifyClient } from "./shopify/client";
 import { importCatalog, syncStockStatuses } from "./bg/sync";
 import { forwardShopifyOrder, pollTracking } from "./bg/orders";
 import { pushPendingProducts } from "./shopify/products";
+import { tagStoreProducts } from "./shopify/tagStoreProducts";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 
 const config = loadConfig();
@@ -37,6 +38,8 @@ const bgClient = config.bg
 
 const api = createApi(config, {
   onShopifyOrder: async (order) => {
+    // В режиме "app" заказы BG-товаров передаёт приложение BrandsGateway само.
+    if (config.importMode === "app") return;
     if (!bgClient || !isDbReady()) {
       await alert(
         `⚠️ Получен заказ №${order.order_number} из Shopify, но BrandsGateway ` +
@@ -61,10 +64,11 @@ if (config.shopifyWebhookSecret) {
   console.log("Вебхук Shopify активен: POST /webhooks/shopify/orders");
 }
 
-// Периодические задачи включаются только когда есть и креды BG, и БД
+// Периодические задачи. Режим "api": наш сервер сам синкает каталог/заказы через API BG.
+// Режим "app": импорт/остатки/заказы делает приложение BrandsGateway — мы только дотегируем.
 let lastDeltaSync = new Date().toISOString();
 const jobs: Job[] = [];
-if (bgClient && isDbReady()) {
+if (config.importMode === "api" && bgClient && isDbReady()) {
   jobs.push(
     {
       name: "bg-status-sync",
@@ -95,8 +99,8 @@ if (bgClient && isDbReady()) {
   );
 }
 
-// Заливка каталога БД → Shopify: работает, как только есть Shopify и БД
-if (shopifyClient && isDbReady()) {
+// Режим "api": заливка каталога БД → Shopify нашим сервером.
+if (config.importMode === "api" && shopifyClient && isDbReady()) {
   jobs.push({
     name: "shopify-push",
     intervalMs: 60_000,
@@ -113,6 +117,26 @@ if (shopifyClient && isDbReady()) {
         throw new Error(
           `не залилось ${stats.failed} товаров, например: ${stats.errors[0]}`
         );
+      }
+    },
+  });
+}
+
+// Режим "app": приложение BrandsGateway залило товары само, но без тега склада.
+// Дотегируем их через наш Admin API — на этом держится фильтр EU/US на витрине.
+if (config.importMode === "app" && shopifyClient) {
+  jobs.push({
+    name: "shopify-tagger",
+    intervalMs: 10 * 60_000,
+    run: async () => {
+      const stats = await tagStoreProducts(shopifyClient);
+      if (stats.tagged > 0 || stats.failed > 0) {
+        console.log(
+          `shopify-tagger: просмотрено ${stats.scanned}, дотегировано ${stats.tagged}, ошибок ${stats.failed}`
+        );
+      }
+      if (stats.failed > 0) {
+        throw new Error(`не дотегировалось ${stats.failed} товаров`);
       }
     },
   });

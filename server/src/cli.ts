@@ -25,6 +25,7 @@ const config = {
   port: 0,
   inventoryCap: 1,
   pushBatch: 25,
+  importMode: "app" as const,
 };
 
 console.log("Запрос:", req);

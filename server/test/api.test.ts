@@ -10,6 +10,7 @@ const config: Config = {
   port: 0,
   inventoryCap: 1,
   pushBatch: 25,
+  importMode: "app",
 };
 
 describe("HTTP API", () => {

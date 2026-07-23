@@ -50,6 +50,7 @@ describe("вебхук /webhooks/shopify/orders", () => {
     port: 0,
     inventoryCap: 1,
     pushBatch: 25,
+    importMode: "api",
     shopifyWebhookSecret: SECRET,
   };
 
