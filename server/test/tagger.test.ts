@@ -23,18 +23,18 @@ describe("warehouseForBrand", () => {
 describe("missingTags", () => {
   it("нет тегов вовсе → склад по бренду + дизайнер", () => {
     expect(missingTags({ id: "1", vendor: "Gucci", tags: [] })).toEqual([
-      "warehouse:eu",
+      "EU",
       "designer:gucci",
     ]);
     expect(missingTags({ id: "2", vendor: "Coach", tags: [] })).toEqual([
-      "warehouse:us",
+      "US",
       "designer:coach",
     ]);
   });
 
   it("склад уже есть → не трогаем склад", () => {
     expect(
-      missingTags({ id: "3", vendor: "Gucci", tags: ["warehouse:eu", "designer:gucci"] })
+      missingTags({ id: "3", vendor: "Gucci", tags: ["EU", "designer:gucci"] })
     ).toEqual([]);
   });
 
@@ -42,15 +42,21 @@ describe("missingTags", () => {
     const add = missingTags({
       id: "4",
       vendor: "Prada",
-      tags: ["gender:women", "Bags"],
+      tags: ["Women", "Bags"],
     });
-    expect(add).toContain("warehouse:eu");
+    expect(add).toContain("EU");
     expect(add).toContain("designer:prada");
-    expect(add).not.toContain("gender:women");
+    expect(add).not.toContain("Women");
+  });
+
+  it("размерный тег EU37/US7 не считается складом → склад всё равно добавляем", () => {
+    // у товаров приложения размеры вида "EU37/US7" — не путаем со складом
+    const add = missingTags({ id: "6", vendor: "Prada", tags: ["EU37/US7", "Bags"] });
+    expect(add).toContain("EU");
   });
 
   it("без vendor → только склад по умолчанию", () => {
-    expect(missingTags({ id: "5", vendor: null, tags: [] })).toEqual(["warehouse:eu"]);
+    expect(missingTags({ id: "5", vendor: null, tags: [] })).toEqual(["EU"]);
   });
 });
 
@@ -74,7 +80,7 @@ describe("tagStoreProducts", () => {
           pageInfo: { hasNextPage: false, endCursor: null },
           nodes: [
             { id: "gid://shopify/Product/1", vendor: "Gucci", tags: [] },
-            { id: "gid://shopify/Product/2", vendor: "Coach", tags: ["warehouse:us", "designer:coach"] },
+            { id: "gid://shopify/Product/2", vendor: "Coach", tags: ["US", "designer:coach"] },
           ],
         },
       },
@@ -86,10 +92,10 @@ describe("tagStoreProducts", () => {
     expect(stats.tagged).toBe(1);
     expect(stats.failed).toBe(0);
 
-    // второй запрос — tagsAdd для товара 1 с eu+designer
+    // второй запрос — tagsAdd для товара 1 с EU+designer
     const addBody = JSON.parse(fetchFn.mock.calls[1][1].body);
     expect(addBody.variables.id).toBe("gid://shopify/Product/1");
-    expect(addBody.variables.tags).toEqual(["warehouse:eu", "designer:gucci"]);
+    expect(addBody.variables.tags).toEqual(["EU", "designer:gucci"]);
   });
 
   it("пустая выдача → ничего не делает", async () => {

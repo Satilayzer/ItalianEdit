@@ -58,18 +58,18 @@ const qtyOk = { inventorySetQuantities: { userErrors: [] } };
 const updateOk = { productUpdate: { product: { id: "gid://shopify/Product/1" }, userErrors: [] } };
 
 describe("buildTags", () => {
-  it("склад, пол и дизайнер", () => {
+  it("склад, пол и дизайнер — в формате витрины", () => {
     expect(buildTags({ brand: "Gucci", warehouse: "us", gender: "women" })).toEqual([
       "bg",
-      "warehouse:us",
-      "gender:women",
+      "US",
+      "Women",
       "designer:gucci",
     ]);
   });
-  it("без склада — eu по умолчанию, без бренда и пола — без их тегов", () => {
+  it("без склада — EU по умолчанию, без бренда и пола — без их тегов", () => {
     expect(buildTags({ brand: null, warehouse: null, gender: null })).toEqual([
       "bg",
-      "warehouse:eu",
+      "EU",
     ]);
   });
 });
@@ -94,7 +94,7 @@ describe("pushProduct — создание", () => {
     const create = body(0).variables;
     expect(create.product.status).toBe("ACTIVE");
     expect(create.product.vendor).toBe("Gucci");
-    expect(create.product.tags).toContain("warehouse:eu");
+    expect(create.product.tags).toContain("EU");
     expect(create.media).toHaveLength(2);
 
     const variant = body(1).variables.variants[0];

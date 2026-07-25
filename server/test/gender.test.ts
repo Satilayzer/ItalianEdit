@@ -25,8 +25,6 @@ describe("нормализация пола из BrandsGateway", () => {
   });
 
   it("«woman» не читается как «man»", () => {
-    // Ловушка подстроки: woman содержит man, women содержит men.
-    // При обратном порядке проверок всё женское уехало бы в мужское.
     expect(normalizeGender("Woman")).not.toBe("men");
     expect(normalizeGender("Women")).not.toBe("men");
   });
@@ -39,16 +37,15 @@ describe("нормализация пола из BrandsGateway", () => {
   });
 });
 
-describe("теги пола", () => {
+describe("теги пола — формат витрины Women/Men", () => {
   it("женское и мужское — по одному тегу", () => {
-    expect(genderTags("women")).toEqual(["gender:women"]);
-    expect(genderTags("men")).toEqual(["gender:men"]);
+    expect(genderTags("women")).toEqual(["Women"]);
+    expect(genderTags("men")).toEqual(["Men"]);
   });
 
-  it("унисекс — женский + мужской тег (без отдельного gender:unisex)", () => {
-    // Отдельного унисекс-тега нет; товар виден и в Women, и в Men.
-    expect(genderTags("unisex")).toEqual(["gender:women", "gender:men"]);
-    expect(genderTags("unisex")).not.toContain("gender:unisex");
+  it("унисекс — Women + Men (отдельного unisex-тега нет)", () => {
+    expect(genderTags("unisex")).toEqual(["Women", "Men"]);
+    expect(genderTags("unisex")).not.toContain("Unisex");
   });
 
   it("пол не определён — тегов нет", () => {
@@ -57,29 +54,29 @@ describe("теги пола", () => {
   });
 
   it("выбор Women достаёт и унисекс", () => {
-    const unisexProduct = genderTags("unisex");
-    expect(unisexProduct).toContain("gender:women");
-    expect(unisexProduct).toContain("gender:men");
+    const unisex = genderTags("unisex");
+    expect(unisex).toContain("Women");
+    expect(unisex).toContain("Men");
   });
 });
 
 describe("чтение пола из тегов", () => {
-  it("оба тега (women+men) читаются как унисекс", () => {
+  it("оба тега (Women+Men) читаются как унисекс", () => {
     expect(genderFromTags(genderTags("unisex"))).toBe("unisex");
   });
 
   it("обычные случаи", () => {
-    expect(genderFromTags(["bg", "gender:women"])).toBe("women");
-    expect(genderFromTags(["gender:men", "designer:prada"])).toBe("men");
+    expect(genderFromTags(["bg", "Women"])).toBe("women");
+    expect(genderFromTags(["Men", "designer:prada"])).toBe("men");
   });
 
   it("регистр и пробелы не мешают", () => {
-    expect(genderFromTags([" Gender:WOMEN "])).toBe("women");
+    expect(genderFromTags([" WOMEN "])).toBe("women");
   });
 
-  it("нет тега — null", () => {
-    expect(genderFromTags(["bg", "warehouse:eu"])).toBeNull();
-    expect(genderFromTags(["gender:martian"])).toBeNull();
+  it("нет тега пола — null", () => {
+    expect(genderFromTags(["bg", "EU"])).toBeNull();
+    expect(genderFromTags(["Bags", "Brown"])).toBeNull();
   });
 });
 

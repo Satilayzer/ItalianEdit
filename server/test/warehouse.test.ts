@@ -3,36 +3,37 @@ import {
   warehouseTag,
   warehouseFromTags,
   DEFAULT_WAREHOUSE,
-  WAREHOUSE_TAG_PREFIX,
 } from "../src/shopify/warehouse";
 import { buildTags } from "../src/shopify/products";
 
 describe("тег склада", () => {
-  it("склад превращается в тег", () => {
-    expect(warehouseTag("eu")).toBe("warehouse:eu");
-    expect(warehouseTag("us")).toBe("warehouse:us");
+  it("склад превращается в тег в формате витрины (EU/US)", () => {
+    expect(warehouseTag("eu")).toBe("EU");
+    expect(warehouseTag("us")).toBe("US");
   });
 
   it("неизвестный склад — европейский по умолчанию", () => {
-    expect(warehouseTag(null)).toBe(`${WAREHOUSE_TAG_PREFIX}${DEFAULT_WAREHOUSE}`);
-    expect(warehouseTag(undefined)).toBe("warehouse:eu");
+    expect(DEFAULT_WAREHOUSE).toBe("eu");
+    expect(warehouseTag(null)).toBe("EU");
+    expect(warehouseTag(undefined)).toBe("EU");
   });
 
   it("склад читается обратно из тегов", () => {
-    expect(warehouseFromTags(["bg", "warehouse:us", "designer:prada"])).toBe("us");
-    expect(warehouseFromTags(["warehouse:eu"])).toBe("eu");
+    expect(warehouseFromTags(["bg", "US", "designer:prada"])).toBe("us");
+    expect(warehouseFromTags(["EU"])).toBe("eu");
   });
 
   it("регистр и пробелы не мешают", () => {
-    expect(warehouseFromTags([" Warehouse:US "])).toBe("us");
+    expect(warehouseFromTags([" us "])).toBe("us");
   });
 
   it("нет тега склада — null", () => {
     expect(warehouseFromTags(["bg", "designer:gucci"])).toBeNull();
   });
 
-  it("мусорное значение не принимается за склад", () => {
-    expect(warehouseFromTags(["warehouse:atlantis"])).toBeNull();
+  it("размерный тег с EU/US не принимается за склад", () => {
+    // у товаров приложения есть размеры вида "EU37/US7" — не путаем со складом
+    expect(warehouseFromTags(["EU37/US7", "Bags"])).toBeNull();
   });
 });
 
@@ -40,7 +41,7 @@ describe("теги товара BrandsGateway", () => {
   it("склад US попадает в теги", () => {
     expect(buildTags({ brand: "Gucci", warehouse: "us", gender: null })).toEqual([
       "bg",
-      "warehouse:us",
+      "US",
       "designer:gucci",
     ]);
   });
@@ -48,16 +49,16 @@ describe("теги товара BrandsGateway", () => {
   it("склад не определён — едет европейский", () => {
     expect(buildTags({ brand: null, warehouse: null, gender: null })).toEqual([
       "bg",
-      "warehouse:eu",
+      "EU",
     ]);
   });
 
   it("унисекс добавляет женский и мужской тег рядом со складом", () => {
     expect(buildTags({ brand: null, warehouse: "us", gender: "unisex" })).toEqual([
       "bg",
-      "warehouse:us",
-      "gender:women",
-      "gender:men",
+      "US",
+      "Women",
+      "Men",
     ]);
   });
 });

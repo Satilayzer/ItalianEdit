@@ -8,8 +8,8 @@ import { warehouseForBrand } from "./warehouseByBrand";
  * Приложение BrandsGateway заливает товары само и ставит теги категории/пола,
  * но НЕ ставит склад. Здесь мы читаем товары через наш Shopify Admin API
  * и добавляем недостающие теги, на которых держатся фильтры витрины:
- *   - warehouse:eu | warehouse:us  (переключатель «откуда едет», выводим из бренда)
- *   - designer:<бренд>             (фильтр по дизайнеру, из vendor)
+ *   - EU | US            (переключатель «откуда едет» Ships from, выводим из бренда)
+ *   - designer:<бренд>   (фильтр по дизайнеру, из vendor)
  * Только ДОБАВЛЯЕМ теги — ничего не удаляем; идемпотентно (уже помеченные пропускаем).
  */
 
@@ -72,7 +72,8 @@ export async function tagStoreProducts(
   const stats: TagStats = { scanned: 0, tagged: 0, failed: 0 };
   const limit = opts.maxProducts ?? 250;
   // Кандидаты: без тега склада (наши TG-товары тоже подхватятся — они EU из Италии).
-  const query = `-tag:'warehouse:eu' -tag:'warehouse:us' status:active,draft`;
+  // Формат тегов держим через warehouseTag, чтобы запрос не рассинхронился со схемой витрины.
+  const query = `-tag:'${warehouseTag("eu")}' -tag:'${warehouseTag("us")}' status:active,draft`;
   let cursor: string | undefined;
 
   while (stats.scanned < limit) {

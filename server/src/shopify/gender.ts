@@ -6,37 +6,36 @@
  * и названия, как и категорию.
  */
 
-export const GENDER_TAG_PREFIX = "gender:";
-
 export type Gender = "women" | "men" | "unisex";
+
+/**
+ * Метки пола на витрине — в формате приложения BrandsGateway: Women / Men
+ * (без префикса, с заглавной). Так фильтр пола ловит и товары приложения,
+ * и товары бота одним тегом.
+ */
+const GENDER_TAG: Record<"women" | "men", string> = { women: "Women", men: "Men" };
 
 /**
  * Теги для Shopify.
  *
- * Отдельного тега `gender:unisex` нет — на витрине только Women и Men.
- * Унисекс-товар получает оба тега (women + men), поэтому виден в обоих
- * фильтрах: встроенный маршрут Shopify /collections/<handle>/<tag> отбирает
- * по одному тегу без ИЛИ, а унисекс должен показываться и там, и там.
+ * Отдельного «unisex» нет — на витрине только Women и Men. Унисекс-товар
+ * получает оба тега, поэтому виден в обоих фильтрах: маршрут Shopify
+ * /collections/<handle>/<tag> отбирает по одному тегу без ИЛИ.
  */
 export function genderTags(gender: Gender | null | undefined): string[] {
   if (!gender) return [];
-  if (gender === "unisex") {
-    return [`${GENDER_TAG_PREFIX}women`, `${GENDER_TAG_PREFIX}men`];
-  }
-  return [`${GENDER_TAG_PREFIX}${gender}`];
+  if (gender === "unisex") return [GENDER_TAG.women, GENDER_TAG.men];
+  return [GENDER_TAG[gender]];
 }
 
-/** Достаёт пол из тегов товара. Оба тега (women+men) — значит унисекс. */
+/** Достаёт пол из тегов товара. Оба (Women+Men) — унисекс. Регистр не важен. */
 export function genderFromTags(tags: string[]): Gender | null {
-  const values = new Set(
-    tags
-      .map((t) => t.trim().toLowerCase())
-      .filter((t) => t.startsWith(GENDER_TAG_PREFIX))
-      .map((t) => t.slice(GENDER_TAG_PREFIX.length))
-  );
-  if (values.has("women") && values.has("men")) return "unisex";
-  if (values.has("women")) return "women";
-  if (values.has("men")) return "men";
+  const set = new Set(tags.map((t) => t.trim().toLowerCase()));
+  const women = set.has("women");
+  const men = set.has("men");
+  if (women && men) return "unisex";
+  if (women) return "women";
+  if (men) return "men";
   return null;
 }
 
