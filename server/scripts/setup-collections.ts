@@ -81,6 +81,8 @@ const shoeTypes: { title: string; tags: string[] }[] = [
   { title: "Boots", tags: ["Boots - Shoes"] },
 ];
 
+const created: string[] = [];
+
 for (const c of [...service, ...categories, ...shoeTypes]) {
   const res = await ensureSmartCollection(client, c.title, c.tags);
   const state = res.created
@@ -88,5 +90,19 @@ for (const c of [...service, ...categories, ...shoeTypes]) {
     : res.updated
       ? "правило исправлено"
       : "уже актуальна";
+  if (res.created) created.push(c.title);
   console.log(`Коллекция «${c.title}» (${res.id}) — ${c.tags.join(" | ")}: ${state}`);
+}
+
+if (created.length > 0) {
+  // Созданная через API коллекция НЕ публикуется в каналы продаж сама: её
+  // страница отдаёт 404, хотя товары внутри есть и ссылка в меню работает.
+  // Опубликовать отсюда нельзя — нужен скоуп write_publications, которого
+  // у приложения нет. Поэтому просто говорим об этом громко.
+  console.log(
+    `\n⚠ Созданы новые коллекции (${created.length}): ${created.join(", ")}.\n` +
+      `  Сами в каналы продаж они НЕ попадают — до публикации их страницы\n` +
+      `  отдают 404. Откройте каждую в админке (Products → Collections)\n` +
+      `  и добавьте канал Online Store в блоке Publishing.`
+  );
 }
