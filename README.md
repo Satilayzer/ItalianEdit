@@ -444,8 +444,9 @@ Dresses нет — платья внутри Clothing. Ювелирка — в M
 | Designers | All designers, Gucci, Miu Miu, Prada, The Row |
 | Clothing | All Clothing, Dresses, Tops, Swimsuits & Cover-Ups, Jeans, Sweaters, Jackets & Blazers, Pants, Skirts, Shorts, Matching Sets, Pajamas & Robes, Lingerie |
 | Shoes | All Shoes, Sneakers, Flats, Loafers, Pumps & Heels, Sandals, Boots |
+| Bags | All Bags, Handbags, Shoulder Bags, Clutch Bags |
 | More | Jewelry, Accessories, Kids |
-| New, Bags | без вложенных — выпадашки нет |
+| New | без вложенных — выпадашки нет |
 
 По образцу Clothing первым пунктом идёт «All …», ведущий на родительскую коллекцию.
 
@@ -509,10 +510,18 @@ quick add.
   (тег приложения BG `Bags`/… ИЛИ легаси `category:*` от бота).
 - **Типы обуви** (Sneakers, Flats, Loafers, Pumps & Heels, Sandals, Boots) — по
   тегам второго уровня BG (`Sneakers - Shoes` и т.д.), на них держится выпадающее
-  меню под SHOES. Легаси-тега бота у них нет: его словарь знает только
-  `category:shoes` без дробления на типы, поэтому обувь, заведённая ботом,
-  попадает в `Shoes`, но не в подколлекцию. Разойдётся заметно, когда ботом
-  заведут много обуви — тогда добавить типы в `categorize.ts` и вторым тегом сюда.
+  меню под SHOES.
+- **Типы сумок** (Handbags, Shoulder Bags, Clutch Bags) — так же, по
+  `Handbags - Bags` и т.д., для меню под BAGS. Словарь BG здесь беднее: три
+  подтипа против шести у обуви. Totes и Backpacks не заводили — таких тегов
+  у BG не встречалось, а тоут и рюкзак в каталоге есть только от бота.
+
+> У подколлекций обуви и сумок **нет легаси-тега бота**: его словарь
+> (`categorize.ts`) знает только `category:shoes` и `category:bags` без дробления
+> на типы. Поэтому обувь и сумки, заведённые ботом, попадают в `Shoes`/`Bags`,
+> но ни в одну подколлекцию. Сейчас это 1 обувь и 4 сумки. Станет заметно, когда
+> ботом начнут заводить их всерьёз — тогда добавить типы в `categorize.ts`
+> и вторым тегом в правила.
 - **New** — по тегу `new`; товар выпадает через 14 дней (job `shopify-expire-new`).
 - **Ships from Europe / USA** — по тегам `EU` / `US`.
 - **Women / Men** — по тегам `Women` / `Men`.

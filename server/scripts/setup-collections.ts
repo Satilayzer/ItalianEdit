@@ -81,9 +81,23 @@ const shoeTypes: { title: string; tags: string[] }[] = [
   { title: "Boots", tags: ["Boots - Shoes"] },
 ];
 
+/**
+ * Типы сумок — для выпадающего меню под BAGS. Та же логика, что у обуви,
+ * но словарь BG здесь заметно беднее: всего три подтипа против шести у обуви.
+ *
+ * Totes/Backpacks не заводим: у BG таких тегов не встречалось, а тоут и рюкзак
+ * в каталоге есть только от бота — с одним `category:bags` без подтипа.
+ * Правило под невиданный тег было бы обманом.
+ */
+const bagTypes: { title: string; tags: string[] }[] = [
+  { title: "Handbags", tags: ["Handbags - Bags"] },
+  { title: "Shoulder Bags", tags: ["Shoulder Bags - Bags"] },
+  { title: "Clutch Bags", tags: ["Clutch Bags - Bags"] },
+];
+
 const created: string[] = [];
 
-for (const c of [...service, ...categories, ...shoeTypes]) {
+for (const c of [...service, ...categories, ...shoeTypes, ...bagTypes]) {
   const res = await ensureSmartCollection(client, c.title, c.tags);
   const state = res.created
     ? "создана"
