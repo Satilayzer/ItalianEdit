@@ -11,6 +11,7 @@ import { forwardShopifyOrder, pollTracking } from "./bg/orders";
 import { pushPendingProducts } from "./shopify/products";
 import { tagStoreProducts } from "./shopify/tagStoreProducts";
 import { categorizeStoreProducts } from "./shopify/categorizeStoreProducts";
+import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 
 const config = loadConfig();
@@ -142,6 +143,35 @@ if (config.importMode === "app" && shopifyClient) {
     },
   });
 }
+// Режим "app": приложение BG заливает описание машинным текстом с внутренними
+// кодами. Пересобираем его в человеческую вёрстку, оригинал складываем в метаполе.
+// Товары бота задача обходит: там настоящий текст бренда.
+if (config.importMode === "app" && shopifyClient) {
+  jobs.push({
+    name: "shopify-descriptions",
+    intervalMs: 30 * 60_000,
+    run: async () => {
+      const stats = await rewriteDescriptions(shopifyClient);
+      if (stats.rewritten > 0 || stats.failed > 0) {
+        console.log(
+          `shopify-descriptions: просмотрено ${stats.scanned}, пересобрано ${stats.rewritten}, ошибок ${stats.failed}`
+        );
+      }
+      if (stats.foreign.length > 0) {
+        // Формат фида BG расширяется. Нераспознанное описание оставляем как есть
+        // и показываем глазами — правится разбором в description.ts.
+        console.warn(
+          `shopify-descriptions: формат не распознан у ${stats.foreign.length} товаров, ` +
+            `например «${stats.foreign[0]}»`
+        );
+      }
+      if (stats.failed > 0) {
+        throw new Error(`не пересобралось описание у ${stats.failed} товаров`);
+      }
+    },
+  });
+}
+
 // Категория и тип товара: ни приложение BG, ни бот их не заполняют, а фиды
 // Google/Meta, налоги и маркетплейсы читают именно эти поля. Выводим из тегов.
 // Задача нужна в обоих режимах: товары бота тоже приходят без Category.
