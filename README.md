@@ -432,10 +432,28 @@ PostgreSQL нужна **только режиму `api`**; в режиме `app`
 
 ### Меню
 
-`Designers` · `New` · `Clothing` (+ подкатегории: Dresses, Tops, Swimsuits,
-Jeans, Sweaters, Jackets & Blazers, Pants, Skirts, Shorts, Matching Sets,
-Pajamas & Robes, Lingerie) · `Shoes` · `Bags` · `More` (Jewelry, Accessories, Kids).
-Отдельной вкладки Dresses нет — платья внутри Clothing. Ювелирка — в More.
+`Designers` · `New` · `Clothing` · `Shoes` · `Bags` · `More`. Отдельной вкладки
+Dresses нет — платья внутри Clothing. Ювелирка — в More.
+
+Выпадающее меню у пункта появляется **само**, когда у него есть вложенные ссылки
+в навигации (Online Store → Navigation → Main menu). Тема ничего про конкретные
+пункты не знает, кода для этого писать не нужно — только завести детей.
+
+| Пункт | Вложенные ссылки |
+|---|---|
+| Designers | All designers, Gucci, Miu Miu, Prada, The Row |
+| Clothing | All Clothing, Dresses, Tops, Swimsuits & Cover-Ups, Jeans, Sweaters, Jackets & Blazers, Pants, Skirts, Shorts, Matching Sets, Pajamas & Robes, Lingerie |
+| Shoes | All Shoes, Sneakers, Flats, Loafers, Pumps & Heels, Sandals, Boots |
+| More | Jewelry, Accessories, Kids |
+| New, Bags | без вложенных — выпадашки нет |
+
+По образцу Clothing первым пунктом идёт «All …», ведущий на родительскую коллекцию.
+
+> `menuUpdate` заменяет список пунктов **целиком**, а не дописывает. Чтобы не
+> потерять существующие ссылки и их ID, дерево пересобирается полностью, и у уже
+> существующих пунктов передаётся `id`. Скоуп нужен
+> `write_online_store_navigation` — у приложения из `.env` его нет, правки шли
+> через MCP-коннектор.
 
 ### Дизайнер над названием
 
@@ -482,6 +500,12 @@ quick add.
   Есть отдельная индекс-страница дизайнеров.
 - **Категорийные** (Bags, Shoes, Clothing и подкатегории, Accessories) — по тегам
   (тег приложения BG `Bags`/… ИЛИ легаси `category:*` от бота).
+- **Типы обуви** (Sneakers, Flats, Loafers, Pumps & Heels, Sandals, Boots) — по
+  тегам второго уровня BG (`Sneakers - Shoes` и т.д.), на них держится выпадающее
+  меню под SHOES. Легаси-тега бота у них нет: его словарь знает только
+  `category:shoes` без дробления на типы, поэтому обувь, заведённая ботом,
+  попадает в `Shoes`, но не в подколлекцию. Разойдётся заметно, когда ботом
+  заведут много обуви — тогда добавить типы в `categorize.ts` и вторым тегом сюда.
 - **New** — по тегу `new`; товар выпадает через 14 дней (job `shopify-expire-new`).
 - **Ships from Europe / USA** — по тегам `EU` / `US`.
 - **Women / Men** — по тегам `Women` / `Men`.

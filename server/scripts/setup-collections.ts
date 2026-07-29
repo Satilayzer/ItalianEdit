@@ -64,7 +64,24 @@ const categories: { title: string; tags: string[] }[] = [
   { title: "Kids", tags: ["category:kids"] },
 ];
 
-for (const c of [...service, ...categories]) {
+/**
+ * Типы обуви — на них держится выпадающее меню под SHOES (как подкатегории
+ * под CLOTHING). Теги выписаны с фактических товаров каталога.
+ *
+ * Легаси-тега бота здесь нет намеренно: словарь бота (categorize.ts) знает
+ * только `category:shoes` без дробления на типы, и правило под несуществующий
+ * тег вводило бы в заблуждение. Научим бота типам — допишем сюда вторым тегом.
+ */
+const shoeTypes: { title: string; tags: string[] }[] = [
+  { title: "Sneakers", tags: ["Sneakers - Shoes"] },
+  { title: "Flats", tags: ["Flats - Shoes"] },
+  { title: "Loafers", tags: ["Loafers - Shoes"] },
+  { title: "Pumps & Heels", tags: ["Pumps - Shoes"] },
+  { title: "Sandals", tags: ["Sandals - Shoes"] },
+  { title: "Boots", tags: ["Boots - Shoes"] },
+];
+
+for (const c of [...service, ...categories, ...shoeTypes]) {
   const res = await ensureSmartCollection(client, c.title, c.tags);
   const state = res.created
     ? "создана"
