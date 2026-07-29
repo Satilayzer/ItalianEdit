@@ -6,33 +6,57 @@ interface Rule {
   condition: string;
 }
 
-function isSingleTagRule(rules: Rule[], tag: string): boolean {
-  return (
-    rules.length === 1 &&
-    rules[0].column === "TAG" &&
-    rules[0].relation === "EQUALS" &&
-    rules[0].condition === tag
-  );
+interface RuleSet {
+  appliedDisjunctively: boolean;
+  rules: Rule[];
 }
 
 /**
- * Гарантирует автоколлекцию (smart collection), собирающую товары по одному тегу.
- * Нет — создаёт; есть, но правило указывает на другой тег — приводит к нужному
- * (иначе после смены формата тегов коллекция осталась бы пустой).
+ * Совпадает ли текущее правило коллекции с желаемым набором тегов.
+ * Порядок правил Shopify не гарантирует, поэтому сравниваем множествами.
+ */
+function sameRuleSet(existing: RuleSet | null, wanted: RuleSet): boolean {
+  if (!existing) return false;
+  if (existing.appliedDisjunctively !== wanted.appliedDisjunctively) return false;
+  if (existing.rules.length !== wanted.rules.length) return false;
+
+  const key = (r: Rule) => `${r.column}|${r.relation}|${r.condition}`;
+  const have = new Set(existing.rules.map(key));
+  return wanted.rules.every((r) => have.has(key(r)));
+}
+
+/**
+ * Гарантирует автоколлекцию (smart collection), собирающую товары по тегам.
+ * Нет — создаёт; есть, но правило другое — приводит к нужному (иначе после
+ * смены формата тегов коллекция осталась бы пустой).
+ *
+ * Тегов может быть несколько: категорийные коллекции ловят И формат приложения
+ * BrandsGateway («Jewellery - Accessories»), И легаси-формат бота
+ * («category:jewelry»). Несколько тегов объединяются через ИЛИ
+ * (appliedDisjunctively) — товару достаточно одного.
  */
 export async function ensureSmartCollection(
   client: ShopifyClient,
   title: string,
-  tag: string
+  tags: string | string[]
 ): Promise<{ id: string; created: boolean; updated: boolean }> {
+  const tagList = (Array.isArray(tags) ? tags : [tags]).filter((t) => t.trim() !== "");
+  if (tagList.length === 0) {
+    throw new Error(`ensureSmartCollection «${title}»: не передано ни одного тега`);
+  }
+
   const found = await client.graphql<{
     collections: {
-      nodes: { id: string; title: string; ruleSet: { rules: Rule[] } | null }[];
+      nodes: { id: string; title: string; ruleSet: RuleSet | null }[];
     };
   }>(
     `query FindCollection($q: String!) {
       collections(first: 10, query: $q) {
-        nodes { id title ruleSet { rules { column relation condition } } }
+        nodes {
+          id
+          title
+          ruleSet { appliedDisjunctively rules { column relation condition } }
+        }
       }
     }`,
     { q: `title:'${title.replace(/'/g, "\\'")}'` }
@@ -41,13 +65,19 @@ export async function ensureSmartCollection(
     (c) => c.title.toLowerCase() === title.toLowerCase()
   );
 
-  const ruleSet = {
-    appliedDisjunctively: false,
-    rules: [{ column: "TAG", relation: "EQUALS", condition: tag }],
+  const ruleSet: RuleSet = {
+    // Один тег — условие одно, дизъюнкция ничего не меняет, но Shopify
+    // хранит флаг как есть, поэтому держим его предсказуемым.
+    appliedDisjunctively: tagList.length > 1,
+    rules: tagList.map((tag) => ({
+      column: "TAG",
+      relation: "EQUALS",
+      condition: tag,
+    })),
   };
 
   if (existing) {
-    if (isSingleTagRule(existing.ruleSet?.rules ?? [], tag)) {
+    if (sameRuleSet(existing.ruleSet, ruleSet)) {
       return { id: existing.id, created: false, updated: false };
     }
     const updated = await client.graphql<{

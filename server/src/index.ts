@@ -10,6 +10,7 @@ import { importCatalog, syncStockStatuses } from "./bg/sync";
 import { forwardShopifyOrder, pollTracking } from "./bg/orders";
 import { pushPendingProducts } from "./shopify/products";
 import { tagStoreProducts } from "./shopify/tagStoreProducts";
+import { categorizeStoreProducts } from "./shopify/categorizeStoreProducts";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 
 const config = loadConfig();
@@ -141,6 +142,35 @@ if (config.importMode === "app" && shopifyClient) {
     },
   });
 }
+// Категория и тип товара: ни приложение BG, ни бот их не заполняют, а фиды
+// Google/Meta, налоги и маркетплейсы читают именно эти поля. Выводим из тегов.
+// Задача нужна в обоих режимах: товары бота тоже приходят без Category.
+if (shopifyClient) {
+  jobs.push({
+    name: "shopify-categorizer",
+    intervalMs: 15 * 60_000,
+    run: async () => {
+      const stats = await categorizeStoreProducts(shopifyClient);
+      if (stats.updated > 0 || stats.failed > 0) {
+        console.log(
+          `shopify-categorizer: просмотрено ${stats.scanned}, заполнено ${stats.updated}, ошибок ${stats.failed}`
+        );
+      }
+      if (stats.unresolved.length > 0) {
+        // Не ошибка: словарь BG расширяется, и незнакомую категорию лучше
+        // показать глазами, чем проставить наугад. Правится в category.ts.
+        console.warn(
+          `shopify-categorizer: категория не опознана у ${stats.unresolved.length} товаров, ` +
+            `например «${stats.unresolved[0]}»`
+        );
+      }
+      if (stats.failed > 0) {
+        throw new Error(`не проставилась категория у ${stats.failed} товаров`);
+      }
+    },
+  });
+}
+
 // Снятие метки «новинка»: нужен только Shopify, БД не участвует.
 // Раз в 6 часов — TTL измеряется днями, чаще смысла нет.
 if (shopifyClient) {

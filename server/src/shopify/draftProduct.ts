@@ -1,6 +1,7 @@
 import type { ShopifyClient } from "./client";
 import type { ManagerRequest, ProductInfo } from "../types";
 import { categoryTags } from "./categorize";
+import { resolveCategory } from "./category";
 import { NEW_TAG } from "./expireNew";
 import { warehouseTag, TG_WAREHOUSE } from "./warehouse";
 import { detectGender, genderTags } from "./gender";
@@ -11,6 +12,10 @@ export interface DraftInput {
   descriptionHtml?: string;
   vendor: string;
   tags: string[];
+  /** Стандартная категория Shopify (ID узла таксономии) — выводим из тегов. */
+  category?: string;
+  /** Product type — имя того же узла. Пусто, если категорию не опознали. */
+  productType?: string;
   imageUrls: string[];
   /** Наша цена (из Телеграма) — цена товара. */
   price: number;
@@ -73,28 +78,36 @@ export function buildDraftInput(
     ? `<p>${escapeHtml(info.description)}</p>`
     : "";
 
+  const tags = [
+    "tg-bot",
+    // Метка «новинка» — её снимает задача shopify-expire-new через 14 дней.
+    NEW_TAG,
+    TG_COLLECTION_TAG,
+    TG_DELIVERY_TAG,
+    // Склад отгрузки — на нём держится фильтр «откуда едет».
+    // Товары из ТГ менеджер везёт из Италии, то есть с европейской стороны.
+    warehouseTag(TG_WAREHOUSE),
+    `designer:${(info.brand ?? req.designer).toLowerCase()}`,
+    // Категорию менеджер не присылает — выводим из названия и URL бренда.
+    // Не определилась — товар остаётся только в New, категорию ставит менеджер.
+    ...categoryTags(info.title, info.url),
+    // Пол — по разделу на сайте бренда. Не определился — тега нет,
+    // и товар виден при любом положении переключателя.
+    ...genderTags(detectGender(info.url)),
+  ];
+
+  // Поля Category и Product type — из тех же тегов, что и у товаров BG,
+  // чтобы товар сразу попадал в фиды Google/Meta, а не ждал категоризатора.
+  const category = resolveCategory(tags);
+
   return {
     // Вариация в названии: у каждой расцветки — свой товар в магазине
     title: req.variation ? `${info.title} — ${req.variation}` : info.title,
     descriptionHtml: description + sectionsToHtml(info.sections) + DELIVERY_NOTE_HTML,
     vendor: info.brand ?? req.designer,
-    tags: [
-      "tg-bot",
-      // Метка «новинка» — её снимает задача shopify-expire-new через 14 дней.
-      NEW_TAG,
-      TG_COLLECTION_TAG,
-      TG_DELIVERY_TAG,
-      // Склад отгрузки — на нём держится фильтр «откуда едет».
-      // Товары из ТГ менеджер везёт из Италии, то есть с европейской стороны.
-      warehouseTag(TG_WAREHOUSE),
-      `designer:${(info.brand ?? req.designer).toLowerCase()}`,
-      // Категорию менеджер не присылает — выводим из названия и URL бренда.
-      // Не определилась — товар остаётся только в New, категорию ставит менеджер.
-      ...categoryTags(info.title, info.url),
-      // Пол — по разделу на сайте бренда. Не определился — тега нет,
-      // и товар виден при любом положении переключателя.
-      ...genderTags(detectGender(info.url)),
-    ],
+    tags,
+    category: category?.taxonomyId,
+    productType: category?.productType,
     imageUrls: info.images.slice(0, MAX_IMAGES),
     price: req.ourPrice,
     compareAtPrice:
@@ -151,6 +164,9 @@ export async function createDraftProduct(
       descriptionHtml: input.descriptionHtml,
       vendor: input.vendor,
       tags: input.tags,
+      // Пустые поля не шлём: Shopify отвергает category: null.
+      ...(input.category ? { category: input.category } : {}),
+      ...(input.productType ? { productType: input.productType } : {}),
       status: "DRAFT",
     },
   });
