@@ -20,8 +20,23 @@ const bot = createBot(config, { shopify: shopifyClient });
 const alert = makeAlerter(config.botToken, config.alertChatId);
 
 if (config.databaseUrl) {
-  await initDb(config.databaseUrl);
-  console.log("PostgreSQL подключена, схема на месте.");
+  // Недоступная база не должна ронять весь процесс в режиме "app": там она не
+  // нужна вовсе, а вместе с ней уедут HTTP API и задачи Shopify. Ровно так и
+  // случалось, когда на хостинг по недосмотру уезжал локальный DATABASE_URL
+  // с localhost — контейнер валился в цикл перезапусков.
+  // В режиме "api" база — основа работы, там падать на старте правильно:
+  // тихо работать без каталога и заказов хуже, чем не стартовать.
+  try {
+    await initDb(config.databaseUrl);
+    console.log("PostgreSQL подключена, схема на месте.");
+  } catch (err) {
+    if (config.importMode === "api") throw err;
+    console.warn(
+      `Не удалось подключиться к PostgreSQL (${String(err)}). ` +
+        `В режиме "app" она не нужна — продолжаю без неё. ` +
+        `Если база не планировалась, уберите DATABASE_URL.`
+    );
+  }
 } else {
   console.warn(
     "DATABASE_URL не задан — работаю без БД (для бота не критично, " +

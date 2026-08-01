@@ -5,12 +5,25 @@ import pg from "pg";
 
 let pool: pg.Pool | null = null;
 
-/** Подключается к PostgreSQL и накатывает схему. Вызывается один раз на старте. */
+/**
+ * Подключается к PostgreSQL и накатывает схему. Вызывается один раз на старте.
+ *
+ * При неудаче пул закрывается и обнуляется: иначе `isDbReady()` отвечал бы `true`
+ * на заведомо мёртвом подключении, и задачи режима `api` полезли бы в него на
+ * каждом проходе.
+ */
 export async function initDb(databaseUrl: string): Promise<pg.Pool> {
-  pool = new pg.Pool({ connectionString: databaseUrl, max: 10 });
-  const schemaPath = join(dirname(fileURLToPath(import.meta.url)), "schema.sql");
-  await pool.query(readFileSync(schemaPath, "utf8"));
-  return pool;
+  const created = new pg.Pool({ connectionString: databaseUrl, max: 10 });
+  try {
+    const schemaPath = join(dirname(fileURLToPath(import.meta.url)), "schema.sql");
+    await created.query(readFileSync(schemaPath, "utf8"));
+  } catch (err) {
+    await created.end().catch(() => {});
+    pool = null;
+    throw err;
+  }
+  pool = created;
+  return created;
 }
 
 /** Пул соединений; кидает ошибку, если БД не инициализирована. */
