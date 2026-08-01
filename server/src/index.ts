@@ -234,15 +234,30 @@ if (jobs.length > 0) {
   console.log("Планировщик: задач нет (ждём креды BrandsGateway).");
 }
 
-console.log("Запускаю бота (long polling)…");
-void bot.start({
-  onStart: (me) => console.log(`Бот @${me.username} запущен.`),
-});
+if (config.botEnabled) {
+  console.log("Запускаю бота (long polling)…");
+  // Ошибку поллинга обязательно ловим здесь. Без catch реджект остаётся
+  // необработанным, и Node убивает процесс целиком — вместе с HTTP API и всеми
+  // задачами Shopify, которые к Телеграму отношения не имеют.
+  // Типичный случай — 409 Conflict: второй инстанс с тем же токеном. На Render
+  // это происходит на каждом деплое, пока новый процесс и старый живут внахлёст.
+  void bot
+    .start({ onStart: (me) => console.log(`Бот @${me.username} запущен.`) })
+    .catch((err) => {
+      console.error("Бот остановлен (long polling прерван):", err);
+      void alert(
+        `🔴 Телеграм-бот остановлен: ${String(err)}\n` +
+          `Задачи Shopify продолжают работать.`
+      );
+    });
+} else {
+  console.log("Бот выключен (BOT_ENABLED=false) — работают только задачи Shopify.");
+}
 
 async function shutdown() {
   console.log("Останавливаюсь…");
   stopJobs();
-  await bot.stop();
+  if (config.botEnabled) await bot.stop();
   await api.close();
   await closeDb();
   process.exit(0);

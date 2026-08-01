@@ -52,6 +52,7 @@ describe("вебхук /webhooks/shopify/orders", () => {
     pushBatch: 25,
     importMode: "api",
     shopifyWebhookSecret: SECRET,
+    botEnabled: false,
   };
 
   it("правильная подпись → 200 и вызов обработчика", async () => {

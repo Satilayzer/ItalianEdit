@@ -26,6 +26,7 @@ const config = {
   inventoryCap: 1,
   pushBatch: 25,
   importMode: "app" as const,
+  botEnabled: false,
 };
 
 console.log("Запрос:", req);

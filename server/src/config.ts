@@ -38,6 +38,13 @@ export interface Config {
   /** Сколько товаров заливать в Shopify за один проход (раз в минуту). */
   pushBatch: number;
   importMode: ImportMode;
+  /**
+   * Запускать ли long polling Телеграма. Канал ручного завода товаров может
+   * стоять на паузе — тогда поллинг лишний, а на хостинге ещё и вреден:
+   * два инстанса с одним токеном дают 409 Conflict (перекрытие при деплое).
+   * Токен обязателен в любом случае — он часть контракта конфига.
+   */
+  botEnabled: boolean;
 }
 
 export function loadConfig(): Config {
@@ -87,5 +94,6 @@ export function loadConfig(): Config {
     inventoryCap: Number(process.env.INVENTORY_CAP ?? 1),
     pushBatch: Number(process.env.SHOPIFY_PUSH_BATCH ?? 25),
     importMode: process.env.IMPORT_MODE === "api" ? "api" : "app",
+    botEnabled: process.env.BOT_ENABLED !== "false",
   };
 }

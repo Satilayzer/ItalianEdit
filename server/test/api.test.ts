@@ -11,6 +11,7 @@ const config: Config = {
   inventoryCap: 1,
   pushBatch: 25,
   importMode: "app",
+  botEnabled: false,
 };
 
 describe("HTTP API", () => {
