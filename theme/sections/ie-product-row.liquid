@@ -1,0 +1,129 @@
+{%- comment -%}
+  Полоса товаров из коллекции: заголовок, сетка и кнопка-таблетка.
+{%- endcomment -%}
+
+{%- liquid
+  assign collection = section.settings.collection
+  assign limit = section.settings.products_to_show
+  assign columns = section.settings.columns
+  assign columns_tablet = columns | at_most: 3
+-%}
+
+<section
+  class="ie-product-row ie-section"
+  style="--ie-columns: {{ columns }}; --ie-columns-tablet: {{ columns_tablet }};"
+>
+  {%- if section.settings.heading != blank -%}
+    <h2 class="ie-product-row__heading ie-eyebrow">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  <div class="ie-grid">
+    {%- if collection != blank and collection.products.size > 0 -%}
+      {%- for product in collection.products limit: limit -%}
+        {%- render 'ie-product-card',
+          product: product,
+          image_ratio: section.settings.ratio,
+          show_vendor: section.settings.show_vendor
+        -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- for i in (1..limit) -%}
+        <span class="ie-card" style="--ie-card-ratio: {{ section.settings.ratio }};">
+          <span class="ie-card__media">{{ 'product-1' | placeholder_svg_tag: 'ie-card__image' }}</span>
+          <span class="ie-card__body">
+            <span class="ie-card__title">Product</span>
+            <span class="ie-card__price">{{ 199900 | money_without_trailing_zeros }}</span>
+          </span>
+        </span>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.button_label != blank -%}
+    <div class="ie-product-row__cta">
+      <a class="ie-pill" href="{{ section.settings.button_link | default: collection.url }}">
+        {{- section.settings.button_label -}}
+      </a>
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .ie-product-row {
+    padding-block: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .ie-product-row__heading {
+    margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+    text-align: center;
+    color: var(--ie-ink);
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+  }
+
+  .ie-card__media {
+    position: relative;
+    display: block;
+    aspect-ratio: var(--ie-card-ratio, 2 / 3);
+    overflow: hidden;
+    background: #f2f2f2;
+  }
+
+  .ie-card__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease, transform 0.6s ease;
+  }
+
+  .ie-card__image--hover {
+    opacity: 0;
+  }
+
+  .ie-card:hover .ie-card__image--hover {
+    opacity: 1;
+  }
+
+  .ie-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.85rem;
+  }
+
+  .ie-product-row__cta {
+    margin-top: clamp(2rem, 4vw, 3.25rem);
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Полоса товаров",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Заголовок", "default": "NEW IN" },
+    { "type": "collection", "id": "collection", "label": "Коллекция" },
+    { "type": "range", "id": "products_to_show", "label": "Сколько товаров", "min": 2, "max": 12, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns", "label": "Колонок на десктопе", "min": 2, "max": 6, "step": 1, "default": 4 },
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Пропорция картинки",
+      "default": "2 / 3",
+      "options": [
+        { "value": "2 / 3", "label": "2:3" },
+        { "value": "3 / 4", "label": "3:4" },
+        { "value": "4 / 5", "label": "4:5" },
+        { "value": "1 / 1", "label": "1:1" }
+      ]
+    },
+    { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
+    { "type": "text", "id": "button_label", "label": "Кнопка", "default": "Shop now" },
+    { "type": "url", "id": "button_link", "label": "Ссылка кнопки" }
+  ],
+  "presets": [{ "name": "IE — Полоса товаров" }]
+}
+{% endschema %}

@@ -1,0 +1,100 @@
+{%- comment -%}
+  Страница 404: полноэкранное фото и крупные цифры поверх.
+{%- endcomment -%}
+
+<section class="ie-404">
+  {%- if section.settings.image != blank -%}
+    {{
+      section.settings.image
+      | image_url: width: 2400
+      | image_tag:
+        loading: 'eager',
+        sizes: '100vw',
+        widths: '750, 1100, 1500, 1900, 2400',
+        alt: section.settings.heading,
+        class: 'ie-404__img'
+    }}
+  {%- else -%}
+    {{ 'lifestyle-2' | placeholder_svg_tag: 'ie-404__img' }}
+  {%- endif -%}
+
+  <div class="ie-404__digits" aria-hidden="true">
+    <span>4</span><span>0</span><span>4</span>
+  </div>
+
+  <div class="ie-404__body">
+    <h1 class="ie-404__title">{{ section.settings.heading }}</h1>
+    {%- if section.settings.button_label != blank -%}
+      <a class="ie-pill" href="{{ section.settings.button_link | default: routes.root_url }}">
+        {{- section.settings.button_label -}}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .ie-404 {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: #e8e8e8;
+  }
+
+  .ie-404__img {
+    display: block;
+    width: 100%;
+    height: calc(100svh - var(--header-group-height, 0px));
+    min-height: 28rem;
+    object-fit: cover;
+  }
+
+  .ie-404__digits {
+    position: absolute;
+    inset-inline: clamp(1.5rem, 6vw, 7rem);
+    bottom: clamp(1.5rem, 5vw, 4rem);
+    display: flex;
+    justify-content: space-between;
+    color: rgba(90, 90, 90, 0.85);
+    font-family: var(--ie-display);
+    font-size: clamp(3rem, 2rem + 5vw, 8rem);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .ie-404__body {
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .ie-404__title {
+    margin: 0;
+    font-family: var(--ie-display);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 0.9rem + 1.2vw, 2rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — 404",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Фон" },
+    { "type": "text", "id": "heading", "label": "Заголовок", "default": "Page not found" },
+    { "type": "text", "id": "button_label", "label": "Кнопка", "default": "Back to shop" },
+    { "type": "url", "id": "button_link", "label": "Ссылка кнопки" }
+  ],
+  "presets": [{ "name": "IE — 404" }]
+}
+{% endschema %}

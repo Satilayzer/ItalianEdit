@@ -1,0 +1,85 @@
+{%- comment -%}
+  Бегущая строка под героем: тёмная полоса с повторяющимся текстом.
+{%- endcomment -%}
+
+{%- liquid
+  assign text = section.settings.text
+  assign repeats = section.settings.repeats
+-%}
+
+<section
+  class="ie-marquee"
+  style="--ie-marquee-bg: {{ section.settings.background }}; --ie-marquee-fg: {{ section.settings.text_color }}; --ie-marquee-speed: {{ section.settings.speed }}s;"
+>
+  <div class="ie-marquee__track" {% if section.settings.animate %}data-animate="true"{% endif %}>
+    {%- for i in (1..repeats) -%}
+      <span class="ie-marquee__item">{{ text }}</span>
+    {%- endfor -%}
+    {%- comment -%} Дубль ленты нужен для бесшовной прокрутки. {%- endcomment -%}
+    {%- if section.settings.animate -%}
+      {%- for i in (1..repeats) -%}
+        <span class="ie-marquee__item" aria-hidden="true">{{ text }}</span>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .ie-marquee {
+    background: var(--ie-marquee-bg, #1a1a1a);
+    color: var(--ie-marquee-fg, #ffffff);
+    overflow: hidden;
+    padding-block: 0.85rem;
+  }
+
+  .ie-marquee__track {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    white-space: nowrap;
+    justify-content: space-around;
+  }
+
+  .ie-marquee__track[data-animate='true'] {
+    width: max-content;
+    justify-content: flex-start;
+    animation: ie-marquee-scroll var(--ie-marquee-speed, 40s) linear infinite;
+  }
+
+  .ie-marquee__item {
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+  }
+
+  @keyframes ie-marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ie-marquee__track[data-animate='true'] {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Бегущая строка",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Текст", "default": "Made and Designed With Care In Italy" },
+    { "type": "range", "id": "repeats", "label": "Повторов", "min": 3, "max": 12, "step": 1, "default": 6 },
+    { "type": "checkbox", "id": "animate", "label": "Прокручивать", "default": false },
+    { "type": "range", "id": "speed", "label": "Длительность прокрутки, с", "min": 10, "max": 90, "step": 5, "default": 40 },
+    { "type": "color", "id": "background", "label": "Фон", "default": "#1a1a1a" },
+    { "type": "color", "id": "text_color", "label": "Текст", "default": "#ffffff" }
+  ],
+  "presets": [{ "name": "IE — Бегущая строка" }]
+}
+{% endschema %}

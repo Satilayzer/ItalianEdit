@@ -1,0 +1,114 @@
+{%- comment -%}
+  Полоса брендов: заголовок, подзаголовок и ряд фирменных этикеток-ссылок.
+{%- endcomment -%}
+
+<section class="ie-labels ie-section">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="ie-heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+  {%- if section.settings.subheading != blank -%}
+    <p class="ie-subheading">{{ section.settings.subheading }}</p>
+  {%- endif -%}
+
+  <div class="ie-labels__track">
+    {%- for block in section.blocks -%}
+      <a
+        class="ie-labels__item"
+        href="{{ block.settings.link | default: '#' }}"
+        {{ block.shopify_attributes }}
+      >
+        {%- if block.settings.image != blank -%}
+          {{
+            block.settings.image
+            | image_url: width: 600
+            | image_tag:
+              loading: 'lazy',
+              widths: '200, 300, 450, 600',
+              sizes: '(min-width: 750px) 18vw, 45vw',
+              alt: block.settings.name,
+              class: 'ie-labels__img'
+          }}
+        {%- else -%}
+          <span class="ie-labels__fallback">{{ block.settings.name }}</span>
+        {%- endif -%}
+      </a>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .ie-labels {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .ie-labels__track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    margin-top: clamp(2rem, 4vw, 3.25rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ie-labels__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ie-labels__item {
+    flex: 0 0 auto;
+    width: clamp(8rem, 14vw, 13rem);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ie-labels__img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .ie-labels__fallback {
+    display: block;
+    text-align: center;
+    font-family: var(--ie-display);
+    font-size: 1.125rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ie-ink);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Полоса брендов",
+  "tag": "section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Заголовок", "default": "Italian Edit Blog" },
+    { "type": "text", "id": "subheading", "label": "Подзаголовок" }
+  ],
+  "blocks": [
+    {
+      "type": "label",
+      "name": "Бренд",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Этикетка" },
+        { "type": "text", "id": "name", "label": "Название", "default": "BRAND" },
+        { "type": "url", "id": "link", "label": "Ссылка" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "IE — Полоса брендов",
+      "blocks": [
+        { "type": "label", "settings": { "name": "PRADA" } },
+        { "type": "label", "settings": { "name": "CELINE" } },
+        { "type": "label", "settings": { "name": "SAINT LAURENT" } },
+        { "type": "label", "settings": { "name": "VALENTINO" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,138 @@
+{%- comment -%}
+  Отзывы: бумажные карточки внахлёст с лёгким наклоном.
+{%- endcomment -%}
+
+<section class="ie-feedbacks">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="ie-heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  <div class="ie-feedbacks__track">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign tilt = forloop.index | modulo: 3 | minus: 1
+        assign shift = forloop.index | modulo: 2 | times: 18
+        assign auto_number = forloop.index | prepend: '00' | slice: -3, 3
+      -%}
+      <figure
+        class="ie-feedbacks__card"
+        style="--ie-tilt: {{ tilt }}deg; --ie-shift: {{ shift }}px;"
+        {{ block.shopify_attributes }}
+      >
+        <span class="ie-feedbacks__num">
+          {{- block.settings.number | default: auto_number -}}
+        </span>
+
+        <blockquote class="ie-feedbacks__text">{{ block.settings.text }}</blockquote>
+
+        {%- if block.settings.author != blank -%}
+          <figcaption class="ie-feedbacks__author">{{ block.settings.author }}</figcaption>
+        {%- endif -%}
+      </figure>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .ie-feedbacks {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    overflow: hidden;
+  }
+
+  .ie-feedbacks__track {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1.5vw, 1.5rem);
+    margin-top: clamp(2rem, 4vw, 3.25rem);
+    padding-inline: var(--ie-gutter);
+    padding-block: 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ie-feedbacks__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ie-feedbacks__card {
+    position: relative;
+    flex: 0 0 auto;
+    width: clamp(13rem, 20vw, 17rem);
+    min-height: 15rem;
+    margin: 0;
+    padding: 2.25rem 1.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--ie-cream);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    transform: rotate(var(--ie-tilt, 0deg)) translateY(var(--ie-shift, 0));
+    transition: transform 0.3s ease;
+  }
+
+  .ie-feedbacks__card:hover {
+    transform: rotate(0deg) translateY(0);
+    z-index: 2;
+  }
+
+  .ie-feedbacks__num {
+    position: absolute;
+    top: 0.9rem;
+    left: 1.75rem;
+    font-family: var(--ie-sans);
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    color: var(--ie-mauve);
+  }
+
+  .ie-feedbacks__text {
+    margin: 0;
+    font-family: var(--ie-display);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--ie-ink);
+    text-align: center;
+  }
+
+  .ie-feedbacks__author {
+    margin-top: 1.5rem;
+    font-family: var(--ie-display);
+    font-size: 0.6875rem;
+    font-style: italic;
+    color: var(--ie-mauve);
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Отзывы",
+  "tag": "section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Заголовок", "default": "Feedbacks" }
+  ],
+  "blocks": [
+    {
+      "type": "feedback",
+      "name": "Отзыв",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Номер" },
+        { "type": "textarea", "id": "text", "label": "Текст" },
+        { "type": "text", "id": "author", "label": "Автор" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "IE — Отзывы",
+      "blocks": [
+        { "type": "feedback" },
+        { "type": "feedback" },
+        { "type": "feedback" },
+        { "type": "feedback" }
+      ]
+    }
+  ]
+}
+{% endschema %}

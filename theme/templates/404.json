@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "not_found": {
+      "type": "ie-404",
+      "settings": {
+        "heading": "Page not found",
+        "button_label": "Back to shop",
+        "button_link": "/collections/all"
+      }
+    }
+  },
+  "order": ["not_found"]
+}

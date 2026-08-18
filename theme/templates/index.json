@@ -1,0 +1,213 @@
+{
+  "sections": {
+    "hero": {
+      "type": "ie-hero",
+      "settings": {
+        "alt": "Italian Edit",
+        "height": "ratio",
+        "ratio": "2 / 1"
+      }
+    },
+    "marquee": {
+      "type": "ie-marquee",
+      "settings": {
+        "text": "Made and Designed With Care In Italy",
+        "repeats": 6,
+        "animate": false,
+        "speed": 40,
+        "background": "#1a1a1a",
+        "text_color": "#ffffff"
+      }
+    },
+    "featured_products": {
+      "type": "ie-product-row",
+      "settings": {
+        "heading": "SHOES",
+        "collection": "shoes",
+        "products_to_show": 4,
+        "columns": 4,
+        "ratio": "2 / 3",
+        "show_vendor": true,
+        "button_label": "Shop now",
+        "button_link": "/collections/shoes"
+      }
+    },
+    "split": {
+      "type": "ie-split-banner",
+      "blocks": {
+        "men": {
+          "type": "panel",
+          "settings": {
+            "label": "MEN",
+            "link": "/collections/all"
+          }
+        },
+        "women": {
+          "type": "panel",
+          "settings": {
+            "label": "WOMEN",
+            "link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "men",
+        "women"
+      ],
+      "settings": {
+        "ratio": "4 / 3"
+      }
+    },
+    "brands": {
+      "type": "ie-label-strip",
+      "blocks": {
+        "b1": {
+          "type": "label",
+          "settings": {
+            "name": "PRADA",
+            "link": "/pages/designers"
+          }
+        },
+        "b2": {
+          "type": "label",
+          "settings": {
+            "name": "CELINE",
+            "link": "/pages/designers"
+          }
+        },
+        "b3": {
+          "type": "label",
+          "settings": {
+            "name": "SAINT LAURENT",
+            "link": "/pages/designers"
+          }
+        },
+        "b4": {
+          "type": "label",
+          "settings": {
+            "name": "VALENTINO",
+            "link": "/pages/designers"
+          }
+        },
+        "b5": {
+          "type": "label",
+          "settings": {
+            "name": "GUCCI",
+            "link": "/pages/designers"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5"
+      ],
+      "settings": {
+        "heading": "Italian Edit Blog",
+        "subheading": ""
+      }
+    },
+    "instagram": {
+      "type": "ie-instagram",
+      "blocks": {
+        "p1": {
+          "type": "post",
+          "settings": {
+            "width": "narrow"
+          }
+        },
+        "p2": {
+          "type": "post",
+          "settings": {
+            "width": "narrow",
+            "caption": "Italian Edit"
+          }
+        },
+        "p3": {
+          "type": "post",
+          "settings": {
+            "width": "wide"
+          }
+        },
+        "p4": {
+          "type": "post",
+          "settings": {
+            "width": "narrow",
+            "caption": "Trends 2026"
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "settings": {
+        "heading": "Follow Our Instagram",
+        "height": 480
+      }
+    },
+    "feedbacks": {
+      "type": "ie-feedbacks",
+      "blocks": {
+        "f1": {
+          "type": "feedback",
+          "settings": {
+            "text": "Заменить на настоящий отзыв покупателя.",
+            "author": "Имя / роль"
+          }
+        },
+        "f2": {
+          "type": "feedback",
+          "settings": {
+            "text": "Заменить на настоящий отзыв покупателя.",
+            "author": "Имя / роль"
+          }
+        },
+        "f3": {
+          "type": "feedback",
+          "settings": {
+            "text": "Заменить на настоящий отзыв покупателя.",
+            "author": "Имя / роль"
+          }
+        },
+        "f4": {
+          "type": "feedback",
+          "settings": {
+            "text": "Заменить на настоящий отзыв покупателя.",
+            "author": "Имя / роль"
+          }
+        },
+        "f5": {
+          "type": "feedback",
+          "settings": {
+            "text": "Заменить на настоящий отзыв покупателя.",
+            "author": "Имя / роль"
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5"
+      ],
+      "settings": {
+        "heading": "Feedbacks"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "marquee",
+    "featured_products",
+    "split",
+    "brands",
+    "instagram",
+    "feedbacks"
+  ]
+}

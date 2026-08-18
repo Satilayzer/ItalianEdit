@@ -1,0 +1,63 @@
+{%- comment -%}
+  Карточка товара витрины Italian Edit.
+  Параметры:
+    product          — товар (обязателен)
+    show_vendor      — показывать бренд под ценой (по умолчанию true)
+    image_ratio      — пропорция картинки, например '2 / 3'
+    loading          — 'lazy' | 'eager'
+{%- endcomment -%}
+
+{%- liquid
+  assign card_ratio = image_ratio | default: '2 / 3'
+  assign img_loading = loading | default: 'lazy'
+  if show_vendor == nil
+    assign show_vendor = true
+  endif
+  assign featured = product.featured_media
+  assign hover = product.media[1]
+-%}
+
+<a class="ie-card" href="{{ product.url }}" style="--ie-card-ratio: {{ card_ratio }};">
+  <span class="ie-card__media">
+    {%- if featured != blank -%}
+      {{
+        featured
+        | image_url: width: 1200
+        | image_tag:
+          loading: img_loading,
+          sizes: '(min-width: 1100px) 20vw, (min-width: 750px) 33vw, 50vw',
+          widths: '300, 450, 600, 900, 1200',
+          alt: product.title,
+          class: 'ie-card__image'
+      }}
+      {%- if hover != blank -%}
+        {{
+          hover
+          | image_url: width: 1200
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1100px) 20vw, (min-width: 750px) 33vw, 50vw',
+            widths: '300, 450, 600, 900, 1200',
+            alt: product.title,
+            class: 'ie-card__image ie-card__image--hover'
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'ie-card__image' }}
+    {%- endif -%}
+  </span>
+
+  <span class="ie-card__body">
+    <span class="ie-card__title">{{ product.title }}</span>
+    <span class="ie-card__price">
+      {%- if product.price_varies -%}
+        {{ product.price_min | money_without_trailing_zeros }}
+      {%- else -%}
+        {{ product.price | money_without_trailing_zeros }}
+      {%- endif -%}
+    </span>
+    {%- if show_vendor and product.vendor != blank -%}
+      <span class="ie-card__vendor">{{ product.vendor }}</span>
+    {%- endif -%}
+  </span>
+</a>
