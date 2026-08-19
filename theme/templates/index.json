@@ -13,7 +13,7 @@
       "settings": {
         "text": "Made and Designed With Care In Italy",
         "repeats": 6,
-        "animate": false,
+        "animate": true,
         "speed": 40,
         "background": "#1a1a1a",
         "text_color": "#ffffff"
@@ -22,14 +22,15 @@
     "featured_products": {
       "type": "ie-product-row",
       "settings": {
-        "heading": "SHOES",
-        "collection": "shoes",
+        "heading": "NEW",
+        "collection": "new",
         "products_to_show": 4,
         "columns": 4,
         "ratio": "2 / 3",
         "show_vendor": true,
         "button_label": "Shop now",
-        "button_link": "/collections/shoes"
+        "button_link": "/collections/new",
+        "fallback_to_all": true
       }
     },
     "split": {

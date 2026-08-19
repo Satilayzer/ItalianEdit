@@ -70,29 +70,58 @@
 /* ------------------------------------------------------------------ */
 
 /*
- * Верхний ряд шапки Horizon — CSS-сетка. Колонки по умолчанию жмутся по
- * содержимому, поэтому логотип уезжает влево. Делаем крайние колонки
- * равными, тогда центральная встаёт ровно посередине, как в макете.
- * .header-switchers уже растянут на все колонки (grid-column: 1 / -1),
- * так что ряд переключателей не ломается.
+ * Раскладка шапки из макета:
+ *   верхний ряд  — Shop: Women/Men у левого края, вордмарк по центру,
+ *                  валюта/поиск/вишлист/аккаунт/корзина у правого края;
+ *   нижний ряд   — категории (Designers, New, Clothing…) у левого края.
+ *
+ * Верхний ряд Horizon — CSS-сетка, но колонки жмутся по содержимому, а
+ * .header-switchers по умолчанию растянут на всю ширину (grid-column: 1 / -1)
+ * и уходит на вторую строку сетки. Расставляем всё по местам явно: порядок
+ * в DOM здесь другой — свитчеры рендерятся после колонок.
  */
 @media (min-width: 990px) {
   .header__row.header__row--top {
+    display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
   }
 
-  .header__row--top .header__column--left {
+  .header__row--top > .header__column--left {
+    grid-column: 1;
     justify-self: start;
   }
 
-  .header__row--top .header__column--center {
+  .header__row--top > .header__column--center {
+    grid-column: 2;
     justify-self: center;
   }
 
-  .header__row--top .header__column--right {
+  .header__row--top > .header__column--right {
+    grid-column: 3;
     justify-self: end;
   }
+
+  .header__row--bottom .header__column--left {
+    justify-self: start;
+  }
+}
+
+/*
+ * Свитчеры перенесены в левую колонку верхнего ряда (см. snippets/header-row.liquid),
+ * поэтому растяжка на всю сетку и собственные отступы им больше не нужны.
+ */
+.header__row--top .header__column--left {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  flex-wrap: wrap;
+}
+
+.header__row--top .header-switchers {
+  grid-column: auto;
+  min-height: 0;
+  padding-block: 0;
 }
 
 /* Пункты меню — санс, разрядка, неактивные приглушены. */
