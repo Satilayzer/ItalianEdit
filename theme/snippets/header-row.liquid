@@ -75,13 +75,26 @@
     if row == 'top' and column == 'left'
       assign with_switchers = true
     endif
+
+    comment
+      Управление звуком стоит на месте бывшего переключателя стран и валют —
+      первым в правой колонке верхнего ряда, перед поиском и иконками.
+    endcomment
+    assign with_sound = false
+    if row == 'top' and column == 'right'
+      assign with_sound = true
+    endif
   -%}
 
-  {%- if items_array.size > 0 or with_switchers -%}
+  {%- if items_array.size > 0 or with_switchers or with_sound -%}
     <div
       class="header__column header__column--{{ column }}"
       data-testid="header-{{ row }}-{{ column }}"
     >
+      {%- if with_sound -%}
+        {% render 'ie-sound-control' %}
+      {%- endif -%}
+
       {% for key in items_array %}
         {% unless key == blank %}
           {% case key %}

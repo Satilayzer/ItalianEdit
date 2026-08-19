@@ -1,0 +1,55 @@
+{%- comment -%}
+  Фоновая музыка страницы. Сама секция ничего не рисует — она добавляет
+  дорожку, которой управляет динамик в шапке (assets/ie-sound.js).
+
+  Файл загружается в Настройки → Файлы, оттуда копируется ссылка.
+  Отдельного типа настройки под аудио у Shopify нет, поэтому ссылка текстом.
+{%- endcomment -%}
+
+{%- if section.settings.audio_url != blank -%}
+  <audio
+    class="ie-background-music"
+    src="{{ section.settings.audio_url }}"
+    preload="none"
+    loop
+    data-ie-sound-autoplay="true"
+    aria-hidden="true"
+  ></audio>
+{%- elsif request.design_mode -%}
+  <p class="ie-background-music__hint">
+    Фоновая музыка: укажите ссылку на аудиофайл в настройках секции.
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .ie-background-music {
+    display: none;
+  }
+
+  .ie-background-music__hint {
+    margin: 0;
+    padding: 1rem var(--ie-gutter, 24px);
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ie-muted, #9a9a9a);
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Фоновая музыка",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "audio_url",
+      "label": "Ссылка на аудиофайл",
+      "info": "Загрузите mp3 в Настройки → Файлы и вставьте ссылку. Звук включается динамиком в шапке."
+    }
+  ],
+  "presets": [{ "name": "IE — Фоновая музыка" }]
+}
+{% endschema %}

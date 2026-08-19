@@ -1,0 +1,142 @@
+{% doc %}
+  Управление звуком витрины в шапке: динамик глушит и включает весь звук
+  на сайте, ползунок рядом задаёт громкость. Стоит на месте бывшего
+  переключателя стран и валют.
+
+  Логика — в assets/ie-sound.js.
+{% enddoc %}
+
+<script src="{{ 'ie-sound.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+<ie-sound-control
+  class="ie-sound"
+  data-muted="true"
+  data-label-on="{{ 'Включить звук' | escape }}"
+  data-label-off="{{ 'Выключить звук' | escape }}"
+>
+  <button
+    type="button"
+    class="ie-sound__toggle"
+    data-sound-toggle
+    aria-pressed="false"
+    aria-label="{{ 'Включить звук' | escape }}"
+  >
+    <svg class="ie-sound__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path
+        class="ie-sound__speaker"
+        d="M4 9.5h3.2L12 5.5v13l-4.8-4H4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5Z"
+        stroke="currentColor"
+        stroke-width="1.2"
+        stroke-linejoin="round"
+      />
+      <path class="ie-sound__wave" d="M15.2 9.4a3.6 3.6 0 0 1 0 5.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      <path class="ie-sound__wave ie-sound__wave--far" d="M17.6 7.2a7 7 0 0 1 0 9.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      <path class="ie-sound__cross" d="M15.6 9.6l5 4.8m0-4.8l-5 4.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <label class="ie-sound__volume">
+    <span class="ie-sound__label">{{ 'Громкость' }}</span>
+    <input
+      class="ie-sound__range"
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value="40"
+      data-sound-volume
+    >
+  </label>
+</ie-sound-control>
+
+{% stylesheet %}
+  .ie-sound {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    color: currentcolor;
+  }
+
+  .ie-sound__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  .ie-sound__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Волны видно, когда звук включён; перечёркнутый динамик — когда выключен. */
+  .ie-sound__cross {
+    opacity: 0;
+  }
+
+  .ie-sound[data-muted='true'] .ie-sound__wave {
+    opacity: 0;
+  }
+
+  .ie-sound[data-muted='true'] .ie-sound__cross {
+    opacity: 1;
+  }
+
+  .ie-sound__wave,
+  .ie-sound__cross {
+    transition: opacity 0.2s ease;
+  }
+
+  /*
+   * Ползунок не занимает места в шапке: разворачивается при наведении
+   * и при фокусе с клавиатуры.
+   */
+  .ie-sound__volume {
+    display: inline-flex;
+    align-items: center;
+    inline-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: inline-size 0.25s ease, opacity 0.25s ease, margin-inline-start 0.25s ease;
+  }
+
+  .ie-sound:hover .ie-sound__volume,
+  .ie-sound:focus-within .ie-sound__volume {
+    inline-size: 64px;
+    opacity: 1;
+    margin-inline-start: 10px;
+  }
+
+  .ie-sound__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .ie-sound__range {
+    inline-size: 64px;
+    block-size: 14px;
+    margin: 0;
+    accent-color: currentcolor;
+    cursor: pointer;
+  }
+
+  /* На тач-устройствах наведения нет — показываем ползунок сразу. */
+  @media (hover: none) {
+    .ie-sound__volume {
+      inline-size: 56px;
+      opacity: 1;
+      margin-inline-start: 8px;
+    }
+  }
+{% endstylesheet %}
