@@ -200,6 +200,17 @@
       "settings": {
         "heading": "Feedbacks"
       }
+    },
+    "designer_carousel": {
+      "type": "designer-carousel",
+      "settings": {
+        "heading": "Recommended Designers",
+        "max_designers": 12,
+        "aspect_ratio": "4 / 5",
+        "section_width": "full-width",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
     }
   },
   "order": [
@@ -207,6 +218,7 @@
     "marquee",
     "featured_products",
     "split",
+    "designer_carousel",
     "brands",
     "instagram",
     "feedbacks"
