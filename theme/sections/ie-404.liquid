@@ -17,7 +17,13 @@
   endif
 -%}
 
-<section class="ie-404" {% if video != blank %}data-ie-sound="{{ sound_scope }}"{% endif %}>
+<section
+  class="ie-404"
+  {% if video != blank %}
+    data-ie-sound="{{ sound_scope }}"
+    style="--ie-media-ratio: {{ video.aspect_ratio | default: 1.7778 }};"
+  {% endif %}
+>
   {%- if video != blank -%}
     {{
       video
@@ -66,8 +72,7 @@
     background: #e8e8e8;
   }
 
-  .ie-404__img,
-  .ie-404__video {
+  .ie-404__img {
     display: block;
     width: 100%;
     height: calc(100svh - var(--header-group-height, 0px));
@@ -75,12 +80,17 @@
     object-fit: cover;
   }
 
-  /* Тема оборачивает видео своим контейнером — растягиваем и его. */
-  .ie-404 .video-wrapper,
-  .ie-404 deferred-media {
+  /*
+   * Видео не обрезаем: высоту берём из собственной пропорции ролика,
+   * а не из высоты экрана. Пропорция приходит из video.aspect_ratio,
+   * поэтому кадр не прыгает, пока грузятся метаданные.
+   */
+  .ie-404__video {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: var(--ie-media-ratio, 1.7778);
+    object-fit: contain;
   }
 
   .ie-404__body {

@@ -20,7 +20,7 @@
 
 <section
   class="ie-hero ie-hero--{{ section.settings.height }}"
-  style="--ie-hero-ratio: {{ section.settings.ratio }};"
+  style="--ie-hero-ratio: {{ section.settings.ratio }};{% if video != blank %} --ie-media-ratio: {{ video.aspect_ratio | default: 1.7778 }};{% endif %}"
   {% if video != blank %}data-ie-sound="{{ sound_scope }}"{% endif %}
 >
   {%- if section.settings.link != blank -%}
@@ -83,7 +83,6 @@
   }
 
   .ie-hero__img,
-  .ie-hero__video,
   .ie-hero__placeholder svg {
     display: block;
     width: 100%;
@@ -92,24 +91,28 @@
   }
 
   .ie-hero--ratio .ie-hero__img,
-  .ie-hero--ratio .ie-hero__video,
   .ie-hero--ratio .ie-hero__placeholder {
     aspect-ratio: var(--ie-hero-ratio, 16 / 9);
   }
 
   .ie-hero--viewport .ie-hero__img,
-  .ie-hero--viewport .ie-hero__video,
   .ie-hero--viewport .ie-hero__placeholder {
     height: calc(100svh - var(--header-group-height, 0px));
     min-height: 30rem;
   }
 
-  /* Тема оборачивает видео своим контейнером — растягиваем и его. */
-  .ie-hero .video-wrapper,
-  .ie-hero deferred-media {
+  /*
+   * Видео не обрезаем: высоту берём из собственной пропорции ролика, поэтому
+   * настройки «Высота» и «Пропорция» на него не влияют — они для изображения.
+   * Пропорция приходит из video.aspect_ratio, так что кадр не прыгает, пока
+   * грузятся метаданные.
+   */
+  .ie-hero__video {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: var(--ie-media-ratio, 1.7778);
+    object-fit: contain;
   }
 
   .ie-hero__caption {
@@ -135,7 +138,7 @@
       "type": "video",
       "id": "video",
       "label": "Видео",
-      "info": "Если видео выбрано, изображение не показывается."
+      "info": "Если видео выбрано, изображение не показывается. Ролик показывается целиком, по своей пропорции."
     },
     {
       "type": "checkbox",
@@ -153,6 +156,7 @@
       "id": "height",
       "label": "Высота",
       "default": "ratio",
+      "info": "Для изображения. Видео всегда идёт по своей пропорции.",
       "options": [
         { "value": "ratio", "label": "По пропорции" },
         { "value": "viewport", "label": "На весь экран" }
