@@ -5,11 +5,6 @@
  * задаёт громкость. Состояние лежит в localStorage, поэтому переживает
  * переходы между страницами: включил звук на главной — он играет и дальше.
  *
- * Под управление попадают все <audio> и <video>, кроме двух случаев:
- *   • data-ie-sound="ignore" — явное исключение;
- *   • фоновое видео (<video autoplay muted>) — оно немое по замыслу,
- *     и включать ему звук вместе с музыкой нельзя.
- *
  * Элемент с data-ie-sound-autoplay="true" (фоновая музыка) запускается сам,
  * как только звук разрешён. Браузеры не дают включить звук без жеста
  * пользователя, поэтому первая попытка может провалиться — тогда ждём
@@ -56,9 +51,23 @@ function isDecorativeVideo(element) {
   return element.tagName === 'VIDEO' && element.autoplay && element.hasAttribute('muted');
 }
 
+/*
+ * data-ie-sound можно повесить и на сам элемент, и на любого предка — секции
+ * удобнее объявить режим один раз на обёртке:
+ *   'ignore'  — не трогаем никогда;
+ *   'managed' — отдаём общему переключателю, даже если это фоновое видео
+ *               (герой стартует немым по правилам автозапуска, но звук
+ *               появляется, когда покупатель его включает).
+ */
 function isManaged(element) {
   if (!(element instanceof HTMLMediaElement)) return false;
-  if (element.dataset.ieSound === 'ignore') return false;
+
+  const scope = element.closest('[data-ie-sound]');
+  const mode = scope ? scope.dataset.ieSound : null;
+
+  if (mode === 'ignore') return false;
+  if (mode === 'managed') return true;
+
   return !isDecorativeVideo(element);
 }
 
