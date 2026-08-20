@@ -19,12 +19,24 @@
   endif
 -%}
 
+{%- assign scope = '#shopify-section-' | append: section.id -%}
+
+{%- comment -%}
+  Шрифт, кегль и цвет заголовка задаются в редакторе темы.
+{%- endcomment -%}
+{%- render 'ie-heading-style',
+  font: section.settings.heading_font,
+  size: section.settings.heading_size,
+  color: section.settings.heading_color,
+  scope: scope
+-%}
+
 <section
   class="ie-product-row ie-section"
   style="--ie-columns: {{ columns }}; --ie-columns-tablet: {{ columns_tablet }};"
 >
   {%- if section.settings.heading != blank -%}
-    <h2 class="ie-product-row__heading ie-eyebrow">{{ section.settings.heading }}</h2>
+    <h2 class="ie-product-row__heading">{{ section.settings.heading }}</h2>
   {%- endif -%}
 
   <div class="ie-grid">
@@ -66,8 +78,12 @@
   .ie-product-row__heading {
     margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
     text-align: center;
-    color: var(--ie-ink);
-    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-family: var(--ie-heading-font, var(--ie-sans));
+    font-weight: var(--ie-heading-weight, 400);
+    font-style: var(--ie-heading-style, normal);
+    font-size: var(--ie-heading-size, 0.75rem);
+    color: var(--ie-heading-color, var(--ie-ink));
     letter-spacing: 0.16em;
   }
 
@@ -106,7 +122,11 @@
     },
     { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
     { "type": "text", "id": "button_label", "label": "Кнопка", "default": "Shop now" },
-    { "type": "url", "id": "button_link", "label": "Ссылка кнопки" }
+    { "type": "url", "id": "button_link", "label": "Ссылка кнопки" },
+    { "type": "header", "content": "Оформление заголовка" },
+    { "type": "font_picker", "id": "heading_font", "label": "Шрифт", "default": "source_sans_pro_n4" },
+    { "type": "range", "id": "heading_size", "label": "Кегль", "min": 9, "max": 32, "step": 1, "unit": "px", "default": 12 },
+    { "type": "color", "id": "heading_color", "label": "Цвет", "default": "#111111" }
   ],
   "presets": [{ "name": "IE — Полоса товаров" }]
 }

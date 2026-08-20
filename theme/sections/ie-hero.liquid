@@ -18,6 +18,18 @@
   endif
 -%}
 
+{%- assign scope = '#shopify-section-' | append: section.id -%}
+
+{%- comment -%}
+  Шрифт, кегль и цвет подписи задаются в редакторе темы.
+{%- endcomment -%}
+{%- render 'ie-heading-style',
+  font: section.settings.heading_font,
+  size: section.settings.heading_size,
+  color: section.settings.heading_color,
+  scope: scope
+-%}
+
 <section
   class="ie-hero ie-hero--{{ section.settings.height }}"
   style="--ie-hero-ratio: {{ section.settings.ratio }};{% if video != blank %} --ie-media-ratio: {{ video.aspect_ratio | default: 1.7778 }};{% endif %}"
@@ -120,11 +132,19 @@
     inset-inline: 0;
     bottom: clamp(1.5rem, 4vw, 3.5rem);
     text-align: center;
-    color: #fff;
-    font-family: var(--ie-display);
-    font-size: clamp(1.5rem, 1rem + 2vw, 3rem);
+    color: var(--ie-heading-color, #fff);
+    font-family: var(--ie-heading-font, var(--ie-display));
+    font-weight: var(--ie-heading-weight, 400);
+    font-style: var(--ie-heading-style, normal);
+    font-size: var(--ie-heading-size, 3rem);
     letter-spacing: 0.04em;
     text-shadow: 0 1px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  @media (max-width: 749px) {
+    .ie-hero__caption {
+      font-size: calc(var(--ie-heading-size, 3rem) * 0.6);
+    }
   }
 {% endstylesheet %}
 
@@ -173,7 +193,11 @@
         { "value": "2 / 1", "label": "2:1" },
         { "value": "1 / 1", "label": "1:1" }
       ]
-    }
+    },
+    { "type": "header", "content": "Оформление подписи" },
+    { "type": "font_picker", "id": "heading_font", "label": "Шрифт", "default": "source_serif_4_n4" },
+    { "type": "range", "id": "heading_size", "label": "Кегль", "min": 16, "max": 120, "step": 2, "unit": "px", "default": 48 },
+    { "type": "color", "id": "heading_color", "label": "Цвет", "default": "#ffffff" }
   ],
   "presets": [{ "name": "IE — Герой" }]
 }

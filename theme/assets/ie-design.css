@@ -34,17 +34,30 @@
   padding-inline: 0;
 }
 
-/* Заголовок раздела: серифный дисплей, приглушённое бордо. */
+/*
+ * Заголовок раздела: серифный дисплей, приглушённое бордо.
+ * Шрифт, кегль и цвет приходят из настроек секции (snippets/ie-heading-style.liquid);
+ * без них работают значения по умолчанию. Кегль задаётся для десктопа —
+ * на узких экранах уменьшаем его пропорционально, чтобы длинные заголовки
+ * не ломали вёрстку.
+ */
 .ie-heading {
   margin: 0;
-  font-family: var(--ie-display);
-  font-weight: 400;
-  color: var(--ie-mauve);
+  font-family: var(--ie-heading-font, var(--ie-display));
+  font-weight: var(--ie-heading-weight, 400);
+  font-style: var(--ie-heading-style, normal);
+  color: var(--ie-heading-color, var(--ie-mauve));
   text-align: center;
   letter-spacing: 0.01em;
   text-transform: none;
-  font-size: clamp(1.75rem, 1.1rem + 1.6vw, 2.75rem);
+  font-size: var(--ie-heading-size, 2.75rem);
   line-height: 1.15;
+}
+
+@media (max-width: 749px) {
+  .ie-heading {
+    font-size: calc(var(--ie-heading-size, 2.75rem) * 0.62);
+  }
 }
 
 .ie-subheading {

@@ -1,9 +1,22 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "ie-hero",
       "settings": {
+        "video": "shopify://files/videos/0818 (1)(1).mp4",
+        "sound": true,
         "alt": "Italian Edit",
+        "heading": "",
+        "link": "",
         "height": "ratio",
         "ratio": "2 / 1"
       }
@@ -24,13 +37,13 @@
       "settings": {
         "heading": "NEW",
         "collection": "new",
+        "fallback_to_all": true,
         "products_to_show": 4,
         "columns": 4,
         "ratio": "2 / 3",
         "show_vendor": true,
         "button_label": "Shop now",
-        "button_link": "/collections/new",
-        "fallback_to_all": true
+        "button_link": "/collections/new"
       }
     },
     "split": {
@@ -57,6 +70,18 @@
       ],
       "settings": {
         "ratio": "4 / 3"
+      }
+    },
+    "designer_carousel": {
+      "type": "designer-carousel",
+      "settings": {
+        "heading": "Recommended Designers",
+        "side_reveal": 50,
+        "max_designers": 12,
+        "aspect_ratio": "4 / 5",
+        "section_width": "full-width",
+        "padding_top": 56,
+        "padding_bottom": 56
       }
     },
     "brands": {
@@ -110,45 +135,46 @@
         "subheading": ""
       }
     },
-    "instagram": {
-      "type": "ie-instagram",
+    "1787193191f56eb69c": {
+      "type": "_blocks",
       "blocks": {
-        "p1": {
-          "type": "post",
+        "square_instagram_feed_insta_feed_ccErPm": {
+          "type": "shopify://apps/square-instagram-feed/blocks/insta-feed/8c9f3786-8bb5-488d-a397-b1285ed978df",
           "settings": {
-            "width": "narrow"
-          }
-        },
-        "p2": {
-          "type": "post",
-          "settings": {
-            "width": "narrow",
-            "caption": "Italian Edit"
-          }
-        },
-        "p3": {
-          "type": "post",
-          "settings": {
-            "width": "wide"
-          }
-        },
-        "p4": {
-          "type": "post",
-          "settings": {
-            "width": "narrow",
-            "caption": "Trends 2026"
+            "hide_mock_data": false
           }
         }
       },
       "block_order": [
-        "p1",
-        "p2",
-        "p3",
-        "p4"
+        "square_instagram_feed_insta_feed_ccErPm"
       ],
       "settings": {
-        "heading": "Follow Our Instagram",
-        "height": 480
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     },
     "feedbacks": {
@@ -157,6 +183,7 @@
         "f1": {
           "type": "feedback",
           "settings": {
+            "number": "",
             "text": "Заменить на настоящий отзыв покупателя.",
             "author": "Имя / роль"
           }
@@ -164,6 +191,7 @@
         "f2": {
           "type": "feedback",
           "settings": {
+            "number": "",
             "text": "Заменить на настоящий отзыв покупателя.",
             "author": "Имя / роль"
           }
@@ -171,6 +199,7 @@
         "f3": {
           "type": "feedback",
           "settings": {
+            "number": "",
             "text": "Заменить на настоящий отзыв покупателя.",
             "author": "Имя / роль"
           }
@@ -178,6 +207,7 @@
         "f4": {
           "type": "feedback",
           "settings": {
+            "number": "",
             "text": "Заменить на настоящий отзыв покупателя.",
             "author": "Имя / роль"
           }
@@ -185,6 +215,7 @@
         "f5": {
           "type": "feedback",
           "settings": {
+            "number": "",
             "text": "Заменить на настоящий отзыв покупателя.",
             "author": "Имя / роль"
           }
@@ -200,17 +231,6 @@
       "settings": {
         "heading": "Feedbacks"
       }
-    },
-    "designer_carousel": {
-      "type": "designer-carousel",
-      "settings": {
-        "heading": "Recommended Designers",
-        "max_designers": 12,
-        "aspect_ratio": "4 / 5",
-        "section_width": "full-width",
-        "padding_top": 56,
-        "padding_bottom": 56
-      }
     }
   },
   "order": [
@@ -220,7 +240,7 @@
     "split",
     "designer_carousel",
     "brands",
-    "instagram",
+    "1787193191f56eb69c",
     "feedbacks"
   ]
 }

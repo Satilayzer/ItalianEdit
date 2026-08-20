@@ -2,6 +2,18 @@
   Полоса брендов: заголовок, подзаголовок и ряд фирменных этикеток-ссылок.
 {%- endcomment -%}
 
+{%- assign scope = '#shopify-section-' | append: section.id -%}
+
+{%- comment -%}
+  Шрифт, кегль и цвет заголовка задаются в редакторе темы.
+{%- endcomment -%}
+{%- render 'ie-heading-style',
+  font: section.settings.heading_font,
+  size: section.settings.heading_size,
+  color: section.settings.heading_color,
+  scope: scope
+-%}
+
 <section class="ie-labels ie-section">
   {%- if section.settings.heading != blank -%}
     <h2 class="ie-heading">{{ section.settings.heading }}</h2>
@@ -86,7 +98,11 @@
   "max_blocks": 12,
   "settings": [
     { "type": "text", "id": "heading", "label": "Заголовок", "default": "Italian Edit Blog" },
-    { "type": "text", "id": "subheading", "label": "Подзаголовок" }
+    { "type": "text", "id": "subheading", "label": "Подзаголовок" },
+    { "type": "header", "content": "Оформление заголовка" },
+    { "type": "font_picker", "id": "heading_font", "label": "Шрифт", "default": "source_serif_4_n4" },
+    { "type": "range", "id": "heading_size", "label": "Кегль", "min": 16, "max": 96, "step": 1, "unit": "px", "default": 44 },
+    { "type": "color", "id": "heading_color", "label": "Цвет", "default": "#ac555e" }
   ],
   "blocks": [
     {

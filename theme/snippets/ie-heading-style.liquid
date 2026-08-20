@@ -1,0 +1,27 @@
+{% doc %}
+  Оформление заголовка секции из настроек редактора: шрифт, кегль, цвет.
+
+  Печатает @font-face выбранного шрифта и кладёт значения в CSS-переменные
+  на обёртку секции. Сами правила остаются в {% stylesheet %} секций —
+  так у каждого заголовка одно место с вёрсткой, а редактор только
+  подменяет значения.
+
+  @param {object} font - настройка font_picker
+  @param {number} size - кегль на десктопе, px
+  @param {string} color - цвет заголовка
+  @param {string} scope - CSS-селектор обёртки секции
+{% enddoc %}
+
+{% style %}
+  {{ font | font_face: font_display: 'swap' }}
+
+  {{ scope }} {
+    {% if font != blank %}
+      --ie-heading-font: {{ font.family }}, {{ font.fallback_families }};
+      --ie-heading-weight: {{ font.weight }};
+      --ie-heading-style: {{ font.style }};
+    {% endif %}
+    {% if size != blank %}--ie-heading-size: {{ size }}px;{% endif %}
+    {% if color != blank %}--ie-heading-color: {{ color }};{% endif %}
+  }
+{% endstyle %}

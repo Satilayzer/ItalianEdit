@@ -2,6 +2,18 @@
   Сплит-баннер: две (или больше) панели во всю ширину с крупной подписью.
 {%- endcomment -%}
 
+{%- assign scope = '#shopify-section-' | append: section.id -%}
+
+{%- comment -%}
+  Шрифт, кегль и цвет заголовка задаются в редакторе темы.
+{%- endcomment -%}
+{%- render 'ie-heading-style',
+  font: section.settings.heading_font,
+  size: section.settings.heading_size,
+  color: section.settings.heading_color,
+  scope: scope
+-%}
+
 <section class="ie-split" style="--ie-split-ratio: {{ section.settings.ratio }};">
   {%- for block in section.blocks -%}
     <a
@@ -69,13 +81,20 @@
     inset: 0;
     display: grid;
     place-items: center;
-    color: #fff;
-    font-family: var(--ie-display);
-    font-weight: 400;
-    font-size: clamp(2rem, 1rem + 4vw, 4.5rem);
+    color: var(--ie-heading-color, #fff);
+    font-family: var(--ie-heading-font, var(--ie-display));
+    font-weight: var(--ie-heading-weight, 400);
+    font-style: var(--ie-heading-style, normal);
+    font-size: var(--ie-heading-size, 4.5rem);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-shadow: 0 2px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 749px) {
+    .ie-split__label {
+      font-size: calc(var(--ie-heading-size, 4.5rem) * 0.5);
+    }
   }
 {% endstylesheet %}
 
@@ -96,7 +115,11 @@
         { "value": "1 / 1", "label": "1:1" },
         { "value": "16 / 9", "label": "16:9" }
       ]
-    }
+    },
+    { "type": "header", "content": "Оформление заголовка" },
+    { "type": "font_picker", "id": "heading_font", "label": "Шрифт", "default": "source_serif_4_n4" },
+    { "type": "range", "id": "heading_size", "label": "Кегль", "min": 24, "max": 140, "step": 2, "unit": "px", "default": 72 },
+    { "type": "color", "id": "heading_color", "label": "Цвет", "default": "#ffffff" }
   ],
   "blocks": [
     {
