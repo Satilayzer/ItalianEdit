@@ -47,9 +47,9 @@
         "show_vendor": true,
         "button_label": "Shop now",
         "button_link": "/collections/new",
-        "heading_font": "source_sans_pro_n4",
+        "heading_font": "source_serif_4_n4",
         "heading_size": 32,
-        "heading_color": "#633F47"
+        "heading_color": "#633f47"
       }
     },
     "split": {
@@ -90,7 +90,15 @@
         "aspect_ratio": "4 / 5",
         "section_width": "full-width",
         "padding_top": 56,
-        "padding_bottom": 56
+        "padding_bottom": 56,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 44,
+        "heading_color": "#633f47",
+        "card_background": "#4e070d",
+        "card_text_color": "#ffffff",
+        "scrim_color": "#00000059",
+        "dots_color": "#111111",
+        "label_color": "#111111"
       }
     },
     "brands": {
@@ -144,7 +152,7 @@
         "subheading": "",
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
-        "heading_color": "#633F47"
+        "heading_color": "#633f47"
       }
     },
     "1787193191f56eb69c": {
@@ -244,7 +252,19 @@
         "heading": "Feedbacks",
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
-        "heading_color": "#633F47"
+        "heading_color": "#633f47"
+      }
+    },
+    "instagram_heading": {
+      "type": "ie-section-heading",
+      "settings": {
+        "heading": "Follow Our Instagram",
+        "subheading": "",
+        "heading_font": "source_sans_pro_n4",
+        "heading_size": 44,
+        "heading_color": "#633f47",
+        "padding_top": 48,
+        "padding_bottom": 24
       }
     }
   },
@@ -255,6 +275,7 @@
     "split",
     "designer_carousel",
     "brands",
+    "instagram_heading",
     "1787193191f56eb69c",
     "feedbacks"
   ]
