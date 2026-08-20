@@ -18,7 +18,10 @@
         "heading": "",
         "link": "",
         "height": "ratio",
-        "ratio": "2 / 1"
+        "ratio": "2 / 1",
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 48,
+        "heading_color": "#ffffff"
       }
     },
     "marquee": {
@@ -35,7 +38,7 @@
     "featured_products": {
       "type": "ie-product-row",
       "settings": {
-        "heading": "NEW",
+        "heading": "New",
         "collection": "new",
         "fallback_to_all": true,
         "products_to_show": 4,
@@ -43,7 +46,10 @@
         "ratio": "2 / 3",
         "show_vendor": true,
         "button_label": "Shop now",
-        "button_link": "/collections/new"
+        "button_link": "/collections/new",
+        "heading_font": "source_sans_pro_n4",
+        "heading_size": 32,
+        "heading_color": "#633F47"
       }
     },
     "split": {
@@ -52,14 +58,14 @@
         "men": {
           "type": "panel",
           "settings": {
-            "label": "MEN",
+            "label": "Men",
             "link": "/collections/all"
           }
         },
         "women": {
           "type": "panel",
           "settings": {
-            "label": "WOMEN",
+            "label": "Women",
             "link": "/collections/all"
           }
         }
@@ -69,7 +75,10 @@
         "women"
       ],
       "settings": {
-        "ratio": "4 / 3"
+        "ratio": "4 / 3",
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 72,
+        "heading_color": "#ffffff"
       }
     },
     "designer_carousel": {
@@ -132,7 +141,10 @@
       ],
       "settings": {
         "heading": "Italian Edit Blog",
-        "subheading": ""
+        "subheading": "",
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 44,
+        "heading_color": "#633F47"
       }
     },
     "1787193191f56eb69c": {
@@ -229,7 +241,10 @@
         "f5"
       ],
       "settings": {
-        "heading": "Feedbacks"
+        "heading": "Feedbacks",
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 44,
+        "heading_color": "#633F47"
       }
     }
   },
