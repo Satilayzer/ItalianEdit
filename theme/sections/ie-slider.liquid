@@ -119,10 +119,21 @@
     display: flex;
     gap: var(--ie-slider-gap, 16px);
     margin: 0;
-    padding: 0 var(--ie-gutter);
+    /*
+     * Поля по краям равны промежутку между карточками: первая карточка
+     * отступает от края витрины ровно настолько же, насколько карточки
+     * отстоят друг от друга. Меняется вместе с настройкой «Промежуток».
+     */
+    padding-block: 0;
+    padding-inline: var(--ie-slider-gap, 16px);
     list-style: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    /*
+     * Без этого прилипание «съедало» бы левое поле: карточка липнет к краю
+     * видимой области, а не к краю поля, и в покое упиралась бы в край экрана.
+     */
+    scroll-padding-inline: var(--ie-slider-gap, 16px);
     scroll-behavior: smooth;
     scrollbar-width: none;
     overscroll-behavior-x: contain;
