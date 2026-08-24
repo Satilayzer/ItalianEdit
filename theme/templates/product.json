@@ -12,9 +12,9 @@
     "main": {
       "type": "ie-product",
       "settings": {
-        "media_width": 46,
+        "media_width": 34,
         "media_ratio": "2 / 3",
-        "info_width": 360,
+        "info_width": 300,
         "show_vendor": true,
         "button_label": "",
         "show_sku": true,
