@@ -15,6 +15,7 @@
         "media_width": 34,
         "media_ratio": "2 / 3",
         "info_width": 300,
+        "size_words": "size, размер, beden, taglia, taille, talla, größe",
         "show_vendor": true,
         "button_label": "",
         "show_sku": true,

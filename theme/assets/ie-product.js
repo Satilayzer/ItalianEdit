@@ -84,9 +84,18 @@ class IeProduct extends HTMLElement {
     this.#applyVariant(this.#matchVariant());
   }
 
+  /** Выбранное значение опции. */
+  #optionValue(group) {
+    const checked = group.querySelector('input[data-ie-option]:checked');
+    return checked ? checked.value : null;
+  }
+
   /** Ищем вариант по набору выбранных значений опций. */
   #matchVariant() {
-    const chosen = Array.from(this.querySelectorAll('[data-ie-option]:checked')).map((input) => input.value);
+    // Порядок групп в разметке совпадает с порядком опций у варианта.
+    const chosen = Array.from(this.querySelectorAll('[data-ie-option-group]')).map((group) =>
+      this.#optionValue(group)
+    );
     return this.variants.find(
       (variant) => variant.options.length === chosen.length && variant.options.every((value, i) => value === chosen[i])
     );
@@ -131,9 +140,11 @@ class IeProduct extends HTMLElement {
   /** Подпись «Размер: 38.5» рядом с названием опции. */
   #updateOptionLabels() {
     this.querySelectorAll('[data-ie-option-group]').forEach((group) => {
-      const selected = group.querySelector('[data-ie-option]:checked');
       const label = group.querySelector('[data-ie-option-value]');
-      if (selected && label) label.textContent = selected.value;
+      if (!label) return;
+
+      const value = this.#optionValue(group);
+      if (value != null) label.textContent = value;
     });
   }
 

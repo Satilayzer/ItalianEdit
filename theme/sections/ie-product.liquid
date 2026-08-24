@@ -22,17 +22,23 @@
     assign selected_index = variant.featured_media.position | minus: 1
   endif
 
+  comment
+    add_label — надпись «в корзину» саму по себе. Её же отдаём в data-атрибуте:
+    при выборе доступного размера скрипт возвращает кнопке эту надпись, и она
+    не остаётся «Sold out» от первого варианта.
+  endcomment
+  assign add_label = 'products.product.add_to_cart' | t
+  if section.settings.button_label != blank
+    assign add_label = section.settings.button_label
+  endif
+
   assign can_add_to_cart = false
   assign add_to_cart_text = 'products.product.unavailable' | t
   if variant and variant.available
     assign can_add_to_cart = true
-    assign add_to_cart_text = 'products.product.add_to_cart' | t
+    assign add_to_cart_text = add_label
   elsif variant
     assign add_to_cart_text = 'products.product.sold_out' | t
-  endif
-
-  if section.settings.button_label != blank
-    assign add_to_cart_text = section.settings.button_label
   endif
 
   assign product_form_id = 'ie-pdp-form-' | append: section.id
@@ -62,7 +68,7 @@
     --ie-pdp-scrim: {{ section.settings.thumb_scrim }};
     padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;
   "
-  data-text-add="{{ add_to_cart_text | escape }}"
+  data-text-add="{{ add_label | escape }}"
   data-text-sold-out="{{ 'products.product.sold_out' | t | escape }}"
   data-text-unavailable="{{ 'products.product.unavailable' | t | escape }}"
 >
@@ -129,6 +135,27 @@
       {%- unless product.has_only_default_variant -%}
         <div class="ie-pdp__options">
           {%- for option in product.options_with_values -%}
+            {%- liquid
+              assign option_index = forloop.index
+              assign option_key = option.name | downcase
+
+              comment
+                Размер выбирают по надписи, всё остальное (цвет, материал) —
+                глазами, поэтому размеры рисуем прямоугольниками, а остальное
+                кружками. Список слов вынесен в настройки: названия опций
+                приходят от поставщиков на разных языках.
+              endcomment
+              assign is_size = false
+              assign size_words = section.settings.size_words | downcase | split: ','
+              for word in size_words
+                assign needle = word | strip
+                if needle != blank and option_key contains needle
+                  assign is_size = true
+                  break
+                endif
+              endfor
+            -%}
+
             <fieldset class="ie-pdp__option" data-ie-option-group>
               <legend class="ie-pdp__option-label">
                 {{ option.name }}: <span data-ie-option-value>{{ option.selected_value }}</span>
@@ -136,26 +163,40 @@
 
               <div class="ie-pdp__values">
                 {%- for value in option.values -%}
+                  {%- liquid
+                    comment
+                      Чем заливать кружок: образцом из настроек товара, а если
+                      его не задали — фотографией варианта. Иначе кружок будет
+                      пустым и по нему ничего не выберешь.
+                    endcomment
+                    assign fill = ''
+                    unless is_size
+                      if value.swatch.color
+                        assign fill = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                      elsif value.swatch.image
+                        assign fill = value.swatch.image | image_url: width: 80 | prepend: 'url(' | append: ')'
+                      elsif value.variant.image
+                        assign fill = value.variant.image | image_url: width: 80 | prepend: 'url(' | append: ')'
+                      endif
+                    endunless
+                  -%}
+
                   <label
-                    class="ie-pdp__value{% if value.swatch %} ie-pdp__value--swatch{% endif %}{% unless value.available %} ie-pdp__value--out{% endunless %}"
-                    {% if value.swatch.color %}
-                      style="--ie-pdp-swatch: rgb({{ value.swatch.color.rgb }});"
-                    {% elsif value.swatch.image %}
-                      style="--ie-pdp-swatch: url({{ value.swatch.image | image_url: width: 80 }});"
-                    {% endif %}
+                    class="ie-pdp__value ie-pdp__value--{% if is_size %}box{% else %}circle{% endif %}{% unless value.available %} ie-pdp__value--out{% endunless %}"
+                    {% if fill != blank %}style="--ie-pdp-swatch: {{ fill }};"{% endif %}
                   >
                     <input
                       type="radio"
-                      name="ie-option-{{ forloop.parentloop.index }}-{{ section.id }}"
+                      name="ie-option-{{ option_index }}-{{ section.id }}"
                       value="{{ value.name | escape }}"
                       data-ie-option
                       {% if value.selected %}checked{% endif %}
                     >
                     <span class="ie-pdp__value-face">
-                      {%- if value.swatch -%}
-                        <span class="visually-hidden">{{ value.name }}</span>
-                      {%- else -%}
+                      {%- if is_size -%}
                         {{ value.name }}
+                      {%- else -%}
+                        <span class="visually-hidden">{{ value.name }}</span>
                       {%- endif -%}
                     </span>
                   </label>
@@ -484,6 +525,7 @@
   }
 
   .ie-pdp__option-label {
+    display: block;
     padding: 0;
     font-family: var(--ie-sans);
     font-size: 0.75rem;
@@ -507,18 +549,7 @@
   .ie-pdp__value-face {
     display: inline-grid;
     place-items: center;
-    min-width: 2.75rem;
-    padding: 0.45rem 0.75rem;
-    border: 1px solid var(--ie-line);
-    font-family: var(--ie-sans);
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
     cursor: pointer;
-    transition: border-color 0.2s ease, color 0.2s ease;
-  }
-
-  .ie-pdp__value input:checked + .ie-pdp__value-face {
-    border-color: var(--ie-ink);
   }
 
   .ie-pdp__value input:focus-visible + .ie-pdp__value-face {
@@ -526,24 +557,48 @@
     outline-offset: 2px;
   }
 
+  /* Размер — прямоугольник с надписью. */
+  .ie-pdp__value--box .ie-pdp__value-face {
+    min-width: 2.75rem;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--ie-line);
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .ie-pdp__value--box input:checked + .ie-pdp__value-face {
+    border-color: var(--ie-ink);
+  }
+
   /* Значения без остатка не прячем: покупатель должен видеть, что размер есть. */
-  .ie-pdp__value--out .ie-pdp__value-face {
+  .ie-pdp__value--box.ie-pdp__value--out .ie-pdp__value-face {
     color: var(--ie-muted);
     text-decoration: line-through;
   }
 
-  .ie-pdp__value--swatch .ie-pdp__value-face {
+  /*
+   * Остальные опции — кружок с цветом. Обводка внутрь нужна светлым
+   * оттенкам: белый кружок на белом фоне иначе не виден.
+   */
+  .ie-pdp__value--circle .ie-pdp__value-face {
     width: 1.25rem;
-    min-width: 0;
     height: 1.25rem;
-    padding: 0;
     border-radius: 50%;
-    background: var(--ie-pdp-swatch, #ccc);
+    background: var(--ie-pdp-swatch, #ddd);
     background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.2s ease;
   }
 
-  .ie-pdp__value--swatch input:checked + .ie-pdp__value-face {
-    box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--ie-ink);
+  .ie-pdp__value--circle input:checked + .ie-pdp__value-face {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 1px #fff, 0 0 0 2px var(--ie-ink);
+  }
+
+  .ie-pdp__value--circle.ie-pdp__value--out .ie-pdp__value-face {
+    opacity: 0.35;
   }
 
   /* ------------------------------------------------------------------ */
@@ -745,6 +800,7 @@
       ]
     },
     { "type": "header", "content": "Сведения" },
+    { "type": "text", "id": "size_words", "label": "Слова, по которым узнаём размер", "default": "size, размер, beden, taglia, taille, talla, größe", "info": "Через запятую. Опции с такими словами в названии показываются прямоугольниками, остальные — цветными кружками." },
     { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 560, "step": 10, "unit": "px", "default": 300 },
     { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
     { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
