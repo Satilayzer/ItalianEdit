@@ -1,0 +1,778 @@
+{%- comment -%}
+  Страница товара по макету: большая картинка слева, сведения справа,
+  под ними — лента всех фотографий товара.
+
+  Почему своя секция, а не блоки Horizon: в макете другой порядок и другой
+  набор элементов (нет количества и мгновенной покупки, вишлист стоит в
+  строке с названием), а лента фотографий должна управлять большой
+  картинкой. Собрать это из блоков product-information можно было бы только
+  сплошными обходами в CSS.
+
+  Что берём у темы как есть: форму добавления в корзину
+  (product-form-component + add-to-cart-button) и кнопку вишлиста. Поэтому
+  корзина-шторка, аналитика и вишлист работают ровно как на остальном сайте.
+{%- endcomment -%}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign gallery = product.media
+
+  assign selected_index = 0
+  if variant.featured_media
+    assign selected_index = variant.featured_media.position | minus: 1
+  endif
+
+  assign can_add_to_cart = false
+  assign add_to_cart_text = 'products.product.unavailable' | t
+  if variant and variant.available
+    assign can_add_to_cart = true
+    assign add_to_cart_text = 'products.product.add_to_cart' | t
+  elsif variant
+    assign add_to_cart_text = 'products.product.sold_out' | t
+  endif
+
+  if section.settings.button_label != blank
+    assign add_to_cart_text = section.settings.button_label
+  endif
+
+  assign product_form_id = 'ie-pdp-form-' | append: section.id
+  assign atc_id = 'ie-pdp-atc-' | append: section.id
+  assign scope = '#shopify-section-' | append: section.id
+-%}
+
+{%- comment -%} Шрифт, кегль и цвет названия задаются в редакторе темы. {%- endcomment -%}
+{%- render 'ie-heading-style',
+  font: section.settings.title_font,
+  size: section.settings.title_size,
+  color: section.settings.title_color,
+  scope: scope
+-%}
+
+<script src="{{ 'ie-slider.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'ie-product.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+<ie-product
+  class="ie-pdp"
+  style="
+    --ie-pdp-media: {{ section.settings.media_width }}%;
+    --ie-pdp-media-ratio: {{ section.settings.media_ratio }};
+    --ie-pdp-info: {{ section.settings.info_width }}px;
+    --ie-pdp-thumb: {{ section.settings.thumb_width }}px;
+    --ie-pdp-thumb-gap: {{ section.settings.thumb_gap }}px;
+    --ie-pdp-scrim: {{ section.settings.thumb_scrim }};
+    padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;
+  "
+  data-text-add="{{ add_to_cart_text | escape }}"
+  data-text-sold-out="{{ 'products.product.sold_out' | t | escape }}"
+  data-text-unavailable="{{ 'products.product.unavailable' | t | escape }}"
+>
+  <div class="ie-pdp__grid">
+    {%- comment -%} Большая картинка. Её меняет лента снизу. {%- endcomment -%}
+    <div class="ie-pdp__media">
+      {%- if gallery.size > 0 -%}
+        {%- assign main_media = gallery[selected_index] -%}
+        <img
+          class="ie-pdp__main"
+          data-ie-main-image
+          src="{{ main_media.preview_image | image_url: width: 1400 }}"
+          srcset="
+            {{ main_media.preview_image | image_url: width: 600 }} 600w,
+            {{ main_media.preview_image | image_url: width: 900 }} 900w,
+            {{ main_media.preview_image | image_url: width: 1400 }} 1400w
+          "
+          sizes="(min-width: 990px) {{ section.settings.media_width }}vw, 100vw"
+          alt="{{ main_media.alt | default: product.title | escape }}"
+          width="{{ main_media.preview_image.width }}"
+          height="{{ main_media.preview_image.height }}"
+        >
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'ie-pdp__main' }}
+      {%- endif -%}
+    </div>
+
+    <div class="ie-pdp__info">
+      {%- if section.settings.show_vendor and product.vendor != blank -%}
+        <p class="ie-pdp__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+
+      {%- comment -%}
+        Название и вишлист — одна строка: в макете иконка прижата к правому
+        краю на уровне названия.
+      {%- endcomment -%}
+      <div class="ie-pdp__headline">
+        <h1 class="ie-pdp__title ie-pdp__title--{{ section.settings.title_case }}">{{ product.title }}</h1>
+        <div class="ie-pdp__wishlist">
+          {%- render 'wishlist-button', product: product, context: 'product' -%}
+        </div>
+      </div>
+
+      <p class="ie-pdp__price">
+        <span data-ie-price>{{ variant.price | money }}</span>
+        <s
+          class="ie-pdp__price-compare"
+          data-ie-compare
+          {% unless variant.compare_at_price > variant.price %}hidden{% endunless %}
+        >
+          {%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}
+        </s>
+        <span
+          class="ie-pdp__discount"
+          data-ie-discount
+          {% unless variant.compare_at_price > variant.price %}hidden{% endunless %}
+        >
+          {%- if variant.compare_at_price > variant.price -%}
+            −{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}%
+          {%- endif -%}
+        </span>
+      </p>
+
+      {%- unless product.has_only_default_variant -%}
+        <div class="ie-pdp__options">
+          {%- for option in product.options_with_values -%}
+            <fieldset class="ie-pdp__option" data-ie-option-group>
+              <legend class="ie-pdp__option-label">
+                {{ option.name }}: <span data-ie-option-value>{{ option.selected_value }}</span>
+              </legend>
+
+              <div class="ie-pdp__values">
+                {%- for value in option.values -%}
+                  <label
+                    class="ie-pdp__value{% if value.swatch %} ie-pdp__value--swatch{% endif %}{% unless value.available %} ie-pdp__value--out{% endunless %}"
+                    {% if value.swatch.color %}
+                      style="--ie-pdp-swatch: rgb({{ value.swatch.color.rgb }});"
+                    {% elsif value.swatch.image %}
+                      style="--ie-pdp-swatch: url({{ value.swatch.image | image_url: width: 80 }});"
+                    {% endif %}
+                  >
+                    <input
+                      type="radio"
+                      name="ie-option-{{ forloop.parentloop.index }}-{{ section.id }}"
+                      value="{{ value.name | escape }}"
+                      data-ie-option
+                      {% if value.selected %}checked{% endif %}
+                    >
+                    <span class="ie-pdp__value-face">
+                      {%- if value.swatch -%}
+                        <span class="visually-hidden">{{ value.name }}</span>
+                      {%- else -%}
+                        {{ value.name }}
+                      {%- endif -%}
+                    </span>
+                  </label>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endfor -%}
+        </div>
+      {%- endunless -%}
+
+      {%- comment -%}
+        Форма темы целиком: без выбора количества и без мгновенной покупки —
+        в макете их нет.
+      {%- endcomment -%}
+      <product-form-component
+        class="ie-pdp__form"
+        data-section-id="{{ section.id }}"
+        data-product-id="{{ product.id }}"
+        data-product-url="{{ product.url }}"
+        on:submit="/handleSubmit"
+        data-quantity-default="1"
+        data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+      >
+        <div
+          class="visually-hidden"
+          aria-live="assertive"
+          role="status"
+          aria-atomic="true"
+          ref="liveRegion"
+        ></div>
+
+        {%- form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' -%}
+          <input
+            type="hidden"
+            name="id"
+            ref="variantId"
+            value="{{ variant.id }}"
+          >
+          <div class="product-form-buttons ie-pdp__buttons" ref="productFormButtons">
+            <span class="product-form-text__error hidden" ref="addToCartTextError">
+              <span class="svg-wrapper">
+                {{- 'icon-error.svg' | inline_asset_content -}}
+              </span>
+            </span>
+
+            <span class="ie-pdp__atc" data-ie-add-to-cart>
+              {%- render 'add-to-cart-button',
+                id: atc_id,
+                class: 'ie-pdp__atc-button',
+                can_add_to_cart: can_add_to_cart,
+                product: product,
+                add_to_cart_text: add_to_cart_text
+              -%}
+            </span>
+          </div>
+        {%- endform -%}
+      </product-form-component>
+
+      {%- if section.settings.show_sku and variant.sku != blank -%}
+        <p class="ie-pdp__sku">
+          {{ section.settings.sku_label }}
+          <span data-ie-sku>{{ variant.sku }}</span>
+        </p>
+      {%- endif -%}
+
+      {%- if product.description != blank -%}
+        <div class="ie-pdp__description rte">{{ product.description }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%}
+      Лента всех фотографий товара. Правила те же, что у листалки блога:
+      без автопрокрутки и зацикливания, на краю стрелка пропадает,
+      карточки тянутся мышью (assets/ie-slider.js).
+    {%- endcomment -%}
+    {%- if gallery.size > 1 -%}
+      <div class="ie-pdp__gallery">
+        <ie-slider class="ie-pdp__slider">
+          <ul class="ie-pdp__track" data-slider-track>
+            {%- for media in gallery -%}
+              <li class="ie-pdp__slide" data-slider-slide>
+                <button
+                  type="button"
+                  class="ie-pdp__thumb"
+                  data-ie-thumb
+                  data-src="{{ media.preview_image | image_url: width: 1400 }}"
+                  data-srcset="{{ media.preview_image | image_url: width: 600 }} 600w, {{ media.preview_image | image_url: width: 900 }} 900w, {{ media.preview_image | image_url: width: 1400 }} 1400w"
+                  data-alt="{{ media.alt | default: product.title | escape }}"
+                  aria-label="{{ product.title | escape }} — {{ forloop.index }}"
+                  {% if forloop.index0 == selected_index %}aria-current="true"{% endif %}
+                >
+                  {{
+                    media.preview_image
+                    | image_url: width: 800
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '200, 300, 450, 600, 800',
+                      sizes: '(min-width: 990px) 20vw, 45vw',
+                      alt: '',
+                      class: 'ie-pdp__thumb-img'
+                  }}
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          <div class="ie-pdp__nav">
+            <button
+              type="button"
+              class="ie-pdp__arrow"
+              data-slider-prev
+              aria-label="{{ 'Назад' | escape }}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="ie-pdp__arrow"
+              data-slider-next
+              aria-label="{{ 'Вперёд' | escape }}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </ie-slider>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%}
+    Цены отдаём уже отформатированными: правила форматирования валюты живут
+    в Liquid, и цена после смены размера выглядит так же, как при загрузке.
+  {%- endcomment -%}
+  <script type="application/json" data-ie-variants>
+    [
+      {%- for v in product.variants -%}
+        {%- unless forloop.first -%},{%- endunless -%}
+        {
+          "id": {{ v.id }},
+          "options": {{ v.options | json }},
+          "available": {{ v.available }},
+          "price": {{ v.price | money | strip_html | json }},
+          "sku": {{ v.sku | json }},
+          {%- if v.compare_at_price > v.price -%}
+            "compare_at": {{ v.compare_at_price | money | strip_html | json }},
+            "discount": {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round | prepend: '−' | append: '%' | json }},
+          {%- else -%}
+            "compare_at": null,
+            "discount": null,
+          {%- endif -%}
+          "media_index": {% if v.featured_media %}{{ v.featured_media.position | minus: 1 }}{% else %}null{% endif %}
+        }
+      {%- endfor -%}
+    ]
+  </script>
+</ie-product>
+
+{% stylesheet %}
+  .ie-pdp {
+    display: block;
+    padding-inline: var(--ie-gutter);
+    color: var(--ie-ink);
+  }
+
+  .ie-pdp__grid {
+    display: grid;
+    /*
+     * minmax(0, 1fr), а не auto: колонка по умолчанию тянется до max-content,
+     * и лента фотографий (она шире экрана) распирала бы страницу вбок вместо
+     * того, чтобы прокручиваться внутри себя.
+     */
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  /*
+   * Раскладка макета: слева высокая картинка, справа сведения, под ними —
+   * лента фотографий. Картинка занимает обе строки, поэтому лента встаёт
+   * рядом с ней, а не под всей страницей.
+   */
+  @media (min-width: 990px) {
+    .ie-pdp__grid {
+      grid-template-columns: minmax(0, var(--ie-pdp-media, 46%)) minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      column-gap: clamp(1.5rem, 4vw, 4rem);
+      row-gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+
+    .ie-pdp__media {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+
+    .ie-pdp__info {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .ie-pdp__gallery {
+      grid-column: 2;
+      grid-row: 2;
+    }
+  }
+
+  .ie-pdp__main {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ie-pdp-media-ratio, 2 / 3);
+    object-fit: cover;
+    background: #f4f4f4;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Правая колонка                                                      */
+  /* ------------------------------------------------------------------ */
+
+  .ie-pdp__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: var(--ie-pdp-info, 360px);
+  }
+
+  @media (min-width: 990px) {
+    .ie-pdp__info {
+      margin-inline: auto;
+    }
+  }
+
+  .ie-pdp__vendor {
+    margin: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ie-muted);
+  }
+
+  .ie-pdp__headline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .ie-pdp__title {
+    margin: 0;
+    font-family: var(--ie-heading-font, var(--ie-sans));
+    font-weight: var(--ie-heading-weight, 400);
+    font-style: var(--ie-heading-style, normal);
+    font-size: var(--ie-heading-size, 0.8125rem);
+    color: var(--ie-heading-color, var(--ie-ink));
+    line-height: 1.35;
+    letter-spacing: 0.1em;
+  }
+
+  .ie-pdp__title--upper {
+    text-transform: uppercase;
+  }
+
+  .ie-pdp__title--none {
+    text-transform: none;
+  }
+
+  /*
+   * Кнопка вишлиста у темы идёт с подписью — в макете на её месте только
+   * иконка, поэтому подпись убираем визуально, но оставляем в разметке:
+   * wishlist.js держит в ней состояние «в вишлисте / добавить».
+   */
+  .ie-pdp__wishlist .wishlist-button__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .ie-pdp__wishlist .wishlist-button__control {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .ie-pdp__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+  }
+
+  .ie-pdp__price-compare {
+    color: var(--ie-muted);
+  }
+
+  .ie-pdp__discount {
+    color: var(--ie-bordo);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Опции                                                               */
+  /* ------------------------------------------------------------------ */
+
+  .ie-pdp__options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ie-pdp__option {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .ie-pdp__option-label {
+    padding: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--ie-ink);
+  }
+
+  .ie-pdp__values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+
+  .ie-pdp__value input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ie-pdp__value-face {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.75rem;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--ie-line);
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .ie-pdp__value input:checked + .ie-pdp__value-face {
+    border-color: var(--ie-ink);
+  }
+
+  .ie-pdp__value input:focus-visible + .ie-pdp__value-face {
+    outline: 2px solid var(--ie-ink);
+    outline-offset: 2px;
+  }
+
+  /* Значения без остатка не прячем: покупатель должен видеть, что размер есть. */
+  .ie-pdp__value--out .ie-pdp__value-face {
+    color: var(--ie-muted);
+    text-decoration: line-through;
+  }
+
+  .ie-pdp__value--swatch .ie-pdp__value-face {
+    width: 1.25rem;
+    min-width: 0;
+    height: 1.25rem;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--ie-pdp-swatch, #ccc);
+    background-size: cover;
+  }
+
+  .ie-pdp__value--swatch input:checked + .ie-pdp__value-face {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--ie-ink);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Кнопка и подписи                                                    */
+  /* ------------------------------------------------------------------ */
+
+  .ie-pdp__atc {
+    display: block;
+  }
+
+  .ie-pdp__buttons {
+    display: block;
+  }
+
+  .ie-pdp__atc .ie-pdp__atc-button {
+    width: 100%;
+    border: 1px solid var(--ie-ink);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ie-ink);
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding-block: 0.9rem;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .ie-pdp__atc .ie-pdp__atc-button:hover:not(:disabled) {
+    background: var(--ie-ink);
+    color: #fff;
+  }
+
+  /* Иконку корзины из кнопки темы убираем — в макете только надпись. */
+  .ie-pdp__atc .add-to-cart-icon {
+    display: none;
+  }
+
+  .ie-pdp__sku,
+  .ie-pdp__description {
+    margin: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--ie-ink);
+  }
+
+  .ie-pdp__sku {
+    color: var(--ie-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Лента фотографий                                                    */
+  /* ------------------------------------------------------------------ */
+
+  .ie-pdp__gallery {
+    /* В макете лента уходит за правый край экрана. */
+    margin-inline-end: calc(-1 * var(--ie-gutter));
+  }
+
+  .ie-pdp__slider {
+    display: block;
+  }
+
+  .ie-pdp__track {
+    display: flex;
+    gap: var(--ie-pdp-thumb-gap, 12px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .ie-pdp__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  ie-slider[data-scrollable] .ie-pdp__track {
+    cursor: grab;
+  }
+
+  ie-slider[data-dragging] .ie-pdp__track {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .ie-pdp__slide {
+    flex: 0 0 auto;
+    width: var(--ie-pdp-thumb, 260px);
+    scroll-snap-align: start;
+  }
+
+  .ie-pdp__thumb {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: #f4f4f4;
+    cursor: pointer;
+    -webkit-user-drag: none;
+  }
+
+  .ie-pdp__thumb-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ie-pdp-media-ratio, 2 / 3);
+    object-fit: cover;
+    -webkit-user-drag: none;
+  }
+
+  /*
+   * Выбранная фотография показывается как есть, на остальные ложится
+   * серая вуаль — так видно, какая сейчас в большой картинке.
+   */
+  .ie-pdp__thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ie-pdp-scrim, rgba(120, 120, 120, 0.28));
+    transition: opacity 0.2s ease;
+  }
+
+  .ie-pdp__thumb[aria-current='true']::after {
+    opacity: 0;
+  }
+
+  .ie-pdp__nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-inline-end: var(--ie-gutter);
+  }
+
+  .ie-pdp__arrow {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid var(--ie-line);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ie-ink);
+    cursor: pointer;
+    transition: opacity 0.2s ease, background 0.2s ease;
+  }
+
+  .ie-pdp__arrow svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .ie-pdp__arrow:hover:not(:disabled) {
+    background: var(--ie-cream);
+  }
+
+  /* Лента не зациклена: на краю стрелка пропадает совсем. */
+  .ie-pdp__arrow:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  ie-slider:not([data-scrollable]) .ie-pdp__nav {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ie-pdp__track {
+      scroll-behavior: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Товар",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Картинка" },
+    { "type": "range", "id": "media_width", "label": "Ширина колонки с картинкой", "min": 30, "max": 60, "step": 1, "unit": "%", "default": 46 },
+    {
+      "type": "select",
+      "id": "media_ratio",
+      "label": "Пропорция",
+      "default": "2 / 3",
+      "options": [
+        { "value": "2 / 3", "label": "2:3" },
+        { "value": "3 / 4", "label": "3:4" },
+        { "value": "4 / 5", "label": "4:5" },
+        { "value": "1 / 1", "label": "1:1" }
+      ]
+    },
+    { "type": "header", "content": "Сведения" },
+    { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 240, "max": 560, "step": 10, "unit": "px", "default": 360 },
+    { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
+    { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
+    { "type": "checkbox", "id": "show_sku", "label": "Показывать артикул", "default": true },
+    { "type": "text", "id": "sku_label", "label": "Подпись артикула", "default": "Ref." },
+    { "type": "header", "content": "Название" },
+    { "type": "font_picker", "id": "title_font", "label": "Шрифт", "default": "source_sans_pro_n4" },
+    { "type": "range", "id": "title_size", "label": "Кегль", "min": 11, "max": 48, "step": 1, "unit": "px", "default": 13 },
+    { "type": "color", "id": "title_color", "label": "Цвет", "default": "#111111" },
+    {
+      "type": "select",
+      "id": "title_case",
+      "label": "Регистр",
+      "default": "upper",
+      "options": [
+        { "value": "upper", "label": "ЗАГЛАВНЫМИ" },
+        { "value": "none", "label": "Как в карточке товара" }
+      ]
+    },
+    { "type": "header", "content": "Лента фотографий" },
+    { "type": "range", "id": "thumb_width", "label": "Ширина фотографии", "min": 140, "max": 420, "step": 10, "unit": "px", "default": 260 },
+    { "type": "range", "id": "thumb_gap", "label": "Промежуток", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 12 },
+    { "type": "color", "id": "thumb_scrim", "label": "Вуаль на невыбранных", "default": "#78787847" },
+    { "type": "header", "content": "Отступы" },
+    { "type": "range", "id": "padding_top", "label": "Сверху", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_bottom", "label": "Снизу", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 }
+  ],
+  "presets": [{ "name": "IE — Товар" }]
+}
+{% endschema %}
