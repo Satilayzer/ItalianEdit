@@ -13,9 +13,9 @@
       "type": "ie-product",
       "settings": {
         "media_column": 50,
-        "media_width": 400,
+        "media_width": 460,
         "media_ratio": "2 / 3",
-        "info_width": 340,
+        "info_width": 400,
         "size_words": "size, размер, beden, taglia, taille, talla, größe",
         "show_vendor": true,
         "button_label": "",
