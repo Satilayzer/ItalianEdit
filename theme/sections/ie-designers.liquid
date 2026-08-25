@@ -48,6 +48,7 @@
     --ie-dsg-gap: {{ section.settings.gap }}px;
     --ie-dsg-row: {{ section.settings.row_height }}px;
     --ie-dsg-label: {{ section.settings.label_width }}px;
+    --ie-dsg-ratio: {{ section.settings.label_ratio }};
     --ie-dsg-num: {{ section.settings.number_width }}px;
     --ie-dsg-num-size: {{ section.settings.number_size }}px;
     --ie-dsg-shift: {{ section.settings.list_offset }}px;
@@ -311,20 +312,35 @@
     color: var(--ie-muted);
   }
 
+  /*
+   * Макеты этикеток приходят квадратами 500x500, где сам рисунок занимает
+   * по высоте от 15% до 50%, остальное — запечатанный пустой запас. Если
+   * вписывать квадрат целиком, этот запас и создаёт зазор между строками,
+   * а сама бирка выходит мелкой.
+   *
+   * Поэтому окно бирки — прямоугольник, а картинка обрезается по нему
+   * (object-fit: cover). Размер задаётся шириной, высота считается из
+   * пропорции, так что увеличение ширины делает бирку крупнее и никогда
+   * не обрезает сильнее.
+   *
+   * Пропорцию ограничивают самые высокие макеты — Celine и Gucci, у них
+   * рисунок занимает половину квадрата. При 2:1 видно ровно половину
+   * исходника; шире — начнёт срезать им верх и низ.
+   */
   .ie-dsg__label {
     display: flex;
     align-items: center;
     justify-content: center;
     width: var(--ie-dsg-label, 160px);
+    aspect-ratio: var(--ie-dsg-ratio, 2 / 1);
+    overflow: hidden;
   }
 
   .ie-dsg__img {
     display: block;
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: var(--ie-dsg-row, 96px);
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: opacity 0.25s ease;
   }
 
@@ -461,7 +477,21 @@
     { "type": "range", "id": "list_offset", "label": "Отступ списка слева", "min": 0, "max": 240, "step": 4, "unit": "px", "default": 48 },
     { "type": "range", "id": "gap", "label": "Промежуток", "min": 0, "max": 64, "step": 2, "unit": "px", "default": 24 },
     { "type": "range", "id": "row_height", "label": "Высота строки", "min": 48, "max": 200, "step": 4, "unit": "px", "default": 96 },
-    { "type": "range", "id": "label_width", "label": "Ширина бирки", "min": 80, "max": 320, "step": 10, "unit": "px", "default": 160 },
+    { "type": "range", "id": "label_width", "label": "Размер бирки", "min": 80, "max": 560, "step": 10, "unit": "px", "default": 160, "info": "Ширина окна бирки. Высота считается из пропорции ниже." },
+    {
+      "type": "select",
+      "id": "label_ratio",
+      "label": "Пропорция бирки",
+      "default": "2 / 1",
+      "info": "Картинка обрезается по этому окну. Чем шире окно, тем больше пустого запаса срезается — но у высоких макетов (Celine, Gucci) рисунок занимает половину квадрата, и после 2:1 им начнёт срезать верх и низ.",
+      "options": [
+        { "value": "1 / 1", "label": "1:1 — весь квадрат" },
+        { "value": "3 / 2", "label": "3:2" },
+        { "value": "2 / 1", "label": "2:1" },
+        { "value": "5 / 2", "label": "5:2" },
+        { "value": "3 / 1", "label": "3:1" }
+      ]
+    },
     { "type": "range", "id": "number_width", "label": "Колонка номера", "min": 48, "max": 240, "step": 4, "unit": "px", "default": 96 },
     { "type": "range", "id": "number_size", "label": "Кегль номера", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
     { "type": "header", "content": "Видео" },
