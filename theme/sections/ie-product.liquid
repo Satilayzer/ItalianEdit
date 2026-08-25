@@ -122,6 +122,7 @@
     --ie-pdp-image: {{ section.settings.media_width }}px;
     --ie-pdp-media-ratio: {{ section.settings.media_ratio }};
     --ie-pdp-info: {{ section.settings.info_width }}px;
+    --ie-pdp-info-offset: {{ section.settings.info_offset }}px;
     --ie-pdp-thumb: {{ section.settings.thumb_width }}px;
     --ie-pdp-thumb-gap: {{ section.settings.thumb_gap }}px;
     --ie-pdp-scrim: {{ section.settings.thumb_scrim }};
@@ -469,6 +470,8 @@
     .ie-pdp__info {
       grid-column: 2;
       grid-row: 1;
+      /* Колонка стоит от середины страницы, но чуть правее — на этот отступ. */
+      margin-inline-start: var(--ie-pdp-info-offset, 48px);
     }
 
     .ie-pdp__gallery {
@@ -892,6 +895,7 @@
     { "type": "textarea", "id": "color_swatches", "label": "Цвета из тегов", "default": "Black = #111111\nWhite = #ffffff\nGrey = #9a9a9a\nGray = #9a9a9a\nBeige = #e8dcc8\nBrown = #6b4a2f\nBlue = #2f4b8f\nNavy = #1b2a4a\nGreen = #3f6b45\nYellow = #e8c53a\nOrange = #e07b2f\nRed = #a52128\nPink = #f0c2cf\nPurple = #6b3f8f\nGold = #c8a24a\nSilver = #c9ccce", "info": "По строке на цвет: название тега = цвет кружка. Показывается, когда цвет не задан отдельной опцией товара." },
     { "type": "text", "id": "size_words", "label": "Слова, по которым узнаём размер", "default": "size, размер, beden, taglia, taille, talla, größe", "info": "Через запятую. Опции с такими словами в названии показываются прямоугольниками, остальные — цветными кружками." },
     { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 620, "step": 10, "unit": "px", "default": 400 },
+    { "type": "range", "id": "info_offset", "label": "Отступ от середины", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 48, "info": "Насколько колонка сдвинута правее середины страницы." },
     { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
     { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
     { "type": "checkbox", "id": "show_sku", "label": "Показывать артикул", "default": true },
