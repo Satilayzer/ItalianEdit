@@ -47,7 +47,14 @@
     {%- endif -%}
   </span>
 
+  {%- comment -%}
+    Бренд идёт первой строкой: в бутике сначала смотрят на марку, а уже
+    потом на название вещи.
+  {%- endcomment -%}
   <span class="ie-card__body">
+    {%- if show_vendor and product.vendor != blank -%}
+      <span class="ie-card__vendor">{{ product.vendor }}</span>
+    {%- endif -%}
     <span class="ie-card__title">{{ product.title }}</span>
     <span class="ie-card__price">
       {%- if product.price_varies -%}
@@ -56,8 +63,5 @@
         {{ product.price | money_without_trailing_zeros }}
       {%- endif -%}
     </span>
-    {%- if show_vendor and product.vendor != blank -%}
-      <span class="ie-card__vendor">{{ product.vendor }}</span>
-    {%- endif -%}
   </span>
 </a>

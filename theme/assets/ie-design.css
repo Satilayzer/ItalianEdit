@@ -18,6 +18,9 @@
   /* Горизонтальные поля витрины: макет идёт почти в край. */
   --ie-gutter: 24px;
   --ie-card-ratio: 2 / 3;
+
+  /* Кегль бренда в карточках витрины и каталога. */
+  --ie-vendor-size: 1rem;
 }
 
 @media (min-width: 1200px) {
@@ -295,9 +298,9 @@ html body [id$="__1787193191f56eb69c"][id] * {
 .ie-card__title {
   margin: 0;
   font-family: var(--ie-sans);
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
   color: var(--ie-ink);
   text-align: center;
   overflow: hidden;
@@ -314,14 +317,51 @@ html body [id$="__1787193191f56eb69c"][id] * {
   text-align: center;
 }
 
-.ie-card__vendor {
+/*
+ * Бренд — крупно и жирно. Регистр не трогаем ни у бренда, ни у названия:
+ * показываем ровно так, как они записаны в карточке товара.
+ */
+.ie-card__vendor,
+.product-designer {
   margin: 0;
   font-family: var(--ie-sans);
-  font-size: 0.5625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ie-muted);
+  font-size: var(--ie-vendor-size, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ie-ink);
+}
+
+.ie-card__vendor {
   text-align: center;
+}
+
+/*
+ * Капс на карточках каталога ставит не карточка, а типографика темы: бренд
+ * и название лежат в одном абзаце с пресетом h5, а он берёт регистр из
+ * --font-h5--case. Снимаем регистр с самого абзаца — :has() выбирает именно
+ * тот, где есть бренд, и не задевает остальные h5 на сайте.
+ *
+ * Селектор длиннее, чем хотелось бы, ради специфичности: тема пишет регистр
+ * правилом .text-block.h5 > * (0,2,0), и короткое p:has(…) ему проигрывает.
+ * Через .text-block получаем (0,2,2) и не привязываемся к пресету h5 —
+ * если его сменят, правило продолжит работать. Второй селектор оставлен
+ * на случай другой обёртки. В браузерах без :has() бренд всё равно будет
+ * без капса: правило выше задаёт ему регистр напрямую.
+ */
+.text-block:has(> p > .product-designer) > p,
+p:has(> .product-designer) {
+  text-transform: none;
+}
+
+/*
+ * Насыщенность и разрядку бренду задаёт ещё и стиль секции (600 / 0.06em),
+ * а он грузится после нашего слоя. Повторяем класс, чтобы наше правило
+ * оказалось специфичнее и бренд был именно жирным.
+ */
+.product-designer.product-designer {
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 /* ------------------------------------------------------------------ */

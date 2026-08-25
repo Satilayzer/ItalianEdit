@@ -123,6 +123,7 @@
     --ie-pdp-media-ratio: {{ section.settings.media_ratio }};
     --ie-pdp-info: {{ section.settings.info_width }}px;
     --ie-pdp-info-offset: {{ section.settings.info_offset }}px;
+    --ie-pdp-vendor: {{ section.settings.vendor_size }}px;
     --ie-pdp-thumb: {{ section.settings.thumb_width }}px;
     --ie-pdp-thumb-gap: {{ section.settings.thumb_gap }}px;
     --ie-pdp-scrim: {{ section.settings.thumb_scrim }};
@@ -516,13 +517,16 @@
     max-width: var(--ie-pdp-info, 400px);
   }
 
+  /* Бренд — крупно и жирно, без капса: как записан в карточке товара. */
   .ie-pdp__vendor {
     margin: 0;
     font-family: var(--ie-sans);
-    font-size: 0.6875rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ie-muted);
+    font-size: var(--ie-pdp-vendor, 1.375rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--ie-ink);
   }
 
   .ie-pdp__headline {
@@ -897,6 +901,7 @@
     { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 620, "step": 10, "unit": "px", "default": 400 },
     { "type": "range", "id": "info_offset", "label": "Отступ от середины", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 48, "info": "Насколько колонка сдвинута правее середины страницы." },
     { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
+    { "type": "range", "id": "vendor_size", "label": "Кегль бренда", "min": 12, "max": 48, "step": 1, "unit": "px", "default": 22 },
     { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
     { "type": "checkbox", "id": "show_sku", "label": "Показывать артикул", "default": true },
     { "type": "text", "id": "sku_label", "label": "Подпись артикула", "default": "Ref." },
@@ -908,7 +913,7 @@
       "type": "select",
       "id": "title_case",
       "label": "Регистр",
-      "default": "upper",
+      "default": "none",
       "options": [
         { "value": "upper", "label": "ЗАГЛАВНЫМИ" },
         { "value": "none", "label": "Как в карточке товара" }
