@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "From saddles to suitcases: how Hermès survived the death of the horse-drawn carriage",
+            "text": "<p>The turning point came with Thierry's grandson, Émile-Maurice Hermès, who took over at the start of the twentieth century just as automobiles were making carriages obsolete. Rather than defend a shrinking market, he redirected the workshop's leatherworking skill toward travel: trunks, driving gloves, and handbags for a new generation of car owners. He also secured an early license for the zipper in France, using it first on golf jackets and then, in 1935, on the ancestor of the modern Hermès handbag. The house's willingness to abandon its original product while keeping its original standard is the reason it still exists.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "HERMÈS",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The bag that took a princess's name, and the one named after a singer",
+            "text": "<p>In 1935, Hermès introduced a saddle bag with a flap and strap, then called the Sac à dépêches. In the 1950s, Grace Kelly, by then Princess of Monaco, was photographed shielding her pregnancy with one, and by 1977 the house had renamed it the Kelly in her honor. The more famous origin story belongs to the Birkin: in 1984, actress and singer Jane Birkin found herself seated next to Hermès's then-chief executive Jean-Louis Dumas on a flight, complained about not finding a bag that fit her life as a new mother, and sketched what she needed on an airplane sick bag. Dumas built it. Decades later, the Birkin remains one of the few luxury goods that regularly outperforms fine art and gold as an investment asset, largely because Hermès still makes it in limited numbers by hand.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "The silk square as a canvas",
+            "text": "<p>Hermès introduced its first printed silk scarf, the carré, in 1937, using a technique developed for its equestrian roots and eventually expanding into thousands of designs, many now traded and collected the way prints or first-edition books are. Each carré can take months to design and screen-print in dozens of colors, and the house has never automated the process in any way that would compromise it.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Still a family business, on purpose",
+            "text": "<p>What separates Hermès from nearly every other name on this list is what didn't happen: it was never sold to a conglomerate. The Hermès family fought off a hostile stake-building campaign by LVMH in the early 2010s and remains majority family-owned today, across six generations. That independence shows up in small, deliberate choices, restricting handbag production rather than mass-producing to meet demand, promoting from within, keeping its ready-to-wear under designers like Nadège Vanhee-Cybulski for women and Véronique Nichanian for men, who has held the men's design chair since 1988, longer than any other creative director in fashion. Scarcity, at Hermès, was never a marketing tactic. It was simply what happens when a company refuses to compromise on how something is made.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Hermès piece?",
+            "text": "<p>Hermès's famously long waitlists and limited production make finding an authentic bag, scarf, or accessory difficult without the right access. Italian Edit sources genuine Hermès pieces from boutiques and trusted sellers across Europe, verifies authenticity, and ships directly to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Hermès Brand History: From a Paris Harness Shop to the World's Most Patient Luxury House",
+        "heading_visible": false,
+        "number": "002",
+        "image_alt": "Hermès",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Hermès has never chased a trend in its 188-year history. It has simply outlasted every trend that tried to chase it.”</p>",
+        "lede": "<p>In 1837, Thierry Hermès opened a workshop near the Grands Boulevards in Paris making harnesses and saddles for the carriage trade. He built for European aristocracy, and he built to last: a Hermès saddle was stitched by hand, in a technique called the point sellier, strong enough that if one thread broke the rest held. That single decision, quality that outlives fashion, has shaped every product the house has made since.</p>",
+        "aside_caption": "Hermès",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Who founded Chanel, and why does it still matter",
+            "text": "<p>Chanel's founder was not trained as a couturier. She learned to sew as an orphan in a convent, and she carried that plainness into her work: no fuss, no wasted fabric, no ornament that didn't serve the woman wearing it. By the 1920s she had introduced the little black dress, reframed as a wardrobe staple rather than a mourning color, and dressed women in trousers, cardigan jackets, and low-heeled shoes at a time when that alone was a small act of rebellion. Chanel No. 5, launched in 1921, marked another break with convention: it was the first perfume built on synthetic aldehydes rather than a single flower, and it became the template for how a fashion house could build a business well beyond clothing.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "CHANEL",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The tweed suit, the 2.55, and a wartime exile",
+            "text": "<p>The Chanel suit, boxy jacket and skirt in soft tweed, arrived in the 1950s, after a fifteen-year gap in which Coco Chanel had closed the house entirely. She shut her ateliers in 1939 as France entered the war, and did not reopen until 1954, at the age of seventy. Parisian critics were unkind to her comeback show. American buyers were not: the suit's ease and its resistance to trends made it a staple for women who wanted to dress once and be done deciding. The 2.55 bag, named for its February 1955 debut, followed the same logic, quilted leather, a chain strap borrowed from the straps concierges used to carry keys, so women could finally wear a bag hands-free.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Karl Lagerfeld and the invention of Chanel as spectacle",
+            "text": "<p>Coco Chanel died in 1971, and for over a decade the house drifted. Karl Lagerfeld arrived in 1983 and did something almost nobody had tried at a heritage maison: he treated the archive as raw material rather than a rulebook. He blew up the interlocking C's into logo-driven ready-to-wear, sent tweed down runways built as supermarkets and casinos, and turned the twice-yearly show into a cultural event in its own right. By the time of his death in 2019, Chanel had become one of the only privately held houses of its scale, still controlled by the Wertheimer family, who had partnered with Coco Chanel on the fragrance business back in 1924.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Life after Lagerfeld",
+            "text": "<p>Virginie Viard, Lagerfeld's longtime deputy, led the house from 2019 until 2024 with a quieter, less theatrical hand. In 2025, Chanel named Matthieu Blazy, previously of Bottega Veneta, as its fourth designer in over a century, a signal that the house was ready for another chapter built on craft rather than spectacle. His early collections leaned into trompe l'oeil and the ateliers' handwork, proof that a hundred-year-old idea, dressing women for their own comfort and confidence rather than for men's approval, still has room to grow.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic piece of Chanel history?",
+            "text": "<p>Sourcing an original Chanel bag, suit, or accessory from Europe and getting it authenticated and shipped to the United States isn't always straightforward. Italian Edit buys directly from official boutiques and resellers across Europe and handles authentication, customs, and delivery, so you can add a genuine piece of Chanel to your closet without leaving home.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Chanel Brand History: How a Milliner's Shop Became the Grammar of Modern Fashion",
+        "heading_visible": false,
+        "number": "001",
+        "image_alt": "Chanel",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Before Chanel was a fragrance, a quilted bag, or a tweed suit, it was a small hat shop on rue Cambon. What happened next rewrote the rules of how women could dress.”</p>",
+        "lede": "<p>Most fashion houses begin with a designer chasing beauty. Chanel began with a woman rejecting it. Gabrielle \"Coco\" Chanel opened her first millinery shop in Paris in 1910, then a boutique in the seaside resort of Deauville in 1913, selling something no one else was selling: comfort. While the belle époque still had women laced into corsets, Chanel borrowed jersey fabric from menswear and cut it into loose, sportswear-inspired dresses. It was not an aesthetic choice so much as a philosophical one, and it set the tone for everything that followed.</p>",
+        "aside_caption": "Chanel",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

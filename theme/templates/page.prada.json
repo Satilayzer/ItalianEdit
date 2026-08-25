@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Miuccia Prada's arrival, and a nylon backpack that broke the rules",
+            "text": "<p>Mario Prada's granddaughter, Miuccia Prada, joined the family business in the 1970s after earning a doctorate in political science and briefly performing as a mime, an unusual résumé for a fashion heir. She took creative control in the 1980s and made a decision that seemed almost perverse for a luxury house: in 1984, she introduced a backpack made from Pocono, a matte black nylon fabric used in Italian military tents and parachutes. Luxury customers had never been asked to pay a premium for a fabric associated with utility gear. The Vela backpack sold anyway, and it established a theme Miuccia Prada has returned to throughout her career, finding status in restraint, and even in deliberate ugliness, rather than obvious opulence.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "PRADA",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "From accessories house to full-fledged fashion label",
+            "text": "<p>Prada launched its first women's ready-to-wear collection in 1988, moving the house beyond leather goods into full apparel for the first time. Miuccia Prada's designs consistently rejected conventional prettiness in favor of intellectual, sometimes uncomfortable ideas about taste, an approach fashion critics eventually coined \"ugly chic.\" In 1993, she launched Miu Miu, named after her childhood nickname, as a younger, more overtly playful sister line.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "A rare creative partnership",
+            "text": "<p>In 2020, Prada made an announcement without real precedent in fashion: Belgian designer Raf Simons, previously of Jil Sander, Christian Dior, and Calvin Klein, would join as co-creative director, sharing equal creative authority with Miuccia Prada rather than replacing her. Both designers described the arrangement as a genuine collaboration rather than a mentorship or handover, an unusual structure for an industry built around the myth of the singular creative genius. Their joint collections have continued to explore restraint and discomfort as design tools, shown against stark, architectural sets that echo the label's early instinct for anti-decoration.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A family business that never left family hands",
+            "text": "<p>Unlike most of the houses in this series, Prada has never been absorbed into a larger luxury conglomerate. It remains controlled by the Prada and Bertelli families, who took the company public on the Hong Kong Stock Exchange in 2011 while retaining a majority stake. That independence has let Miuccia Prada keep making decisions other executives might have vetoed, like turning a parachute fabric into a status symbol, a century after her grandfather built the business on leather trunks for the aristocracy.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Prada piece?",
+            "text": "<p>From the original nylon Vela bag to recent runway pieces, sourcing genuine Prada from Europe requires the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Prada Brand History: How a Nylon Backpack Turned Luxury Logic Upside Down",
+        "heading_visible": false,
+        "number": "006",
+        "image_alt": "Prada",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Prada spent seven decades as a respectable, unremarkable Milanese luggage house. Then a granddaughter with a degree in political science made ugliness fashionable.”</p>",
+        "lede": "<p>Mario Prada opened Fratelli Prada in Milan's Galleria Vittorio Emanuele II in 1913, selling handcrafted leather bags, trunks, and travel accessories to European nobility. The shop earned a royal warrant from the Italian royal family in 1919, and for decades it operated as a quietly prestigious, family-run leather goods maker, respected but not especially influential beyond Italy's upper class.</p>",
+        "aside_caption": "Prada",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

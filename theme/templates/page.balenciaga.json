@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Sculptor in cloth",
+            "text": "<p>In Paris, Balenciaga built a reputation unlike any other couturier of his era: designers, not just clients, studied his work. He treated fabric almost as a sculptural material, engineering silhouettes that moved away from the body rather than clinging to it, the envelope dress, the baby doll dress, the cocoon coat, the sack dress, each one solving a structural problem most designers hadn't thought to ask. Unlike many of his peers, Balenciaga could cut, drape, and sew a garment entirely by himself, a technical mastery that earned him the rare respect of rivals rather than mere admiration from clients.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "BALENCIAGA",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The house that closed at its peak",
+            "text": "<p>In 1968, at the height of his reputation, Balenciaga shut down his fashion house entirely. He was reportedly disillusioned by the rise of ready-to-wear and the changing culture of the industry, and he chose to stop rather than compromise his standards. He continued designing privately for select clients until his death in 1972. The Balenciaga name went dormant in fashion for nearly two decades.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Three revivals, three completely different Balenciagas",
+            "text": "<p>The house reopened in 1986 under new ownership, but its modern identity was really built by Nicolas Ghesquière, appointed creative director in 1997 at just 25 years old. Ghesquière spent fifteen years reintroducing Balenciaga's structural, experimental instincts through a distinctly modern, at times futuristic lens, and by the early 2000s the brand was again a genuine influence on the rest of the industry. Alexander Wang took over in 2012 with a more commercial, downtown-inflected approach.</p><p>The most radical reinvention came under Demna, appointed in 2015, who pushed Balenciaga toward streetwear and irony: oversized silhouettes, deliberately ugly sneakers, and a much-discussed handbag that echoed the shape of an Ikea shopping bag. The approach was polarizing, and occasionally controversial, but it made Balenciaga one of the most culturally relevant houses of the late 2010s among a much younger customer base. Demna left in 2025 to lead Gucci, and Balenciaga named Pierpaolo Piccioli, previously of Valentino for sixteen years, as his successor, a shift toward the romantic, tailored elegance that first made Cristóbal Balenciaga's name in the 1930s.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A Spanish name, a French legacy",
+            "text": "<p>Through every reinvention, the house has kept the founder's actual archive close at hand. Piccioli reportedly spent his first days in the role at the Balenciaga conservation site outside Paris, studying garments he had previously only seen in photographs, proof that even a brand built on disruption still treats its own history as the foundation worth returning to.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Balenciaga piece?",
+            "text": "<p>From archival Ghesquière-era pieces to current runway releases, sourcing genuine Balenciaga from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Balenciaga Brand History: The Couturier Other Designers Called \"The Master\"",
+        "heading_visible": false,
+        "number": "007",
+        "image_alt": "Balenciaga",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Christian Dior called him the master of us all. Coco Chanel said he was the only true couturier. Then, at the height of his fame, Cristóbal Balenciaga closed his own house and walked away.”</p>",
+        "lede": "<p>Cristóbal Balenciaga opened his first boutique in San Sebastián, Spain, in 1917, having trained since childhood as a tailor's apprentice under the patronage of a Spanish aristocrat who noticed his talent. He expanded to Madrid and Barcelona over the following two decades, dressing the Spanish royal family and aristocracy, before the Spanish Civil War forced him to close his stores and relocate to Paris in 1937.</p>",
+        "aside_caption": "Balenciaga",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Three brothers, three capitals, one global house",
+            "text": "<p>The real expansion came under Louis-François's grandsons: Louis, Pierre, and Jacques Cartier, who each took charge of a different flagship in the early 1900s, Louis in Paris, Pierre in New York, Jacques in London. The division let the brothers cultivate relationships with royal courts and industrialists across three continents simultaneously, an unusually coordinated strategy for a family business of that era. King Edward VII of England is widely credited with dubbing Cartier \"jeweler of kings, king of jewelers,\" a phrase the house still uses today, and by the early twentieth century Cartier held royal warrants from over a dozen European courts.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "CARTIER",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The watch shaped by a war",
+            "text": "<p>In 1917, Louis Cartier designed the Tank watch, its rectangular case and parallel side bars directly inspired by the aerial view of Renault tanks deployed on the Western Front during World War I. It was a striking design choice, taking a symbol of industrial-scale warfare and turning it into a refined accessory, and the Tank has remained in continuous production for over a century, worn by figures from Jacqueline Kennedy to Princess Diana.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "The panther that became a house emblem",
+            "text": "<p>Cartier's panther motif entered the house's design language in 1914 as an abstract fur pattern, but it took on real symbolic weight under Jeanne Toussaint, a designer who joined Cartier's inner circle in the 1930s and eventually led its jewelry division. Toussaint, nicknamed \"the Panther\" by her close friend Louis Cartier, pushed the motif into three-dimensional jewelry, culminating in fully sculpted panther brooches and bracelets that became instantly recognizable and remain central to Cartier's high jewelry collections today.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Fidelity, love, and friendship, in one ring",
+            "text": "<p>In 1924, Louis Cartier designed the Trinity ring, three interlocking bands in white, yellow, and rose gold, each color assigned a specific meaning, fidelity, friendship, and love. It was a quietly radical piece of jewelry design: rather than a single stone signaling wealth, it offered a symbolic structure, and it remains one of Cartier's best-selling designs a century later. The Cartier family sold its stake in the business in the 1960s and 70s, and the house is now part of the Swiss luxury group Richemont, but its design language, precision over excess, symbolism over spectacle, has remained remarkably consistent since Louis-François first opened his workshop.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Cartier piece?",
+            "text": "<p>From the Tank watch to Trinity and Panthère jewelry, sourcing genuine Cartier from Europe requires the right access and careful authentication. Italian Edit buys directly from official boutiques and trusted sellers, verifies every piece, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Cartier Brand History: How Three Brothers Became \"Jeweler of Kings, King of Jewelers\"",
+        "heading_visible": false,
+        "number": "009",
+        "image_alt": "Cartier",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“A single line from an English king gave Cartier its motto. Three grandsons made sure the world never forgot it.”</p>",
+        "lede": "<p>Louis-François Cartier took over his master's jewelry workshop in Paris in 1847, at just 28, and began building a reputation for pieces that balanced technical precision with restraint, a departure from the heavier, more ornate jewelry fashionable earlier in the century. The business stayed relatively modest for its first few decades, serving Parisian society rather than international royalty.</p>",
+        "aside_caption": "Cartier",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

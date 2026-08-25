@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Le Smoking, and the suit that changed what women could wear",
+            "text": "<p>Saint Laurent's most consequential idea arrived in 1966: Le Smoking, a tailored tuxedo suit designed for women, at a time when many restaurants and public spaces still turned women away for wearing trousers. It wasn't the first womenswear tuxedo ever made, but it was the one that stuck, photographed for decades afterward, worn by clients who wanted the same authority a suit gave men. The same year, Saint Laurent opened Rive Gauche, a ready-to-wear boutique that made his designs available to a much wider customer base than couture ever could, a move that helped establish prêt-à-porter as a legitimate, even prestigious, category rather than a lesser alternative to made-to-order clothing.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "SAINT LAURENT",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "An artist as much as a couturier",
+            "text": "<p>Saint Laurent treated the runway as a place for cultural commentary as often as commerce. His 1965 Mondrian collection translated the painter's grid-and-primary-color canvases directly into shift dresses, and later collections referenced Picasso, Matisse, and Russian ballet, part of a broader argument that fashion deserved to be discussed alongside fine art rather than beneath it. He was also among the first major couturiers to regularly cast Black models on his runways, at a time when that choice was still unusual in Paris fashion.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Retirement, death, and a house reborn under a new name",
+            "text": "<p>Saint Laurent retired in 2002, closing his couture house in an emotional farewell that many in the industry treated as the end of an era for made-to-order fashion in general. He died in 2008. By then, the ready-to-wear label had already been sold and was operating under the ownership of what is now Kering. Hedi Slimane took over as creative director in 2012 and made a deliberately provocative choice: he dropped \"Yves\" from the name entirely, rebranding the label simply as Saint Laurent Paris, and pulled the house toward a leaner, rock-and-roll silhouette that alienated some purists while attracting an entirely new, younger customer.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A decade of consistency in an industry built on change",
+            "text": "<p>Anthony Vaccarello took over in 2016 and has now led the house for a decade, an unusually long tenure in an era when most creative directors change every three to five years. His Saint Laurent leans into the label's original sensuality, sharp tailoring and slip dresses in equal measure, and the house topped the Lyst Index as fashion's most in-demand brand in 2025, evidence that Yves Saint Laurent's founding instinct, that a woman in the right suit needs nothing else to prove her authority, still resonates.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Saint Laurent piece?",
+            "text": "<p>From Le Smoking-inspired tailoring to current-season pieces, sourcing genuine Saint Laurent from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Saint Laurent Brand History: The Tuxedo That Argued Women Didn't Need Permission",
+        "heading_visible": false,
+        "number": "008",
+        "image_alt": "Saint Laurent",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Yves Saint Laurent was fired from the house that made him famous. So he started his own, and used it to put women in suits.”</p>",
+        "lede": "<p>Yves Saint Laurent became Christian Dior's successor at just 21, taking over the house after Dior's sudden death in 1957. His early collections were well received, but a controversial 1960 collection inspired by Left Bank youth culture unsettled Dior's conservative clientele, and shortly afterward Saint Laurent was conscripted into the French army during the Algerian War. He suffered a breakdown during service and was dismissed from Dior in his absence. In 1961, alongside his partner Pierre Bergé, he opened his own house.</p>",
+        "aside_caption": "Saint Laurent",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

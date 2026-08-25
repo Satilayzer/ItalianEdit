@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "The New Look, and the collection that needed a rename",
+            "text": "<p>Dior's first collection, shown in February 1947, cinched waists tight, padded hips, and used as much as twenty meters of fabric in a single skirt, an almost defiant use of material so soon after rationing. Carmel Snow, the editor of Harper's Bazaar, reportedly told Dior after the show, \"It's quite a revolution, dear Christian. Your dresses have such a new look.\" The name stuck, and the New Look became shorthand for the entire silhouette. Some criticized it as regressive, a retreat to corseted femininity, but it sold. Within two years, Dior accounted for roughly half of France's fashion export revenue.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "DIOR",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "A sudden death, and a 21-year-old successor",
+            "text": "<p>Christian Dior died of a heart attack in 1957, only ten years into running the house that carried his name. His successor was a 21-year-old assistant named Yves Saint Laurent, who steadied the label with a well-received debut before compulsory military service pulled him away in 1960. Marc Bohan then led the house for nearly three decades, followed by Gianfranco Ferré, before John Galliano took over in 1997 and turned Dior's runway shows into elaborate theatrical productions, referencing everything from Marie Antoinette to the Ballets Russes.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Feminism on a T-shirt: the Maria Grazia Chiuri era",
+            "text": "<p>In 2016, Maria Grazia Chiuri became Dior's first female creative director in the house's history, a notable fact for a label built entirely around a male designer's vision of femininity. Her debut runway T-shirt, printed with the phrase \"We Should All Be Feminists\" after the Chimamanda Ngozi Adichie essay, became one of the most photographed fashion statements of the decade. Chiuri led the house for nine years, through 2025, weaving craft, feminist history, and collaborations with female artists and artisans into every collection.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "One designer, three lines, for the first time since the founder",
+            "text": "<p>In 2025, Dior named Jonathan Anderson, previously of Loewe, as creative director of womenswear, menswear, and haute couture simultaneously, the first time one person had held all three roles since Christian Dior himself. His debut collections drew on Dior's own archive and early fabric swatches, reportedly asking himself what Christian Dior had actually been thinking in 1947, a fitting question for a house whose founding idea, that clothing could physically embody a mood a whole country needed, has outlived every designer who has interpreted it since.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Dior piece?",
+            "text": "<p>Whether it's the Lady Dior bag or an archival couture piece, sourcing genuine Dior from Europe requires access most shoppers don't have. Italian Edit  buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Dior Brand History: The Ten-Year House That Changed Fashion in One Afternoon",
+        "heading_visible": false,
+        "number": "004",
+        "image_alt": "Dior",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Christian Dior ran his own house for barely a decade. In that time, he reshaped what women wore for the rest of the century.”</p>",
+        "lede": "<p>Christian Dior opened his fashion house in 1946 at 30 Avenue Montaigne in Paris, backed by textile magnate Marcel Boussac, after working for over a decade as a sketch artist and designer for other couturiers. He was 41 years old, older than most designers launching a debut house, and Paris had spent six years under wartime rationing that left women in boxy, fabric-starved silhouettes. Dior bet that they were ready for the opposite.</p>",
+        "aside_caption": "Dior",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

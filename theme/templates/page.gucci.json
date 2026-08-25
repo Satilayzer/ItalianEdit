@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Bamboo, wartime shortages, and a signature born from limitation",
+            "text": "<p>Several of Gucci's most enduring motifs were born from wartime scarcity rather than design ambition. During World War II, Italian leather supplies were rationed for military use, so Gucci's craftsmen experimented with alternative materials, canvas, hemp, and, most famously, bamboo, which artisans learned to heat and bend into a curved handle for a 1947 handbag. The bamboo-handled bag remains in the collection today. The interlocking green-red-green stripe, still used across the brand, originated as a nod to the girth strap of a saddle, another artifact of the house's equestrian roots.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "GUCCI",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The feud that nearly ended the house",
+            "text": "<p>By the 1980s, Guccio's grandsons had turned Gucci into a licensing free-for-all, stamping the double-G logo onto everything from watches to cheap accessories, diluting the brand's exclusivity. Internal disputes escalated into a public family war, complete with accusations of tax evasion and, in 1995, the murder of family member Maurizio Gucci, orchestrated by his ex-wife, a story later dramatized in the film House of Gucci. By the time an outside investment firm gained control in the early 1990s, the house's reputation was in serious decline.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Tom Ford, and the reinvention that saved Gucci",
+            "text": "<p>Tom Ford, appointed creative director in 1994, and Domenico De Sole, the executive who ran the business side, rebuilt Gucci into one of the most talked-about labels of the decade. Ford's Gucci was overtly sexual, tightly tailored, and unapologetically modern, a deliberate break from the brand's staid heritage image, and it worked: Gucci's revenue multiplied several times over during his tenure. Frida Giannini took the reins in 2005 with a more polished, glamour-driven approach.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "From maximalism to a fresh reinvention",
+            "text": "<p>Alessandro Michele, appointed in 2015, pushed Gucci in the opposite direction from Ford's minimal sex appeal, layering vintage-inspired prints, gender-fluid tailoring, and eclectic references into collections that made Gucci the most searched fashion brand in the world for several consecutive years. Sabato De Sarno followed in 2023 with a quieter, more restrained take that struggled to match Michele's cultural momentum. In 2025, Gucci named Demna, previously a decade at Balenciaga, as creative director, a move that surprised much of the industry and signaled another attempt to redefine what the house's signature codes, the horsebit, the bamboo, the stripe, can mean for a new generation.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Gucci piece?",
+            "text": "<p>From the bamboo bag to archival Tom Ford-era pieces, sourcing genuine Gucci from Europe takes the right connections. Italian Edit buys directly from official boutiques and trusted resellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Gucci Brand History: A Florentine Luggage Shop, a Family Feud, and Two Reinventions",
+        "heading_visible": false,
+        "number": "005",
+        "image_alt": "Gucci",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Gucci's history has two great turning points: a nearly fatal family war in the 1990s, and the outsider who rebuilt the house from the wreckage. It has since happened again.”</p>",
+        "lede": "<p>Guccio Gucci opened a leather goods and luggage shop in Florence in 1921, after years spent working as a porter and lift operator at London's Savoy hotel, watching the trunks and cases wealthy guests traveled with. He returned to Italy determined to make goods of the same caliber using Tuscan leatherworking traditions, and built a business supplying luggage and equestrian accessories to Italy's elite.</p>",
+        "aside_caption": "Gucci",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

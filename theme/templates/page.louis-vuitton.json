@@ -1,0 +1,130 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Why a flat lid changed the travel industry",
+            "text": "<p>Until Vuitton, most trunks had rounded or domed tops, a shape designed to shed rainwater when stacked on the roof of a carriage. Vuitton reasoned that as steamship and railway travel expanded, trunks would spend more time piled inside cargo holds than lashed to a coach roof, and a rounded lid wasted space and toppled easily. His flat-topped, stackable trunk, covered in gray Trianon canvas, was lighter and more practical, and it let travelers move more luggage more efficiently. The design became standard across the luxury travel industry within a generation.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "LOUIS VUITTON",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The monogram was born to fight counterfeiters",
+            "text": "<p>By the 1870s, Vuitton's trunks were popular enough to be widely copied. His son, Georges Vuitton, responded in 1896 with the now-famous LV monogram canvas, a pattern of interlocking initials, quatrefoils, and flowers that was difficult to reproduce with the printing technology of the era. It is one of the earliest documented examples of a fashion brand using a repeating logo specifically as an anti-counterfeiting measure, decades before \"branding\" was a marketing discipline. That same monogram, largely unchanged for over 125 years, remains one of the most recognized patterns in the world.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "From trunks to handbags to a conglomerate",
+            "text": "<p>Louis Vuitton stayed a family-run trunk and leather goods maker for most of the twentieth century before expanding into handbags, and in 1987 it merged with champagne and cognac house Moët Hennessy to form LVMH, the luxury conglomerate that now owns dozens of the brands in this series. The merger gave Vuitton the capital to scale internationally while keeping its ateliers in France.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Marc Jacobs and the invention of the art collaboration",
+            "text": "<p>The house's modern identity, playful, collectible, unafraid of pop culture, was largely built by American designer Marc Jacobs, who served as creative director from 1997 to 2013. Jacobs launched Vuitton's first ready-to-wear collections and pioneered the now-common practice of pairing a heritage house with a contemporary artist: painted graffiti monograms with Stephen Sprouse in 2001, and colorful cherry and flower motifs with Takashi Murakami in 2003, a collaboration that reportedly generated hundreds of millions in sales and helped define an entire era of luxury marketing.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Two houses under one roof today",
+            "text": "<p>Since 2013, Nicolas Ghesquière has directed womenswear, bringing a sharper, more architectural sensibility than Jacobs's maximalism. Menswear has passed through a different lineage, most notably under Virgil Abloh from 2018 until his death in 2021, and currently under musician and designer Pharrell Williams, who took the role in 2023. Two design languages, one monogram, still stitched by hand in French workshops much as Georges Vuitton intended.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Louis Vuitton piece?",
+            "text": "<p>With counterfeits still common online, sourcing a genuine Louis Vuitton trunk, bag, or accessory takes real diligence. Italian Edit purchases directly from official boutiques and vetted sellers in Europe, confirms authenticity, and ships to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Louis Vuitton Brand History: The Trunk-Maker Who Solved a Problem No One Else Saw",
+        "heading_visible": false,
+        "number": "003",
+        "image_alt": "Louis Vuitton",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Long before the monogram, Louis Vuitton solved a problem nobody had bothered to name: trunks that couldn't be stacked. That single fix built an empire.”</p>",
+        "lede": "<p>Louis Vuitton arrived in Paris in 1835 as a teenager, on foot, after a 400-kilometer walk from his home region of Jura. He apprenticed as a box-maker and packer for wealthy Parisian families, a trade that involved carefully wrapping and arranging their belongings for travel. In 1854, he opened his own workshop near the Place Vendôme, and immediately broke with how trunks had always been made.</p>",
+        "aside_caption": "Louis Vuitton",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A technique born from a limitation, not a vision",
+            "text": "<p>The house's defining signature, the intrecciato weave, wasn't originally a design decision so much as a workaround. The sewing machines available to Taddei and Zengiaro in the 1960s weren't built to handle thick leather, so their artisans cut it into thin strips and wove them together by hand instead, the way a basket is woven. The resulting texture turned out to be both stronger and more distinctive than flat leather, and it became the house's calling card. It remains largely hand-done today, one of the few luxury leather techniques that has resisted meaningful automation.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "BOTTEGA VENETA",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The philosophy that gave Bottega Veneta its slogan",
+            "text": "<p>In an industry that was starting to plaster logos across everything, Bottega Veneta went the other direction. Its advertising line, \"When your own initials are enough,\" became something closer to a mission statement: the intrecciato weave itself was the signature, no monogram required. That anti-logo stance found an appreciative audience in the 1970s art world, and Andy Warhol became a regular visitor to the brand's New York boutique, which opened in 1972 and even inspired a short film he produced about the house.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "A near-collapse, and a rescue by rivals",
+            "text": "<p>Bottega Veneta struggled through the 1990s, a decade defined by loud logos exactly opposite its founding philosophy, and by the turn of the millennium the company was reportedly close to bankruptcy. In 2001, the Gucci Group, led by Tom Ford and Domenico De Sole, the same executives who had rebuilt Gucci a few years earlier, acquired a controlling stake for roughly 157 million dollars. It proved to be one of the shrewder bets in modern luxury: De Sole had identified the brand's Italian craftsmanship and quiet reputation as an asset that had simply gone out of fashion rather than out of relevance.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Quiet luxury, before the phrase existed",
+            "text": "<p>Tomas Maier led the house from 2001 to 2018, restoring Bottega Veneta's reputation for understated, expensive-looking leather goods well before \"quiet luxury\" became a widely used term. Daniel Lee's tenure from 2018 to 2021 brought a viral moment with the oversized Pouch clutch, and Matthieu Blazy, who took over in 2021, pushed the house's craft further into playful, texture-driven territory before departing for Chanel in late 2024. Louise Trotter has led the house since 2025, continuing a run of creative directors who, whatever their individual styles, have all returned to the same founding idea: let the material and the making speak, and skip the logo entirely.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Bottega Veneta piece?",
+            "text": "<p>From the original intrecciato leather goods to current runway pieces, sourcing genuine Bottega Veneta from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Bottega Veneta Brand History: The House Built on \"When Your Own Initials Are Enough\"",
+        "heading_visible": false,
+        "number": "010",
+        "image_alt": "Bottega Veneta",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Bottega Veneta's signature weave exists because a sewing machine couldn't handle thick leather. Its entire identity exists because its founders refused to put their name on it.”</p>",
+        "lede": "<p>Michele Taddei and Renzo Zengiaro founded Bottega Veneta in Vicenza, Italy, in 1966, a small leather workshop with no immediate ambition to compete with the grand houses of Paris or Milan. Zengiaro had spent his teenage years working in local leather ateliers, learning the trade by hand, before the two men decided to strike out on their own. They named the company simply: Bottega Veneta means \"Venetian workshop\" in Italian, a description rather than a flourish.</p>",
+        "aside_caption": "Bottega Veneta",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
