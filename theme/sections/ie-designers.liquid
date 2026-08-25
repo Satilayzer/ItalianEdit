@@ -1,0 +1,512 @@
+{%- comment -%}
+  Страница дизайнеров: слева вертикальная листалка, справа видео.
+
+  Строка листалки — номер и бирка бренда. Номер серый, если товаров этого
+  дизайнера на витрине нет: тогда строка и не кликается — ссылки в пустую
+  выдачу быть не должно.
+
+  «Есть товары» считаем сами, без ручной галки. У большинства дизайнеров
+  своей коллекции нет, зато бренд лежит в product.vendor, а shop.vendors —
+  это список брендов, у которых на витрине есть хотя бы один товар. Если
+  у дизайнера всё-таки заведена коллекция, она точнее: берём её счётчик.
+
+  Прокрутка, стрелки и перетаскивание — общий assets/ie-slider.js
+  (data-axis="y"). Правила те же, что у листалки на главной: без
+  автопрокрутки и зацикливания, на краю стрелка пропадает.
+
+  Видео фоновое: автозапуск, зациклено, без панели управления, поэтому по
+  правилам браузеров стартует немым. Галка «Звуком управляет динамик
+  в шапке» отдаёт его общему переключателю (assets/ie-sound.js).
+{%- endcomment -%}
+
+{%- liquid
+  assign video = section.settings.video
+  assign poster = section.settings.image
+
+  assign sound_scope = 'ignore'
+  if section.settings.sound
+    assign sound_scope = 'managed'
+  endif
+-%}
+
+{%- assign scope = '#shopify-section-' | append: section.id -%}
+
+{%- render 'ie-heading-style',
+  font: section.settings.heading_font,
+  size: section.settings.heading_size,
+  color: section.settings.heading_color,
+  scope: scope
+-%}
+
+<script src="{{ 'ie-slider.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+<section
+  class="ie-dsg"
+  style="
+    --ie-dsg-height: {{ section.settings.height }}vh;
+    --ie-dsg-media: {{ section.settings.media_width }}%;
+    --ie-dsg-gap: {{ section.settings.gap }}px;
+    --ie-dsg-row: {{ section.settings.row_height }}px;
+    --ie-dsg-label: {{ section.settings.label_width }}px;
+    --ie-dsg-num: {{ section.settings.number_width }}px;
+    --ie-dsg-num-size: {{ section.settings.number_size }}px;
+    padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;
+  "
+>
+  {%- if section.settings.heading != blank -%}
+    <h1 class="ie-heading ie-dsg__heading">{{ section.settings.heading }}</h1>
+  {%- endif -%}
+
+  <div class="ie-dsg__grid">
+    <ie-slider class="ie-dsg__viewport" data-axis="y">
+      <button
+        type="button"
+        class="ie-dsg__nav ie-dsg__nav--prev"
+        data-slider-prev
+        aria-label="{{ 'Выше' | escape }}"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M4 15l8-8 8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <ul class="ie-dsg__track" data-slider-track>
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign name = block.settings.name | strip
+            assign designer_collection = block.settings.collection
+
+            assign has_products = false
+            if designer_collection != blank
+              if designer_collection.all_products_count > 0
+                assign has_products = true
+              endif
+            elsif name != blank
+              if shop.vendors contains name
+                assign has_products = true
+              endif
+            endif
+
+            comment
+              Ссылка вручную перебивает всё: ею подставляют лендинг бренда,
+              которого ещё нет ни коллекцией, ни товарами.
+            endcomment
+            assign target = block.settings.link
+            if target == blank and has_products
+              if designer_collection != blank
+                assign target = designer_collection.url
+              else
+                assign vendor_query = name | url_encode
+                assign target = '/collections/vendors?q=' | append: vendor_query
+              endif
+            endif
+
+            comment
+              Номер — порядковый, с ведущими нулями: 001, 012, 120.
+              В настройке блока его можно переписать вручную.
+            endcomment
+            assign number = block.settings.number | strip
+            if number == blank
+              assign index = forloop.index
+              if index < 10
+                assign number = '00' | append: index
+              elsif index < 100
+                assign number = '0' | append: index
+              else
+                assign number = index | append: ''
+              endif
+            endif
+          -%}
+
+          <li
+            class="ie-dsg__row{% unless has_products %} ie-dsg__row--empty{% endunless %}"
+            data-slider-slide
+            {{ block.shopify_attributes }}
+          >
+            {%- if target != blank -%}
+              <a class="ie-dsg__item" href="{{ target }}">
+            {%- else -%}
+              <div class="ie-dsg__item">
+            {%- endif -%}
+
+            <span class="ie-dsg__num">{{ number }}</span>
+
+            <span class="ie-dsg__label">
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 600
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '160, 240, 320, 480, 600',
+                    sizes: '(min-width: 990px) 15vw, 40vw',
+                    alt: name,
+                    class: 'ie-dsg__img'
+                }}
+              {%- else -%}
+                <span class="ie-dsg__fallback">{{ name }}</span>
+              {%- endif -%}
+            </span>
+
+            {%- if target != blank -%}
+              </a>
+            {%- else -%}
+              </div>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <button
+        type="button"
+        class="ie-dsg__nav ie-dsg__nav--next"
+        data-slider-next
+        aria-label="{{ 'Ниже' | escape }}"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M4 9l8 8 8-8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </ie-slider>
+
+    <div
+      class="ie-dsg__media"
+      {% if video != blank %}data-ie-sound="{{ sound_scope }}"{% endif %}
+    >
+      {%- if video != blank -%}
+        {{
+          video
+          | video_tag:
+            image_size: '1600x',
+            autoplay: true,
+            loop: true,
+            muted: true,
+            controls: false,
+            class: 'ie-dsg__video'
+        }}
+      {%- elsif poster != blank -%}
+        {{
+          poster
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'lazy',
+            widths: '600, 900, 1200, 1600',
+            sizes: '(min-width: 990px) 55vw, 100vw',
+            alt: section.settings.alt,
+            class: 'ie-dsg__img-media'
+        }}
+      {%- else -%}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'ie-dsg__img-media' }}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .ie-dsg {
+    display: block;
+  }
+
+  .ie-dsg__heading {
+    padding-inline: var(--ie-gutter);
+    margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  /*
+   * Правая половина уходит в край страницы: в макете видео обрезано
+   * границей окна, а не полем вёрстки.
+   */
+  .ie-dsg__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--ie-dsg-media, 53%));
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .ie-dsg__viewport {
+    position: relative;
+    display: block;
+    height: var(--ie-dsg-height, 78vh);
+  }
+
+  .ie-dsg__track {
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--ie-dsg-gap, 24px);
+    height: 100%;
+    margin: 0;
+    /*
+     * Поля сверху и снизу равны промежутку между строками: первая строка
+     * отступает от края ровно настолько же, насколько строки отстоят
+     * друг от друга. Меняется вместе с настройкой «Промежуток».
+     */
+    padding-block: var(--ie-dsg-gap, 24px);
+    padding-inline: 0;
+    list-style: none;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    /*
+     * Без этого прилипание «съедало» бы верхнее поле: строка липнет к краю
+     * видимой области, а не к краю поля, и в покое упиралась бы в край.
+     */
+    scroll-padding-block: var(--ie-dsg-gap, 24px);
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .ie-dsg__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /*
+   * На десктопе ленту тянут мышью (assets/ie-slider.js). Курсор показывает,
+   * что список можно схватить; на тач-устройствах свайп родной, курсора нет.
+   */
+  ie-slider[data-scrollable] .ie-dsg__track {
+    cursor: grab;
+  }
+
+  ie-slider[data-dragging] .ie-dsg__track {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  /* Иначе браузер начнёт тащить саму картинку вместо списка. */
+  .ie-dsg__item,
+  .ie-dsg__img {
+    -webkit-user-drag: none;
+  }
+
+  .ie-dsg__row {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .ie-dsg__item {
+    display: grid;
+    grid-template-columns: var(--ie-dsg-num, 96px) minmax(0, 1fr);
+    align-items: center;
+    min-height: var(--ie-dsg-row, 96px);
+    padding-inline: var(--ie-gutter);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ie-dsg__num {
+    font-family: var(--ie-sans);
+    font-size: var(--ie-dsg-num-size, 14px);
+    letter-spacing: 0.08em;
+    color: var(--ie-ink);
+  }
+
+  /* Товаров этого дизайнера на витрине нет — номер приглушён. */
+  .ie-dsg__row--empty .ie-dsg__num {
+    color: var(--ie-muted);
+  }
+
+  .ie-dsg__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--ie-dsg-label, 160px);
+  }
+
+  .ie-dsg__img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: var(--ie-dsg-row, 96px);
+    object-fit: contain;
+    transition: opacity 0.25s ease;
+  }
+
+  .ie-dsg__fallback {
+    font-family: var(--ie-sans);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ie-ink);
+    text-align: center;
+  }
+
+  a.ie-dsg__item:hover .ie-dsg__img {
+    opacity: 0.72;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Видео                                                               */
+  /* ------------------------------------------------------------------ */
+
+  .ie-dsg__media {
+    position: relative;
+    height: var(--ie-dsg-height, 78vh);
+    overflow: hidden;
+    background: #eaeaea;
+  }
+
+  .ie-dsg__media video,
+  .ie-dsg__img-media,
+  .ie-dsg__media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Стрелки                                                             */
+  /* ------------------------------------------------------------------ */
+
+  .ie-dsg__nav {
+    position: absolute;
+    left: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--ie-line);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ie-ink);
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease, background 0.2s ease;
+  }
+
+  .ie-dsg__nav svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .ie-dsg__nav--prev {
+    top: 0.5rem;
+  }
+
+  .ie-dsg__nav--next {
+    bottom: 0.5rem;
+  }
+
+  .ie-dsg__nav:hover:not(:disabled) {
+    background: var(--ie-cream);
+  }
+
+  /*
+   * Список не зациклен: на краю стрелка пропадает совсем — приглушённая
+   * кнопка выглядела бы как рабочая. Из фокуса и от скринридера её убирает
+   * сам disabled. Если строки влезли целиком, скрипт снимает
+   * data-scrollable и стрелок нет вовсе.
+   */
+  .ie-dsg__nav:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  ie-slider:not([data-scrollable]) .ie-dsg__nav {
+    display: none;
+  }
+
+  @media (max-width: 989px) {
+    .ie-dsg__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* На узком экране сначала видео, под ним — список. */
+    .ie-dsg__media {
+      order: -1;
+      height: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .ie-dsg__viewport {
+      height: 60vh;
+    }
+
+    .ie-dsg__nav {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ie-dsg__track {
+      scroll-behavior: auto;
+    }
+
+    .ie-dsg__img {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Дизайнеры",
+  "tag": "section",
+  "max_blocks": 50,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Заголовок", "info": "Пусто — заголовка нет, как в макете." },
+    { "type": "header", "content": "Раскладка" },
+    { "type": "range", "id": "height", "label": "Высота блока", "min": 40, "max": 100, "step": 1, "unit": "vh", "default": 78 },
+    { "type": "range", "id": "media_width", "label": "Ширина видео", "min": 35, "max": 65, "step": 1, "unit": "%", "default": 53 },
+    { "type": "header", "content": "Список" },
+    { "type": "range", "id": "gap", "label": "Промежуток", "min": 0, "max": 64, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "row_height", "label": "Высота строки", "min": 48, "max": 200, "step": 4, "unit": "px", "default": 96 },
+    { "type": "range", "id": "label_width", "label": "Ширина бирки", "min": 80, "max": 320, "step": 10, "unit": "px", "default": 160 },
+    { "type": "range", "id": "number_width", "label": "Колонка номера", "min": 48, "max": 240, "step": 4, "unit": "px", "default": 96 },
+    { "type": "range", "id": "number_size", "label": "Кегль номера", "min": 10, "max": 28, "step": 1, "unit": "px", "default": 14 },
+    { "type": "header", "content": "Видео" },
+    { "type": "video", "id": "video", "label": "Видео" },
+    { "type": "image_picker", "id": "image", "label": "Картинка", "info": "Показывается, пока видео не выбрано." },
+    { "type": "text", "id": "alt", "label": "Описание картинки" },
+    { "type": "checkbox", "id": "sound", "label": "Звуком управляет динамик в шапке", "default": false },
+    { "type": "header", "content": "Оформление заголовка" },
+    { "type": "font_picker", "id": "heading_font", "label": "Шрифт", "default": "source_serif_4_n4" },
+    { "type": "range", "id": "heading_size", "label": "Кегль", "min": 16, "max": 96, "step": 1, "unit": "px", "default": 44 },
+    { "type": "color", "id": "heading_color", "label": "Цвет", "default": "#633F47" },
+    { "type": "header", "content": "Отступы" },
+    { "type": "range", "id": "padding_top", "label": "Сверху", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 0 },
+    { "type": "range", "id": "padding_bottom", "label": "Снизу", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 0 }
+  ],
+  "blocks": [
+    {
+      "type": "designer",
+      "name": "Дизайнер",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Дизайнер",
+          "info": "Пишите точно как в поле «Бренд» у товаров: по нему считается, есть ли товары на витрине."
+        },
+        { "type": "image_picker", "id": "image", "label": "Бирка" },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Коллекция",
+          "info": "Не обязательно. Если задана — ссылка и счётчик товаров берутся из неё."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Ссылка",
+          "info": "Не обязательно. Перебивает коллекцию и выдачу по бренду."
+        },
+        { "type": "text", "id": "number", "label": "Номер", "info": "Пусто — считается по порядку: 001, 002, 003." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "IE — Дизайнеры",
+      "blocks": [
+        { "type": "designer" },
+        { "type": "designer" },
+        { "type": "designer" },
+        { "type": "designer" }
+      ]
+    }
+  ]
+}
+{% endschema %}

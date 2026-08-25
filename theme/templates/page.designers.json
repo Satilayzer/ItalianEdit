@@ -1,0 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "ie-designers",
+      "blocks": {
+        "valentino": {
+          "type": "designer",
+          "settings": { "name": "Valentino" }
+        },
+        "saint-laurent": {
+          "type": "designer",
+          "settings": { "name": "Yves Saint Laurent" }
+        },
+        "celine": {
+          "type": "designer",
+          "settings": { "name": "Celine" }
+        },
+        "prada": {
+          "type": "designer",
+          "settings": { "name": "Prada" }
+        },
+        "hermes": {
+          "type": "designer",
+          "settings": { "name": "Hermes" }
+        },
+        "miu-miu": {
+          "type": "designer",
+          "settings": { "name": "Miu Miu" }
+        },
+        "gucci": {
+          "type": "designer",
+          "settings": { "name": "Gucci" }
+        },
+        "the-row": {
+          "type": "designer",
+          "settings": { "name": "The Row" }
+        }
+      },
+      "block_order": [
+        "valentino",
+        "saint-laurent",
+        "celine",
+        "prada",
+        "hermes",
+        "miu-miu",
+        "gucci",
+        "the-row"
+      ],
+      "settings": {
+        "heading": "",
+        "height": 78,
+        "media_width": 53,
+        "gap": 24,
+        "row_height": 96,
+        "label_width": 160,
+        "number_width": 96,
+        "number_size": 14,
+        "alt": "",
+        "sound": false,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 44,
+        "heading_color": "#633F47",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
