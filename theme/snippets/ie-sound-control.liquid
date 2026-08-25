@@ -113,8 +113,6 @@
     display: flex;
     justify-content: center;
     padding: 10px 7px;
-    border: 1px solid var(--ie-line, #e5e1da);
-    background: #fff;
     translate: -50% -4px;
     opacity: 0;
     pointer-events: none;
@@ -155,16 +153,55 @@
    * Размеры задаём физическими свойствами: при writing-mode: vertical-*
    * inline-size — это высота, и логические свойства читались бы наоборот.
    * direction: rtl ставит тихо внизу, громко вверху.
+   *
+   * Бегунок рисуем сами: у системного фиксированный размер, через
+   * accent-color точку не уменьшить. Линию дорожки вешаем фоном на сам
+   * input, а дорожку-псевдоэлемент оставляем прозрачной.
+   *
+   * Ширина input равна диаметру точки: тогда точка, дорожка и поле
+   * совпадают по поперечной оси и точка не может съехать с линии —
+   * браузеры расходятся в том, центрируют ли они бегунок на дорожке.
    */
   .ie-sound__range {
+    appearance: none;
+    -webkit-appearance: none;
     writing-mode: vertical-lr;
     direction: rtl;
-    -webkit-appearance: slider-vertical;
-    width: 14px;
+    width: 8px;
     height: 72px;
     margin: 0;
-    accent-color: currentcolor;
+    padding: 0;
+    border: 0;
+    background: linear-gradient(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.22)) center / 2px 100% no-repeat;
     cursor: pointer;
+  }
+
+  .ie-sound__range::-webkit-slider-runnable-track {
+    border: 0;
+    background: transparent;
+  }
+
+  .ie-sound__range::-moz-range-track {
+    border: 0;
+    background: transparent;
+  }
+
+  .ie-sound__range::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 8px;
+    height: 8px;
+    border: 0;
+    border-radius: 50%;
+    background: currentcolor;
+  }
+
+  .ie-sound__range::-moz-range-thumb {
+    width: 8px;
+    height: 8px;
+    border: 0;
+    border-radius: 50%;
+    background: currentcolor;
   }
 
   @media (prefers-reduced-motion: reduce) {
