@@ -118,7 +118,8 @@
 <ie-product
   class="ie-pdp"
   style="
-    --ie-pdp-media: {{ section.settings.media_width }}%;
+    --ie-pdp-column: {{ section.settings.media_column }}%;
+    --ie-pdp-image: {{ section.settings.media_width }}px;
     --ie-pdp-media-ratio: {{ section.settings.media_ratio }};
     --ie-pdp-info: {{ section.settings.info_width }}px;
     --ie-pdp-thumb: {{ section.settings.thumb_width }}px;
@@ -144,7 +145,7 @@
             {{ main_media.preview_image | image_url: width: 900 }} 900w,
             {{ main_media.preview_image | image_url: width: 1400 }} 1400w
           "
-          sizes="(min-width: 990px) {{ section.settings.media_width }}vw, 100vw"
+          sizes="(min-width: 990px) {{ section.settings.media_width }}px, 100vw"
           alt="{{ main_media.alt | default: product.title | escape }}"
           width="{{ main_media.preview_image.width }}"
           height="{{ main_media.preview_image.height }}"
@@ -453,7 +454,7 @@
    */
   @media (min-width: 990px) {
     .ie-pdp__grid {
-      grid-template-columns: minmax(0, var(--ie-pdp-media, 26%)) minmax(0, 1fr);
+      grid-template-columns: minmax(0, var(--ie-pdp-column, 50%)) minmax(0, 1fr);
       grid-template-rows: auto auto;
       column-gap: clamp(1.5rem, 4vw, 4rem);
       row-gap: clamp(2rem, 4vw, 3.5rem);
@@ -476,9 +477,19 @@
     }
   }
 
+  /*
+   * Левая колонка — половина страницы, но фотография занимает не всю её
+   * ширину: ставим по центру, чтобы вокруг оставались одинаковые поля.
+   */
+  .ie-pdp__media {
+    display: flex;
+    justify-content: center;
+  }
+
   .ie-pdp__main {
     display: block;
     width: 100%;
+    max-width: var(--ie-pdp-image, 400px);
     height: auto;
     aspect-ratio: var(--ie-pdp-media-ratio, 2 / 3);
     object-fit: cover;
@@ -863,7 +874,8 @@
   "tag": "section",
   "settings": [
     { "type": "header", "content": "Картинка" },
-    { "type": "range", "id": "media_width", "label": "Ширина колонки с картинкой", "min": 18, "max": 60, "step": 1, "unit": "%", "default": 26 },
+    { "type": "range", "id": "media_column", "label": "Ширина левой половины", "min": 30, "max": 60, "step": 1, "unit": "%", "default": 50 },
+    { "type": "range", "id": "media_width", "label": "Ширина фотографии", "min": 240, "max": 720, "step": 10, "unit": "px", "default": 400, "info": "Фотография стоит по центру левой половины." },
     {
       "type": "select",
       "id": "media_ratio",
@@ -880,7 +892,7 @@
     { "type": "text", "id": "color_label", "label": "Подпись цвета", "default": "Color" },
     { "type": "textarea", "id": "color_swatches", "label": "Цвета из тегов", "default": "Black = #111111\nWhite = #ffffff\nGrey = #9a9a9a\nGray = #9a9a9a\nBeige = #e8dcc8\nBrown = #6b4a2f\nBlue = #2f4b8f\nNavy = #1b2a4a\nGreen = #3f6b45\nYellow = #e8c53a\nOrange = #e07b2f\nRed = #a52128\nPink = #f0c2cf\nPurple = #6b3f8f\nGold = #c8a24a\nSilver = #c9ccce", "info": "По строке на цвет: название тега = цвет кружка. Показывается, когда цвет не задан отдельной опцией товара." },
     { "type": "text", "id": "size_words", "label": "Слова, по которым узнаём размер", "default": "size, размер, beden, taglia, taille, talla, größe", "info": "Через запятую. Опции с такими словами в названии показываются прямоугольниками, остальные — цветными кружками." },
-    { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 560, "step": 10, "unit": "px", "default": 260 },
+    { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 560, "step": 10, "unit": "px", "default": 340 },
     { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
     { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
     { "type": "checkbox", "id": "show_sku", "label": "Показывать артикул", "default": true },
