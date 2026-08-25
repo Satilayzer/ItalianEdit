@@ -1,7 +1,7 @@
 {% doc %}
   Управление звуком витрины в шапке: динамик глушит и включает весь звук
-  на сайте, ползунок рядом задаёт громкость. Стоит на месте бывшего
-  переключателя стран и валют.
+  на сайте, ползунок задаёт громкость. Стоит на месте бывшего переключателя
+  стран и валют.
 
   Логика — в assets/ie-sound.js.
 {% enddoc %}
@@ -37,6 +37,10 @@
 
   <label class="ie-sound__volume">
     <span class="ie-sound__label">{{ 'Громкость' }}</span>
+    {%- comment -%}
+      orient — для Firefox: он до сих пор поворачивает ползунок только по
+      атрибуту. Остальные браузеры разворачивают его через writing-mode.
+    {%- endcomment -%}
     <input
       class="ie-sound__range"
       type="range"
@@ -44,6 +48,7 @@
       max="100"
       step="1"
       value="40"
+      orient="vertical"
       data-sound-volume
     >
   </label>
@@ -51,9 +56,9 @@
 
 {% stylesheet %}
   .ie-sound {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0;
     color: currentcolor;
   }
 
@@ -93,23 +98,46 @@
   }
 
   /*
-   * Ползунок не занимает места в шапке: разворачивается при наведении
-   * и при фокусе с клавиатуры.
+   * Ползунок висит отдельной панелью под динамиком и разворачивается вниз.
+   * Раньше он раздвигался вбок и сдвигал соседние иконки шапки; так ряд
+   * стоит на месте, что бы ни делал ползунок.
+   *
+   * На тач-устройствах наведения нет, поэтому панель открывается ещё и по
+   * фокусу: касание динамика и глушит звук, и показывает громкость.
    */
   .ie-sound__volume {
-    display: inline-flex;
-    align-items: center;
-    inline-size: 0;
-    overflow: hidden;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    padding: 10px 7px;
+    border: 1px solid var(--ie-line, #e5e1da);
+    background: #fff;
+    translate: -50% -4px;
     opacity: 0;
-    transition: inline-size 0.25s ease, opacity 0.25s ease, margin-inline-start 0.25s ease;
+    pointer-events: none;
+    transition: opacity 0.2s ease, translate 0.2s ease;
   }
 
   .ie-sound:hover .ie-sound__volume,
   .ie-sound:focus-within .ie-sound__volume {
-    inline-size: 64px;
     opacity: 1;
-    margin-inline-start: 10px;
+    pointer-events: auto;
+    translate: -50% 0;
+  }
+
+  /*
+   * Мостик через зазор между динамиком и панелью: без него курсор по дороге
+   * вниз выходит из элемента и панель успевает закрыться.
+   */
+  .ie-sound__volume::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 100%;
+    height: 8px;
   }
 
   .ie-sound__label {
@@ -123,20 +151,25 @@
     white-space: nowrap;
   }
 
+  /*
+   * Размеры задаём физическими свойствами: при writing-mode: vertical-*
+   * inline-size — это высота, и логические свойства читались бы наоборот.
+   * direction: rtl ставит тихо внизу, громко вверху.
+   */
   .ie-sound__range {
-    inline-size: 64px;
-    block-size: 14px;
+    writing-mode: vertical-lr;
+    direction: rtl;
+    -webkit-appearance: slider-vertical;
+    width: 14px;
+    height: 72px;
     margin: 0;
     accent-color: currentcolor;
     cursor: pointer;
   }
 
-  /* На тач-устройствах наведения нет — показываем ползунок сразу. */
-  @media (hover: none) {
+  @media (prefers-reduced-motion: reduce) {
     .ie-sound__volume {
-      inline-size: 56px;
-      opacity: 1;
-      margin-inline-start: 8px;
+      transition: none;
     }
   }
 {% endstylesheet %}
