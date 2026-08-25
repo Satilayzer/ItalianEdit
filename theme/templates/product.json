@@ -12,9 +12,9 @@
     "main": {
       "type": "ie-product",
       "settings": {
-        "media_width": 34,
+        "media_width": 26,
         "media_ratio": "2 / 3",
-        "info_width": 300,
+        "info_width": 260,
         "size_words": "size, размер, beden, taglia, taille, talla, größe",
         "show_vendor": true,
         "button_label": "",

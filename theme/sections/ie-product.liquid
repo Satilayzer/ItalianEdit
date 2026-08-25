@@ -41,6 +41,64 @@
     assign add_to_cart_text = 'products.product.sold_out' | t
   endif
 
+  comment
+    Слова-признаки размера нужны в двух местах: чтобы решить, показывать ли
+    кружок цвета из тега, и чтобы выбрать форму значения. Разбираем один раз.
+  endcomment
+  assign size_words = section.settings.size_words | downcase | split: ','
+
+  comment
+    Цвет у нас не опция варианта, а тег товара: каталог приезжает из
+    BrandsGateway, где цвет один на карточку («Pink», «Black»). Поэтому
+    рисуем его отдельным неинтерактивным кружком — переключать нечего.
+    Если у товара всё-таки есть своя опция цвета, кружок не дублируем.
+  endcomment
+  assign has_color_option = false
+  comment
+    У товара без вариаций Shopify всё равно отдаёт опцию «Title» со значением
+    «Default Title» — это не цвет, поэтому такие товары пропускаем.
+  endcomment
+  unless product.has_only_default_variant
+    for option in product.options_with_values
+      assign option_key = option.name | downcase
+      assign option_is_size = false
+      for word in size_words
+        assign needle = word | strip
+        if needle != blank and option_key contains needle
+          assign option_is_size = true
+          break
+        endif
+      endfor
+      unless option_is_size
+        assign has_color_option = true
+      endunless
+    endfor
+  endunless
+
+  assign color_name = ''
+  assign color_hex = ''
+  unless has_color_option
+    assign tag_key = product.tags | join: '~|~' | downcase | prepend: '~|~' | append: '~|~'
+    assign swatch_rows = section.settings.color_swatches | newline_to_br | replace: '<br />', '~~' | replace: '<br>', '~~'
+    assign swatch_lines = swatch_rows | split: '~~'
+    for line in swatch_lines
+      assign parts = line | strip | split: '='
+      assign candidate = parts[0] | strip
+      assign candidate_hex = parts[1] | strip
+      if candidate != blank and candidate_hex != blank
+        comment
+          Обрамляем разделителями, чтобы «Black» не совпал с тегом «Blackberry».
+        endcomment
+        assign candidate_key = candidate | downcase | prepend: '~|~' | append: '~|~'
+        if tag_key contains candidate_key
+          assign color_name = candidate
+          assign color_hex = candidate_hex
+          break
+        endif
+      endif
+    endfor
+  endunless
+
   assign product_form_id = 'ie-pdp-form-' | append: section.id
   assign atc_id = 'ie-pdp-atc-' | append: section.id
   assign scope = '#shopify-section-' | append: section.id
@@ -132,6 +190,20 @@
         </span>
       </p>
 
+      {%- if color_name != blank -%}
+        <div class="ie-pdp__option">
+          <p class="ie-pdp__option-label">{{ section.settings.color_label }}: {{ color_name }}</p>
+          <div class="ie-pdp__values">
+            <span
+              class="ie-pdp__value ie-pdp__value--circle ie-pdp__value--static"
+              style="--ie-pdp-swatch: {{ color_hex }};"
+            >
+              <span class="ie-pdp__value-face"></span>
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+
       {%- unless product.has_only_default_variant -%}
         <div class="ie-pdp__options">
           {%- for option in product.options_with_values -%}
@@ -146,7 +218,6 @@
                 приходят от поставщиков на разных языках.
               endcomment
               assign is_size = false
-              assign size_words = section.settings.size_words | downcase | split: ','
               for word in size_words
                 assign needle = word | strip
                 if needle != blank and option_key contains needle
@@ -382,7 +453,7 @@
    */
   @media (min-width: 990px) {
     .ie-pdp__grid {
-      grid-template-columns: minmax(0, var(--ie-pdp-media, 34%)) minmax(0, 1fr);
+      grid-template-columns: minmax(0, var(--ie-pdp-media, 26%)) minmax(0, 1fr);
       grid-template-rows: auto auto;
       column-gap: clamp(1.5rem, 4vw, 4rem);
       row-gap: clamp(2rem, 4vw, 3.5rem);
@@ -527,6 +598,7 @@
   .ie-pdp__option-label {
     display: block;
     padding: 0;
+    margin: 0;
     font-family: var(--ie-sans);
     font-size: 0.75rem;
     letter-spacing: 0.06em;
@@ -599,6 +671,11 @@
 
   .ie-pdp__value--circle.ie-pdp__value--out .ie-pdp__value-face {
     opacity: 0.35;
+  }
+
+  /* Цвет из тега показываем, но не предлагаем выбрать: вариант всего один. */
+  .ie-pdp__value--static .ie-pdp__value-face {
+    cursor: default;
   }
 
   /* ------------------------------------------------------------------ */
@@ -786,7 +863,7 @@
   "tag": "section",
   "settings": [
     { "type": "header", "content": "Картинка" },
-    { "type": "range", "id": "media_width", "label": "Ширина колонки с картинкой", "min": 18, "max": 60, "step": 1, "unit": "%", "default": 34 },
+    { "type": "range", "id": "media_width", "label": "Ширина колонки с картинкой", "min": 18, "max": 60, "step": 1, "unit": "%", "default": 26 },
     {
       "type": "select",
       "id": "media_ratio",
@@ -800,8 +877,10 @@
       ]
     },
     { "type": "header", "content": "Сведения" },
+    { "type": "text", "id": "color_label", "label": "Подпись цвета", "default": "Color" },
+    { "type": "textarea", "id": "color_swatches", "label": "Цвета из тегов", "default": "Black = #111111\nWhite = #ffffff\nGrey = #9a9a9a\nGray = #9a9a9a\nBeige = #e8dcc8\nBrown = #6b4a2f\nBlue = #2f4b8f\nNavy = #1b2a4a\nGreen = #3f6b45\nYellow = #e8c53a\nOrange = #e07b2f\nRed = #a52128\nPink = #f0c2cf\nPurple = #6b3f8f\nGold = #c8a24a\nSilver = #c9ccce", "info": "По строке на цвет: название тега = цвет кружка. Показывается, когда цвет не задан отдельной опцией товара." },
     { "type": "text", "id": "size_words", "label": "Слова, по которым узнаём размер", "default": "size, размер, beden, taglia, taille, talla, größe", "info": "Через запятую. Опции с такими словами в названии показываются прямоугольниками, остальные — цветными кружками." },
-    { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 560, "step": 10, "unit": "px", "default": 300 },
+    { "type": "range", "id": "info_width", "label": "Ширина колонки", "min": 200, "max": 560, "step": 10, "unit": "px", "default": 260 },
     { "type": "checkbox", "id": "show_vendor", "label": "Показывать бренд", "default": true },
     { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
     { "type": "checkbox", "id": "show_sku", "label": "Показывать артикул", "default": true },
