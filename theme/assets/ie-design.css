@@ -21,6 +21,9 @@
 
   /* Кегль бренда в карточках витрины и каталога. */
   --ie-vendor-size: 1rem;
+
+  /* Сторона квадрата под иконкой в шапке — у кнопок темы она такая же. */
+  --ie-header-hit: 44px;
 }
 
 @media (min-width: 1200px) {
@@ -184,6 +187,41 @@ html body [id$="__1787193191f56eb69c"][id] * {
   grid-column: auto;
   min-height: 0;
   padding-block: 0;
+}
+
+/*
+ * Промежутки между иконками в правом углу шапки.
+ *
+ * Кнопки темы — квадраты 44×44 с полем вокруг глифа, а переключатель звука
+ * и сердце вишлиста нарисованы «в размер иконки» (20 и 22px). Плюс тема
+ * стягивает свои кнопки отрицательными полями. Из-за этого шаг между
+ * центрами иконок гулял: 37, 31, 33, 44px.
+ *
+ * Приводим весь ряд к одному следу 44px и убираем отрицательные поля —
+ * шаг становится одинаковым, а размеры самих глифов не меняются.
+ */
+.header__row--top .header__column--right,
+.header__row--top .header__column--right header-actions {
+  gap: 0;
+}
+
+.header__row--top .header__column--right > search-button,
+.header__row--top .header__column--right > header-actions {
+  margin-inline: 0;
+}
+
+.header__row--top .header__column--right ie-sound-control {
+  width: var(--ie-header-hit, 44px);
+  justify-content: center;
+}
+
+/*
+ * Вишлисту добавляем внешние поля, а не ширину: счётчик позиционируется
+ * от края самой ссылки, и растягивание ссылки оторвало бы цифру от сердца.
+ * 22px — ширина сердца, её задаёт wishlist.css.
+ */
+.header__row--top .header__column--right .wishlist-link {
+  margin-inline: calc((var(--ie-header-hit, 44px) - 22px) / 2);
 }
 
 /* Пункты меню — санс, разрядка, неактивные приглушены. */
