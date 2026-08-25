@@ -14,35 +14,83 @@
       "blocks": {
         "valentino": {
           "type": "designer",
-          "settings": { "name": "Valentino" }
+          "settings": {
+            "name": "Prada",
+            "image": "shopify://shop_images/4.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "saint-laurent": {
           "type": "designer",
-          "settings": { "name": "Yves Saint Laurent" }
+          "settings": {
+            "name": "Valentino",
+            "image": "shopify://shop_images/5.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "celine": {
           "type": "designer",
-          "settings": { "name": "Celine" }
+          "settings": {
+            "name": "Hermes",
+            "image": "shopify://shop_images/6.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "prada": {
           "type": "designer",
-          "settings": { "name": "Prada" }
+          "settings": {
+            "name": "Celine",
+            "image": "shopify://shop_images/7.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "hermes": {
           "type": "designer",
-          "settings": { "name": "Hermes" }
+          "settings": {
+            "name": "Miu Miu",
+            "image": "shopify://shop_images/8.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "miu-miu": {
           "type": "designer",
-          "settings": { "name": "Miu Miu" }
+          "settings": {
+            "name": "Yves Saint Laurent",
+            "image": "shopify://shop_images/9.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "gucci": {
           "type": "designer",
-          "settings": { "name": "Gucci" }
+          "settings": {
+            "name": "Italian Edit",
+            "image": "shopify://shop_images/10.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         },
         "the-row": {
           "type": "designer",
-          "settings": { "name": "The Row" }
+          "settings": {
+            "name": "Gucci",
+            "image": "shopify://shop_images/11.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         }
       },
       "block_order": [
@@ -58,17 +106,18 @@
       "settings": {
         "heading": "",
         "height": 78,
-        "media_width": 53,
-        "gap": 24,
-        "row_height": 96,
-        "label_width": 160,
+        "media_width": 65,
+        "gap": 0,
+        "row_height": 200,
+        "label_width": 320,
         "number_width": 96,
         "number_size": 14,
+        "video": "shopify://files/videos/0818 (1)(1).mp4",
         "alt": "",
-        "sound": false,
+        "sound": true,
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
-        "heading_color": "#633F47",
+        "heading_color": "#633f47",
         "padding_top": 0,
         "padding_bottom": 0
       }

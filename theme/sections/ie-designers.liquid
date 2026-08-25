@@ -50,6 +50,7 @@
     --ie-dsg-label: {{ section.settings.label_width }}px;
     --ie-dsg-num: {{ section.settings.number_width }}px;
     --ie-dsg-num-size: {{ section.settings.number_size }}px;
+    --ie-dsg-shift: {{ section.settings.list_offset }}px;
     padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;
   "
 >
@@ -227,6 +228,12 @@
     position: relative;
     display: block;
     height: var(--ie-dsg-height, 78vh);
+    /*
+     * Отступ списка от левого края. Вешаем на вьюпорт, а не на строки:
+     * стрелки позиционируются от его внутренней области и уезжают вправо
+     * вместе со списком, а не остаются висеть на прежнем месте.
+     */
+    padding-inline-start: var(--ie-dsg-shift, 0px);
   }
 
   .ie-dsg__track {
@@ -451,6 +458,7 @@
     { "type": "range", "id": "height", "label": "Высота блока", "min": 40, "max": 100, "step": 1, "unit": "vh", "default": 78 },
     { "type": "range", "id": "media_width", "label": "Ширина видео", "min": 35, "max": 65, "step": 1, "unit": "%", "default": 53 },
     { "type": "header", "content": "Список" },
+    { "type": "range", "id": "list_offset", "label": "Отступ списка слева", "min": 0, "max": 240, "step": 4, "unit": "px", "default": 48 },
     { "type": "range", "id": "gap", "label": "Промежуток", "min": 0, "max": 64, "step": 2, "unit": "px", "default": 24 },
     { "type": "range", "id": "row_height", "label": "Высота строки", "min": 48, "max": 200, "step": 4, "unit": "px", "default": 96 },
     { "type": "range", "id": "label_width", "label": "Ширина бирки", "min": 80, "max": 320, "step": 10, "unit": "px", "default": 160 },
