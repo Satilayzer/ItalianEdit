@@ -106,20 +106,12 @@
     "brands": {
       "type": "ie-slider",
       "blocks": {
-        "b1": {
+        "chanel": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/4.png",
+            "image": "shopify://shop_images/IMG_8698.png",
             "caption": "",
-            "link": "shopify://pages/prada"
-          }
-        },
-        "b2": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/5.png",
-            "caption": "",
-            "link": "shopify://pages/valentino"
+            "link": "shopify://pages/chanel"
           }
         },
         "b3": {
@@ -130,36 +122,20 @@
             "link": "shopify://pages/hermes"
           }
         },
-        "b4": {
+        "slide_4K3h8d": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/7.png",
+            "image": "shopify://shop_images/12.png",
             "caption": "",
-            "link": "shopify://pages/celine"
+            "link": "shopify://pages/louis-vuitton"
           }
         },
-        "b5": {
+        "slide_nn4rPy": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/8.png",
+            "image": "shopify://shop_images/13.png",
             "caption": "",
-            "link": "shopify://pages/miu-miu"
-          }
-        },
-        "slide_3ekiDj": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/9.png",
-            "caption": "",
-            "link": "shopify://pages/saint-laurent"
-          }
-        },
-        "slide_XyBEKD": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/10.png",
-            "caption": "",
-            "link": ""
+            "link": "shopify://pages/dior"
           }
         },
         "slide_UkPPiG": {
@@ -170,25 +146,139 @@
             "link": "shopify://pages/gucci"
           }
         },
-        "chanel": {
+        "b1": {
           "type": "slide",
           "settings": {
-            "image": "",
-            "caption": "Chanel",
-            "link": "shopify://pages/chanel"
+            "image": "shopify://shop_images/4.png",
+            "caption": "",
+            "link": "shopify://pages/prada"
+          }
+        },
+        "slide_LnUiK3": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/14.png",
+            "caption": "",
+            "link": "shopify://pages/balenciaga"
+          }
+        },
+        "slide_3ekiDj": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/9.png",
+            "caption": "",
+            "link": "shopify://pages/saint-laurent"
+          }
+        },
+        "slide_EDrVUA": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/15.png",
+            "caption": "",
+            "link": "shopify://pages/cartier"
+          }
+        },
+        "slide_bNdHtT": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/16.png",
+            "caption": "",
+            "link": "shopify://pages/bottega-veneta"
+          }
+        },
+        "slide_DaqzPB": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/17.png",
+            "caption": "",
+            "link": "shopify://pages/fendi"
+          }
+        },
+        "slide_EEhkHp": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/18.png",
+            "caption": "",
+            "link": "shopify://pages/loewe"
+          }
+        },
+        "b5": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/8.png",
+            "caption": "",
+            "link": "shopify://pages/miu-miu"
+          }
+        },
+        "slide_wRT8zJ": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/19.png",
+            "caption": "",
+            "link": "shopify://pages/loro-piana"
+          }
+        },
+        "slide_r6xrUd": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/20.png",
+            "caption": "",
+            "link": "shopify://pages/tom-ford"
+          }
+        },
+        "slide_RfE6qh": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/21.png",
+            "caption": "",
+            "link": "shopify://pages/rolex"
+          }
+        },
+        "b4": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/7.png",
+            "caption": "",
+            "link": "shopify://pages/celine"
+          }
+        },
+        "b2": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/5.png",
+            "caption": "",
+            "link": "shopify://pages/valentino"
+          }
+        },
+        "slide_XyBEKD": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/10.png",
+            "caption": "",
+            "link": ""
           }
         }
       },
       "block_order": [
-        "b1",
-        "b2",
+        "chanel",
         "b3",
-        "b4",
-        "b5",
-        "slide_3ekiDj",
-        "slide_XyBEKD",
+        "slide_4K3h8d",
+        "slide_nn4rPy",
         "slide_UkPPiG",
-        "chanel"
+        "b1",
+        "slide_LnUiK3",
+        "slide_3ekiDj",
+        "slide_EDrVUA",
+        "slide_bNdHtT",
+        "slide_DaqzPB",
+        "slide_EEhkHp",
+        "b5",
+        "slide_wRT8zJ",
+        "slide_r6xrUd",
+        "slide_RfE6qh",
+        "b4",
+        "b2",
+        "slide_XyBEKD"
       ],
       "settings": {
         "heading": "Italian Edit Blog",

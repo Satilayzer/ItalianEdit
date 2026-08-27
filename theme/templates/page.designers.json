@@ -12,37 +12,17 @@
     "main": {
       "type": "ie-designers",
       "blocks": {
-        "valentino": {
+        "chanel": {
           "type": "designer",
           "settings": {
-            "name": "Prada",
-            "image": "shopify://shop_images/4.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "saint-laurent": {
-          "type": "designer",
-          "settings": {
-            "name": "Valentino",
-            "image": "shopify://shop_images/5.png",
+            "name": "Chanel",
+            "image": "shopify://shop_images/IMG_8698.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
         "hermes": {
-          "type": "designer",
-          "settings": {
-            "name": "Miu Miu",
-            "image": "shopify://shop_images/8.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "celine": {
           "type": "designer",
           "settings": {
             "name": "Hermes",
@@ -52,17 +32,27 @@
             "number": ""
           }
         },
-        "miu-miu": {
+        "louis-vuitton": {
           "type": "designer",
           "settings": {
-            "name": "Yves Saint Laurent",
-            "image": "shopify://shop_images/9.png",
+            "name": "Louis Vuitton",
+            "image": "shopify://shop_images/12.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "the-row": {
+        "dior": {
+          "type": "designer",
+          "settings": {
+            "name": "Dior",
+            "image": "shopify://shop_images/13.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "gucci": {
           "type": "designer",
           "settings": {
             "name": "Gucci",
@@ -72,17 +62,117 @@
             "number": ""
           }
         },
-        "gucci": {
+        "prada": {
           "type": "designer",
           "settings": {
-            "name": "Italian Edit",
-            "image": "shopify://shop_images/10.png",
+            "name": "Prada",
+            "image": "shopify://shop_images/4.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "prada": {
+        "balenciaga": {
+          "type": "designer",
+          "settings": {
+            "name": "Balenciaga",
+            "image": "shopify://shop_images/14.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "saint-laurent": {
+          "type": "designer",
+          "settings": {
+            "name": "Yves Saint Laurent",
+            "image": "shopify://shop_images/9.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "cartier": {
+          "type": "designer",
+          "settings": {
+            "name": "Cartier",
+            "image": "shopify://shop_images/15.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "bottega-veneta": {
+          "type": "designer",
+          "settings": {
+            "name": "Bottega Veneta",
+            "image": "shopify://shop_images/16.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "fendi": {
+          "type": "designer",
+          "settings": {
+            "name": "Fendi",
+            "image": "shopify://shop_images/17.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "loewe": {
+          "type": "designer",
+          "settings": {
+            "name": "Loewe",
+            "image": "shopify://shop_images/18.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "miu-miu": {
+          "type": "designer",
+          "settings": {
+            "name": "Miu Miu",
+            "image": "shopify://shop_images/8.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "loro-piana": {
+          "type": "designer",
+          "settings": {
+            "name": "Loro Piana",
+            "image": "shopify://shop_images/19.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "tom-ford": {
+          "type": "designer",
+          "settings": {
+            "name": "Tom Ford",
+            "image": "shopify://shop_images/20.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "rolex": {
+          "type": "designer",
+          "settings": {
+            "name": "Rolex",
+            "image": "shopify://shop_images/21.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "celine": {
           "type": "designer",
           "settings": {
             "name": "Celine",
@@ -92,11 +182,21 @@
             "number": ""
           }
         },
-        "chanel": {
+        "valentino": {
           "type": "designer",
           "settings": {
-            "name": "Chanel",
-            "image": "",
+            "name": "Valentino",
+            "image": "shopify://shop_images/5.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "italian-edit": {
+          "type": "designer",
+          "settings": {
+            "name": "Italian Edit",
+            "image": "shopify://shop_images/10.png",
             "collection": "",
             "link": "",
             "number": ""
@@ -104,15 +204,25 @@
         }
       },
       "block_order": [
-        "valentino",
-        "saint-laurent",
+        "chanel",
         "hermes",
-        "celine",
-        "miu-miu",
-        "the-row",
+        "louis-vuitton",
+        "dior",
         "gucci",
         "prada",
-        "chanel"
+        "balenciaga",
+        "saint-laurent",
+        "cartier",
+        "bottega-veneta",
+        "fendi",
+        "loewe",
+        "miu-miu",
+        "loro-piana",
+        "tom-ford",
+        "rolex",
+        "celine",
+        "valentino",
+        "italian-edit"
       ],
       "settings": {
         "heading": "",
