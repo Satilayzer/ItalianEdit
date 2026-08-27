@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A supplier's supplier",
+            "text": "<p>For most of the twentieth century, Loro Piana wasn't a brand consumers recognized at all. It was the mill behind other people's collections, supplying premium wool and cashmere to Europe's most demanding tailors, fashion houses, and eventually design names like Yves Saint Laurent and Giorgio Armani, who built entire silhouettes around Loro Piana's fabric. Franco expanded the business internationally after the war, sourcing cashmere from Mongolia and China at a time when the material was still considered exotic, and by the 1970s his sons, Sergio and Pier Luigi, had split leadership between sourcing rare fibers and building an international retail arm.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "LORO PIANA",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The most expensive fiber most people have never heard of",
+            "text": "<p>Loro Piana built its reputation on rare raw materials most competitors couldn't or wouldn't chase down. Vicuña, a wild relative of the alpaca found only in the high Andes, produces one of the finest and most limited natural fibers in the world; each animal yields only a small amount of usable wool every few years, and it cannot be farmed at scale. Loro Piana developed exclusive sourcing relationships and conservation programs in Peru to secure a sustainable, protected supply, and vicuña garments remain among the most expensive ready-to-wear pieces in fashion, sometimes exceeding the price of a small car. The house applied the same obsession to what it calls Baby Cashmere, wool combed from the undercoat of young cashmere goats, softer and rarer than standard cashmere.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "From fabric mill to finished brand",
+            "text": "<p>Loro Piana didn't launch its own ready-to-wear collection until 1985, over sixty years after Pietro founded the company, a delay that says a great deal about the family's priorities: get the material right first, and the finished product would follow. Once it did, the brand became a defining name in what would later be called quiet luxury, garments with no visible logos, built almost entirely around the tactile quality of the fabric itself, appealing to a customer who wanted the material to do the talking.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A family business, now inside the world's largest luxury group",
+            "text": "<p>In 2013, LVMH acquired an 80 percent stake in Loro Piana, giving the house global retail infrastructure while the Loro Piana family retained a minority stake and continued sourcing the rare fibers that built the brand's reputation in the first place. A hundred years after Pietro Loro Piana opened his mill, the company's core proposition hasn't really changed: convince the world's most discerning dressers that the fabric itself is worth more than anything printed on it.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Loro Piana piece?",
+            "text": "<p>From vicuña coats to Baby Cashmere knitwear, sourcing genuine Loro Piana from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Loro Piana Brand History: The Quietest Name in Luxury Is Also One of the Oldest",
+        "heading_visible": false,
+        "number": "014",
+        "image_alt": "Loro Piana",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Loro Piana spent a century selling fabric to other designers before it sold a single finished garment under its own name. That patience is precisely what built its reputation.”</p>",
+        "lede": "<p>The Loro Piana family traded wool in the Piedmont region of northern Italy from the early 1800s, but the company as it exists today traces to April 1924, when engineer Pietro Loro Piana founded Ing. Loro Piana &amp; C. in the town of Quarona. Pietro brought a technical mind to a craft trade, applying engineering discipline to fabric production at a time when most textile mills still ran on inherited instinct rather than process. He died in 1941, and his nephew Franco took over the business on the eve of World War II.</p>",
+        "aside_caption": "Loro Piana",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

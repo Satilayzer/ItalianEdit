@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A logo from a children's book illustrator, and a horse-bit from the stables",
+            "text": "<p>Celine's early identity carried its shoe-shop origins forward in unexpected ways. Its original logo, a red elephant, was designed by illustrator Raymond Peynet, better known for whimsical romantic cartoons than fashion branding. The house's other recurring motif, a metal horse-bit with chain detailing, appeared on bags starting in 1972, borrowed from equestrian hardware in the same spirit as several other French leather houses of the era. Celine joined LVMH in 1996, giving the label international retail backing after decades as a respected, if relatively contained, Parisian name.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "CELINE",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Michael Kors, and a decade of American polish",
+            "text": "<p>American designer Michael Kors led the house from 1997 to 2004, bringing a jet-set, sportswear-driven sensibility that widened Celine's international visibility, particularly in the United States. Several designers followed in relatively short succession over the next few years, without a defining creative vision taking hold, until LVMH made an appointment in 2008 that would reshape the entire house.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Phoebe Philo, and the decade that defined modern minimalism",
+            "text": "<p>Phoebe Philo took over as creative director in 2008, and her decade at Celine, through 2018, became one of the most influential runs by any designer of the 2010s. Philo's Celine was deliberately unglamorous in the traditional sense: flat shoes, wide trousers, boxy coats, and bags built for actual use rather than display, most notably the Luggage Tote, the Trapeze, and the Phantom. Vogue and much of the industry press came to describe the aesthetic simply as \"cool minimalism,\" and it reshaped how an entire generation of women, and a generation of other designers, thought about quiet, confident dressing. Under Philo, Celine's annual sales reportedly grew from around 200 million euros to more than 700 million.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Dropping the accent, and starting over twice more",
+            "text": "<p>Hedi Slimane succeeded Philo in 2018 and made his intentions unmistakable within his first collection: he dropped the accent from Céline, restyling the house simply as Celine, and pivoted hard toward the leaner, rock-inflected silhouette that had defined his earlier tenure at Saint Laurent. He also expanded the house into menswear and full couture for the first time in its history. The approach split opinion sharply among longtime Philo loyalists, but it introduced Celine to an entirely new, younger customer through 2024. Slimane departed that October, and Michael Rider, who had spent a decade as Philo's design director before leading Ralph Lauren, returned to Celine as creative director in January 2025, an alumnus brought back to reconcile the house's minimalist inheritance with whatever comes next.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Celine piece?",
+            "text": "<p>From the Philo-era Luggage Tote to current runway pieces, sourcing genuine Celine from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Celine Brand History: A Children's Shoe Shop That Became Fashion's Blueprint for Minimalism",
+        "heading_visible": false,
+        "number": "017",
+        "image_alt": "Celine",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Celine spent its first fifteen years making shoes for children. It took a mother's frustration with adult shoe options to turn it into a fashion house at all.”</p>",
+        "lede": "<p>Céline Vipiana and her husband Richard opened a made-to-measure children's shoe boutique on Paris's rue Malte in 1945, in the immediate aftermath of World War II. The business succeeded quickly enough that satisfied mothers began asking Vipiana to make shoes for them too, and that informal demand pushed the brand toward adult womenswear almost by accident. By the early 1960s, Celine had expanded into leather accessories and full ready-to-wear, building a reputation among Parisian high society for precise, unfussy tailoring, sportswear, trench coats, and the kind of quality leather goods that would eventually define the house.</p>",
+        "aside_caption": "Celine",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

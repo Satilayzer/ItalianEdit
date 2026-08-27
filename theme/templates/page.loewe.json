@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Royal patronage, and a very Spanish kind of prestige",
+            "text": "<p>Loewe's early reputation was built almost entirely on the strength of its leatherwork rather than any marketing effort. In 1905, King Alfonso XIII granted the house an official Royal Warrant, naming it purveyor to the Spanish crown, a recognition that cemented Loewe's status among Spanish aristocracy for the following decades. The house expanded cautiously through the early twentieth century, opening stores in Barcelona and eventually a flagship on Madrid's Gran Vía, but it remained a largely regional name well into the twentieth century, respected in Spain and Latin America while Paris houses dominated international fashion conversation.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "LOEWE",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "From leather workshop to full fashion house",
+            "text": "<p>Loewe didn't launch ready-to-wear until 1965, nearly 120 years after its founding, a sign of just how long it operated purely as a leather goods maker. The Amazona bag, introduced in 1975, became its first genuinely internationally recognized handbag, structured and architectural in a way that distinguished it from the softer bags common at the time. LVMH acquired the house in 1996, giving it access to international distribution that had eluded it for over a century.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Jonathan Anderson, and the decade that made Loewe a household name",
+            "text": "<p>Loewe remained a respected but relatively quiet name in international fashion until 2013, when LVMH appointed Jonathan Anderson, then still building his own label JW Anderson in London, as creative director. Anderson spent eleven years transforming Loewe from a craft-focused leather house into one of the most culturally influential brands in fashion, redesigning the Puzzle bag as a geometric, architectural object, collaborating with Studio Ghibli on a widely covered fashion collection, and consistently framing craft, weaving, ceramics, embroidery, as the intellectual core of every collection rather than a decorative afterthought. Under his direction, the house's revenue reportedly grew more than sevenfold.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A new chapter, from an unexpected pairing",
+            "text": "<p>Anderson departed in early 2025 to take the top creative role at Dior, and Loewe named Jack McCollough and Lazaro Hernandez, the American design duo previously known for founding Proenza Schouler, as co-creative directors, the first time two people have jointly led the house. Their early collections have leaned into a brighter, more American sensibility layered onto Loewe's Spanish craft foundation, continuing a pattern that has defined the brand since 1872: new hands, new interpretations, but the same insistence that leather, worked well, is reason enough to matter.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Loewe piece?",
+            "text": "<p>From the Puzzle bag to current runway pieces, sourcing genuine Loewe from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Loewe Brand History: Europe's Second-Oldest Luxury House Nearly Went Unnoticed for a Century",
+        "heading_visible": false,
+        "number": "012",
+        "image_alt": "Loewe",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Loewe is older than Louis Vuitton. For most of its history, almost nobody outside Spain knew that.”</p>",
+        "lede": "<p>A collective of Spanish leather artisans founded a workshop on Madrid's Calle Lobo in 1846, more than a decade before Louis Vuitton opened his first trunk shop in Paris, making Loewe one of the oldest luxury houses still operating today. The workshop stayed a purely local concern until 1872, when a German leather craftsman named Enrique Loewe Roessberg arrived in Madrid, joined forces with the existing artisans, and consolidated the business under his own name.</p>",
+        "aside_caption": "Loewe",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

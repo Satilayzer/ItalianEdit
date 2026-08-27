@@ -1,0 +1,98 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "The hire that defined the house for 54 years",
+            "text": "<p>In 1965, the Fendi sisters made a decision that would define the brand for the rest of the century: they hired a young, largely unproven designer named Karl Lagerfeld as creative director. It began a partnership that lasted until Lagerfeld's death in 2019, fifty-four years, making it one of the longest continuous collaborations between a single designer and a single house in fashion history. Lagerfeld redesigned Fendi's logo into the interlocking double-F that became known as the \"Fun Fur\" mark, and pushed the house's fur techniques into genuinely experimental territory, dyeing, shearing, and inlaying pelts in ways that treated fur as a material for craft rather than simple status display.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "FENDI",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The bag that needed no explanation",
+            "text": "<p>In 1997, Silvia Venturini Fendi, granddaughter of Adele and Edoardo and the third generation to lead the house, designed the Baguette, a small, elegant shoulder bag meant to be carried under the arm \"like a loaf of French bread.\" It became one of the defining \"it\" bags of the late 1990s and early 2000s, cemented by a recurring appearance on Sex and the City, and it demonstrated something the house has leaned on ever since: a strong idea, held under the arm rather than shown off, could generate more desire than an obvious logo ever could.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Acquisition, centennial, and a season of transition",
+            "text": "<p>LVMH acquired a majority stake in Fendi in 2001, giving the house the resources to expand globally while its ateliers stayed in Rome. The brand marked its hundredth anniversary in 2024 and 2025 with a series of high-profile projects, including funding the restoration of Rome's Trevi Fountain, a fitting gesture for a house that has always tied its identity to the city where it began. That centennial period also brought real creative turnover: Kim Jones, who had led womenswear and couture since 2020, departed in 2024, and Silvia Venturini Fendi, who had spent over three decades at the house across menswear, accessories, and eventually womenswear, stepped back from creative direction in 2025 to become honorary president. Maria Grazia Chiuri, previously of Dior, now leads the house's creative direction, continuing a Fendi tradition: whoever holds the pen, the family that built it from a Roman fur shop has never fully let go.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Fendi piece?",
+            "text": "<p>From the original Baguette to current runway pieces, sourcing genuine Fendi from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Fendi Brand History: A Roman Fur Shop, Five Sisters, and a 54-Year Partnership",
+        "heading_visible": false,
+        "number": "011",
+        "image_alt": "Fendi",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Fendi has been run by women for most of its hundred-year history, in an industry that has rarely made that easy. The house's most famous partnership was still with a man who stayed for over half a century.”</p>",
+        "lede": "<p>Adele and Edoardo Fendi opened a small leather and fur workshop in Rome in 1925, building a local reputation for craftsmanship that would eventually carry the family name across the world. When Edoardo died, Adele ran the business herself and raised five daughters, Paola, Anna, Franca, Carla, and Alda, each of whom eventually took on a different area of the growing company, a genuinely unusual management structure for a mid-century Italian business.</p>",
+        "aside_caption": "Fendi",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

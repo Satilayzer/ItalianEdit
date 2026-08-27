@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Leaving London for Geneva",
+            "text": "<p>After World War I, punishing British import taxes on watch components and precious metals made operating from London increasingly impractical, and in 1919 Wilsdorf relocated the company's operations to Geneva, establishing what would become Montres Rolex SA. The move placed Rolex directly inside the Swiss watchmaking ecosystem it depended on for movements and craftsmanship, and Geneva has remained its home ever since.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "ROLEX",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Waterproof, self-winding, and built to survive a marketing stunt",
+            "text": "<p>Rolex built its reputation on solving mechanical problems competitors hadn't cracked. In 1926, it patented the Oyster case, the first truly waterproof and dustproof watch case, sealed with a screw-down crown and back. To prove it, Wilsdorf arranged for British swimmer Mercedes Gleitze to wear an Oyster during her attempt to swim the English Channel in 1927; the watch worked perfectly after more than ten hours in the water, and Wilsdorf bought the entire front page of a major newspaper to announce it, one of the earliest examples of a brand using a real-world stress test as advertising rather than a studio photograph. In 1931, Rolex patented the Perpetual rotor, a self-winding mechanism that used the wearer's own arm movement to power the watch, a design so effective that its basic principle still underpins most automatic watches made today.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Tool watches that became cultural icons",
+            "text": "<p>Through the mid-twentieth century, Rolex built dedicated tools for specific professions rather than general-purpose luxury pieces: the Submariner in 1953 for divers, rated for depths well beyond recreational diving; the GMT-Master in 1954, developed with Pan American Airways so pilots could track two time zones at once; the Explorer, tied to the first successful summit of Mount Everest that same year, when members of the expedition wore Rolex watches. The Datejust, introduced in 1945, was the first wristwatch to display the date automatically through a window on the dial, a feature so widely imitated that it eventually seemed obvious rather than revolutionary.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Ownership that answers to no one but itself",
+            "text": "<p>Perhaps Wilsdorf's most consequential decision had nothing to do with watchmaking. Having no children, he established the Hans Wilsdorf Foundation in the mid-1940s and, upon his death in 1960, transferred full ownership of Rolex to it. The company has operated as a private foundation ever since, with no public shareholders and no obligation to disclose earnings, free to make long-term decisions, controlling its own gold foundries and dial production, without the quarterly pressure that shapes most publicly traded luxury groups. It is, by most estimates, the most valuable privately held watch brand in the world, run today under chief executive Jean-Frédéric Dufour, still guided by a founder's century-old bet that a watch on the wrist, built to survive a shipwreck or a mountain summit, would eventually outlast every argument against it.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Rolex piece?",
+            "text": "<p>With waitlists at official boutiques often running years long, sourcing a genuine Rolex from Europe takes real access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every piece, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Rolex Brand History: The Watchmaker With No Shareholders to Answer To",
+        "heading_visible": false,
+        "number": "016",
+        "image_alt": "Rolex",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Rolex has no public stock, no majority owner chasing quarterly earnings, and no obligation to anyone but a private foundation that gives its profits away. That structure explains almost everything else about the brand.”</p>",
+        "lede": "<p>Hans Wilsdorf, a German-born entrepreneur working in the Swiss watch trade, founded Wilsdorf &amp; Davis in London in 1905 with his brother-in-law Alfred Davis, importing Swiss movements and fitting them into cases for British retailers. At the time, wristwatches were considered a novelty at best and effeminate at worst; serious men carried pocket watches. Wilsdorf disagreed, and staked the company's future on a product most of his contemporaries dismissed. In 1908, he registered the name Rolex, a short, invented word chosen because it was easy to pronounce in almost any language, an early piece of branding instinct in an industry that mostly still traded on family surnames.</p>",
+        "aside_caption": "Rolex",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

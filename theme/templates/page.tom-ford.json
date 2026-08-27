@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Starting over, on his own terms",
+            "text": "<p>Tom Ford International launched in 2005, initially focused on menswear, eyewear, and grooming rather than the full womenswear collections that had made his name. It was a deliberate, disciplined build rather than an attempt to relaunch his Gucci-era spectacle under a new label. Ford didn't show womenswear again under his own name until 2010, choosing instead to let the brand's tailoring and fragrance business establish credibility first. That patience paid off: Tom Ford built a reputation as one of the only true modern examples of old-school Hollywood glamour rendered in a fully contemporary wardrobe, dark, precise, and openly sensual in a way much of 2000s fashion had moved away from.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "TOM FORD",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "A director as much as a designer",
+            "text": "<p>Ford's ambitions extended well beyond clothing. He wrote and directed A Single Man in 2009, based on the Christopher Isherwood novel, earning an Academy Award nomination for Colin Firth's performance, and followed it with Nocturnal Animals in 2016, which won the Grand Jury Prize at the Venice Film Festival. Both films carried the same visual control that defined his fashion work, precise framing, restrained color, a clear point of view, and reinforced Ford's identity as one of the few designers whose creative authority extended convincingly outside the runway.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "The largest deal of his career, and the one that ended it",
+            "text": "<p>In 2022, Estée Lauder Companies agreed to acquire the Tom Ford brand in a deal valued at 2.8 billion dollars, finalized in 2023. Tom Ford stayed on briefly as \"creative visionary\" before stepping away from day-to-day design entirely by the end of that year, handing the creative director role to Peter Hawkings, his longtime menswear collaborator. Hawkings lasted barely a year before departing in mid-2024, and Estée Lauder named French-Colombian designer Haider Ackermann as creative director that September, tasking him with the full fashion line, menswear, womenswear, accessories, and eyewear, while licensing partner Ermenegildo Zegna Group runs the fashion business day to day.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A name bigger than the man who left",
+            "text": "<p>What makes Tom Ford's story unusual is how cleanly the brand's identity, sharp tailoring, unapologetic glamour, a specific kind of confident sensuality, has survived the founder's own departure. Whether Ackermann's tenure fully honors or reinvents that vision is still being written, but the fact that Tom Ford's name alone justified a multi-billion-dollar acquisition, fifteen years after he'd stopped designing for anyone else, says as much about his influence as any single collection did.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Tom Ford piece?",
+            "text": "<p>From signature tailoring to eyewear and fragrance, sourcing genuine Tom Ford from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Tom Ford Brand History: The Designer Who Rebuilt Two Houses Before Building His Own",
+        "heading_visible": false,
+        "number": "015",
+        "image_alt": "Tom Ford",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Tom Ford spent a decade saving other people's fashion houses before he finally put his own name on the door.”</p>",
+        "lede": "<p>Tom Ford had already reshaped two of the industry's most storied names, Gucci and Yves Saint Laurent, before launching his own label in 2005. As Gucci's creative director from 1994 to 2004, he pulled the house back from near financial collapse into one of the most talked-about brands of the decade, defined by unapologetic sex appeal and razor-sharp tailoring. He simultaneously led Yves Saint Laurent's ready-to-wear from 2000, after the Gucci Group acquired a controlling stake in the French house. Both roles ended in 2004 after a corporate ownership change, and Ford, alongside longtime Gucci business partner Domenico De Sole, walked away from both houses in the same year.</p>",
+        "aside_caption": "Tom Ford",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

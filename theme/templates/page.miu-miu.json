@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A label built for contradiction",
+            "text": "<p>Where Prada dealt in restraint and intellectual discomfort, Miu Miu was conceived as its looser, more personal counterpart, closer to what Miuccia Prada described as pulling from her own closet rather than designing from a brief. The label mixed girlish prints with deliberately undone tailoring, decades before \"unfinished\" became a runway trend elsewhere, and it built a reputation for taking familiar, even modest, pieces, a cardigan, a ballet flat, a plain skirt, and making them feel subversive simply through context and cut.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "MIU MIU",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The first boutique, and two decades as the quiet understudy",
+            "text": "<p>Miu Miu opened its first store on Milan's Via della Spiga in 1993 and spent much of the following two decades as a well-regarded but secondary name, respected by editors and stylists, without the commercial gravity of its parent label. That changed dramatically in the 2020s. A run of viral products, a cropped cardigan, a low-slung micro-mini skirt, ballet flats reissued with sharper proportions, turned the brand into one of the most searched labels in fashion. The Prada Group's own reporting tells the story in numbers: Miu Miu's retail sales grew 93.2 percent in 2024 alone, crossing one billion euros in annual revenue for the first time, before adding another 41 percent growth in the first nine months of 2025, making it the fastest-growing major luxury brand in the world during that stretch.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "From diffusion line to growth engine",
+            "text": "<p>That shift changed Miu Miu's position inside the Prada Group entirely. What was once treated as a lower-priced, youth-focused outlet for Miuccia Prada's ideas is now priced close to Prada itself in many categories and has become the group's primary growth driver, alongside a broader portfolio that expanded further with the Prada Group's acquisition of Versace in late 2025. Miu Miu's cultural programs, including its long-running Women's Tales short film series, commissioning female directors to make short films inspired by each collection, have reinforced an identity built on ideas rather than obvious status symbols.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Still Miuccia Prada's most personal project",
+            "text": "<p>More than thirty years in, Miu Miu remains entirely Miuccia Prada's design vision, no succession, no rotating creative director, unusual for a brand operating at this scale. That continuity may explain why it has aged so well with a much younger customer than the one it launched for in 1993: Miu Miu was built as an outlet for contradiction and youthful irreverence from day one, and it turns out that idea travels well across generations.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Miu Miu piece?",
+            "text": "<p>From the viral micro-mini to the signature Matelassé bags, sourcing genuine Miu Miu from Europe takes the right access, especially with pieces selling out quickly. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Miu Miu Brand History: The \"Baby Sister\" Brand That Outgrew Everyone's Expectations",
+        "heading_visible": false,
+        "number": "013",
+        "image_alt": "Miu Miu",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“For twenty years, Miu Miu was described as Prada's playful younger sibling. Then it started outselling the family business entirely.”</p>",
+        "lede": "<p>Miuccia Prada launched Miu Miu in 1993, fourteen years after taking creative control of her family's leather goods house and five years after debuting Prada's first womenswear collection. She named it after her own childhood nickname and gave herself permission to do something Prada's more austere reputation didn't allow: be loud, silly, and a little undone. The debut collection, shown that year, leaned into a cowgirl theme, fringed suede, patchwork prairie skirts, cowhide, a deliberate departure from her grandfather's refined leather-goods legacy.</p>",
+        "aside_caption": "Miu Miu",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
