@@ -12,7 +12,7 @@
     "hero": {
       "type": "ie-hero",
       "settings": {
-        "video": "shopify://files/videos/0818 (1)(1).mp4",
+        "video": "shopify://files/videos/0825.mp4",
         "sound": true,
         "alt": "Italian Edit",
         "heading": "",
@@ -58,6 +58,7 @@
         "men": {
           "type": "panel",
           "settings": {
+            "image": "shopify://shop_images/Swipe-16-9_7.png",
             "label": "Men",
             "link": "/collections/all"
           }
@@ -65,6 +66,7 @@
         "women": {
           "type": "panel",
           "settings": {
+            "image": "shopify://shop_images/magnifics_upscale_precision_bv09AQ8aTC5YamCYns0S_Swipe_16_9_5_2.png",
             "label": "Women",
             "link": "/collections/all"
           }
@@ -107,36 +109,73 @@
         "b1": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/4.png",
             "caption": "",
-            "link": ""
+            "link": "shopify://pages/prada"
           }
         },
         "b2": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/5.png",
             "caption": "",
-            "link": ""
+            "link": "shopify://pages/valentino"
           }
         },
         "b3": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/6.png",
             "caption": "",
-            "link": ""
+            "link": "shopify://pages/hermes"
           }
         },
         "b4": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/7.png",
             "caption": "",
-            "link": ""
+            "link": "shopify://pages/celine"
           }
         },
         "b5": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/8.png",
+            "caption": "",
+            "link": "shopify://pages/miu-miu"
+          }
+        },
+        "slide_3ekiDj": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/9.png",
+            "caption": "",
+            "link": "shopify://pages/saint-laurent"
+          }
+        },
+        "slide_XyBEKD": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/10.png",
             "caption": "",
             "link": ""
+          }
+        },
+        "slide_UkPPiG": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/11.png",
+            "caption": "",
+            "link": "shopify://pages/gucci"
+          }
+        },
+        "chanel": {
+          "type": "slide",
+          "settings": {
+            "image": "",
+            "caption": "Chanel",
+            "link": "shopify://pages/chanel"
           }
         }
       },
@@ -145,19 +184,35 @@
         "b2",
         "b3",
         "b4",
-        "b5"
+        "b5",
+        "slide_3ekiDj",
+        "slide_XyBEKD",
+        "slide_UkPPiG",
+        "chanel"
       ],
       "settings": {
         "heading": "Italian Edit Blog",
         "subheading": "",
+        "slide_width": 300,
+        "gap": 16,
+        "ratio": "4 / 3",
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
         "heading_color": "#633f47",
-        "slide_width": 300,
-        "gap": 16,
-        "ratio": "3 / 4",
         "padding_top": 48,
         "padding_bottom": 48
+      }
+    },
+    "instagram_heading": {
+      "type": "ie-section-heading",
+      "settings": {
+        "heading": "Follow Our Instagram",
+        "subheading": "",
+        "heading_font": "source_sans_pro_n4",
+        "heading_size": 44,
+        "heading_color": "#633f47",
+        "padding_top": 48,
+        "padding_bottom": 24
       }
     },
     "1787193191f56eb69c": {
@@ -255,21 +310,14 @@
       ],
       "settings": {
         "heading": "Feedbacks",
+        "image": "shopify://shop_images/MAD_ART_2_25.png",
+        "image_alt": "",
+        "link": "",
+        "ratio": "auto",
+        "full_width": false,
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
         "heading_color": "#633f47"
-      }
-    },
-    "instagram_heading": {
-      "type": "ie-section-heading",
-      "settings": {
-        "heading": "Follow Our Instagram",
-        "subheading": "",
-        "heading_font": "source_sans_pro_n4",
-        "heading_size": 44,
-        "heading_color": "#633f47",
-        "padding_top": 48,
-        "padding_bottom": 24
       }
     }
   },

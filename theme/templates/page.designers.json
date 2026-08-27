@@ -32,31 +32,21 @@
             "number": ""
           }
         },
-        "celine": {
-          "type": "designer",
-          "settings": {
-            "name": "Hermes",
-            "image": "shopify://shop_images/6.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "prada": {
-          "type": "designer",
-          "settings": {
-            "name": "Celine",
-            "image": "shopify://shop_images/7.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
         "hermes": {
           "type": "designer",
           "settings": {
             "name": "Miu Miu",
             "image": "shopify://shop_images/8.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "celine": {
+          "type": "designer",
+          "settings": {
+            "name": "Hermes",
+            "image": "shopify://shop_images/6.png",
             "collection": "",
             "link": "",
             "number": ""
@@ -72,6 +62,16 @@
             "number": ""
           }
         },
+        "the-row": {
+          "type": "designer",
+          "settings": {
+            "name": "Gucci",
+            "image": "shopify://shop_images/11.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
         "gucci": {
           "type": "designer",
           "settings": {
@@ -82,11 +82,21 @@
             "number": ""
           }
         },
-        "the-row": {
+        "prada": {
           "type": "designer",
           "settings": {
-            "name": "Gucci",
-            "image": "shopify://shop_images/11.png",
+            "name": "Celine",
+            "image": "shopify://shop_images/7.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "chanel": {
+          "type": "designer",
+          "settings": {
+            "name": "Chanel",
+            "image": "",
             "collection": "",
             "link": "",
             "number": ""
@@ -96,21 +106,23 @@
       "block_order": [
         "valentino",
         "saint-laurent",
-        "celine",
-        "prada",
         "hermes",
+        "celine",
         "miu-miu",
+        "the-row",
         "gucci",
-        "the-row"
+        "prada",
+        "chanel"
       ],
       "settings": {
         "heading": "",
-        "height": 78,
+        "height": 87,
         "media_width": 65,
-        "gap": 0,
+        "list_offset": 48,
+        "gap": 10,
         "row_height": 160,
         "label_width": 320,
-        "label_ratio": "2 / 1",
+        "label_ratio": "3 / 2",
         "number_width": 96,
         "number_size": 14,
         "video": "shopify://files/videos/0818 (1)(1).mp4",

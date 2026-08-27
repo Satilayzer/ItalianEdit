@@ -1,0 +1,139 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "The meeting that saved the house",
+            "text": "<p>On July 31, 1960, Valentino met Giancarlo Giammetti, then a 20-year-old architecture student, at a café on Rome's Via Veneto. Giammetti recognized both the designer's talent and the studio's precarious finances, abandoned his studies, and took over the commercial side of the business entirely. The two men became business partners and, for over a decade, life partners as well, and Giammetti's pragmatism, chasing payments, negotiating with fabric houses, building an actual company around Garavani's instincts, is what turned a struggling atelier into Maison Valentino. Their formal partnership, dated to that year, is treated as the house's true founding.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "VALENTINO",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "A red gown at the opera, and the color that never left",
+            "text": "<p>Valentino's most enduring signature came from a memory rather than a design brief. As a student, he attended the opera in Barcelona and was struck by a woman in a red gown in the audience, more memorable to him than anything on stage. He began closing collections with a red look as a personal ritual, and the habit calcified into a house code: what the industry now calls Rosso Valentino appears in nearly every collection the house has shown since, regardless of who has held the pen.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Florence, Jackie Kennedy, and international fame",
+            "text": "<p>Valentino's 1962 couture collection, presented at the Sala Bianca in Florence's Pitti Palace, was his real international breakthrough, catching the attention of the American press and buyers at a moment when Italian fashion was still working to earn the same respect as Paris. The moment that cemented his global reputation came in 1968, when Jacqueline Kennedy chose a white Valentino gown for her wedding to Aristotle Onassis. The photographs traveled everywhere, and for the following decades Valentino dressed a rotating cast of the world's most photographed women, Audrey Hepburn, Elizabeth Taylor, Princess Diana, at galas, weddings, and premieres.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "A 45-year retirement, staged like a final act",
+            "text": "<p>Valentino announced his retirement in 2007, marking his 45th anniversary with a lavish farewell in Rome attended by heads of state and decades of former clients, and showed his final couture collection in January 2008. The 2008 documentary Valentino: The Last Emperor captured both the designer's meticulous, occasionally imperious perfectionism and the deep partnership with Giammetti that had run the business for nearly fifty years, and it remains one of the most candid records of a couture house at the moment its founder steps away.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Ownership changes, and a return under an unexpected name",
+            "text": "<p>The house itself changed hands repeatedly after Garavani's departure: from the Marzotto textile group to private equity firm Permira in 2007, then to Qatar's Mayhoola for Investments in 2012. Creative direction passed briefly to Alessandra Facchinetti, then to Maria Grazia Chiuri and Pierpaolo Piccioli as co-creative directors from 2008, with Piccioli continuing alone from 2016 until his departure in March 2024 after 25 years at the house. His successor, announced weeks later, surprised much of the industry: Alessandro Michele, the designer who had defined Gucci's maximalist revival through the late 2010s, took over in April 2024, bringing his own dense, romantic maximalism to a house already built around theatrical elegance. Kering, Gucci's parent company, had acquired a 30 percent stake in Valentino from Mayhoola in 2023, with an option to take full ownership by 2029, an arrangement that made Michele's appointment feel less like coincidence than a long game.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "The end of an era",
+            "text": "<p>Valentino Garavani died in January 2026 at the age of 93, closing the loop on one of Italian fashion's defining partnerships. Giammetti, who had remained close to the house and its founder for over sixty years, described him simply as a designer who believed clothes should serve the woman wearing them rather than the story a designer wanted to tell, a fitting way to remember a couturier whose signature color still opens and closes runway shows he never designed himself.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Valentino piece?",
+            "text": "<p>From archival Garavani-era couture to current Michele-era pieces, sourcing genuine Valentino from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Valentino Brand History: The Roman Couturier Who Turned a Color Into a Signature",
+        "heading_visible": false,
+        "number": "018",
+        "image_alt": "Valentino",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Valentino Garavani built his house on one unshakeable idea: a woman in the right red dress needs no further introduction. Six decades later, the world still calls that shade by his name.”</p>",
+        "lede": "<p>Valentino Garavani opened his own atelier on Rome's Via Condotti in 1959, backed financially by his father, after training in Paris under Jean Dessès and Guy Laroche and absorbing the discipline of the Balenciaga school of construction that shaped so many great couturiers of the era. He was 27, ambitious, and, by his own later admission, close to running out of money within the first year. The business that would eventually carry his name almost didn't survive its opening season.</p>",
+        "aside_caption": "Valentino",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
