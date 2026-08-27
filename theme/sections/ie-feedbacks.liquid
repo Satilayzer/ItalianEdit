@@ -1,5 +1,10 @@
 {%- comment -%}
   Отзывы: бумажные карточки внахлёст с лёгким наклоном.
+
+  Второй режим — баннер: как только в настройках выбрано изображение,
+  секция выводит его вместо карточек. Карточки при этом никуда не деваются,
+  лежат в блоках и возвращаются снятием картинки. Заголовок общий для обоих
+  режимов: не нужен — очищается полем.
 {%- endcomment -%}
 
 {%- assign scope = '#shopify-section-' | append: section.id -%}
@@ -19,30 +24,56 @@
     <h2 class="ie-heading">{{ section.settings.heading }}</h2>
   {%- endif -%}
 
-  <div class="ie-feedbacks__track">
-    {%- for block in section.blocks -%}
-      {%- liquid
-        assign tilt = forloop.index | modulo: 3 | minus: 1
-        assign shift = forloop.index | modulo: 2 | times: 18
-        assign auto_number = forloop.index | prepend: '00' | slice: -3, 3
-      -%}
-      <figure
-        class="ie-feedbacks__card"
-        style="--ie-tilt: {{ tilt }}deg; --ie-shift: {{ shift }}px;"
-        {{ block.shopify_attributes }}
-      >
-        <span class="ie-feedbacks__num">
-          {{- block.settings.number | default: auto_number -}}
-        </span>
+  {%- if section.settings.image != blank -%}
+    {%- capture banner -%}
+      {{
+        section.settings.image
+        | image_url: width: 3000
+        | image_tag:
+          loading: 'lazy',
+          widths: '600, 900, 1200, 1600, 2000, 3000',
+          sizes: '100vw',
+          alt: section.settings.image_alt,
+          class: 'ie-feedbacks__banner-img'
+      }}
+    {%- endcapture -%}
 
-        <blockquote class="ie-feedbacks__text">{{ block.settings.text }}</blockquote>
+    <div
+      class="ie-feedbacks__banner{% if section.settings.full_width %} ie-feedbacks__banner--flush{% endif %}"
+      style="--ie-fb-ratio: {{ section.settings.ratio }};"
+    >
+      {%- if section.settings.link != blank -%}
+        <a class="ie-feedbacks__banner-link" href="{{ section.settings.link }}">{{ banner }}</a>
+      {%- else -%}
+        {{ banner }}
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    <div class="ie-feedbacks__track">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign tilt = forloop.index | modulo: 3 | minus: 1
+          assign shift = forloop.index | modulo: 2 | times: 18
+          assign auto_number = forloop.index | prepend: '00' | slice: -3, 3
+        -%}
+        <figure
+          class="ie-feedbacks__card"
+          style="--ie-tilt: {{ tilt }}deg; --ie-shift: {{ shift }}px;"
+          {{ block.shopify_attributes }}
+        >
+          <span class="ie-feedbacks__num">
+            {{- block.settings.number | default: auto_number -}}
+          </span>
 
-        {%- if block.settings.author != blank -%}
-          <figcaption class="ie-feedbacks__author">{{ block.settings.author }}</figcaption>
-        {%- endif -%}
-      </figure>
-    {%- endfor -%}
-  </div>
+          <blockquote class="ie-feedbacks__text">{{ block.settings.text }}</blockquote>
+
+          {%- if block.settings.author != blank -%}
+            <figcaption class="ie-feedbacks__author">{{ block.settings.author }}</figcaption>
+          {%- endif -%}
+        </figure>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
 </section>
 
 {% stylesheet %}
@@ -114,6 +145,36 @@
     color: var(--ie-mauve);
     text-align: center;
   }
+
+  .ie-feedbacks__banner {
+    margin-top: clamp(2rem, 4vw, 3.25rem);
+    padding-inline: var(--ie-gutter);
+  }
+
+  /* Без заголовка баннер идёт первым — верхний отступ ему не от чего. */
+  .ie-feedbacks__banner:first-child {
+    margin-top: 0;
+  }
+
+  .ie-feedbacks__banner--flush {
+    padding-inline: 0;
+  }
+
+  .ie-feedbacks__banner-link {
+    display: block;
+  }
+
+  /*
+   * Пропорция «Как у файла» приходит значением auto: высоту тогда задаёт
+   * сам кадр и обрезки нет — при aspect-ratio: auto коробка равна
+   * картинке, и cover нечего резать.
+   */
+  .ie-feedbacks__banner-img {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--ie-fb-ratio, auto);
+    object-fit: cover;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -123,6 +184,33 @@
   "max_blocks": 12,
   "settings": [
     { "type": "text", "id": "heading", "label": "Заголовок", "default": "Feedbacks" },
+
+    { "type": "header", "content": "Баннер" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Изображение",
+      "info": "Пока изображение выбрано, карточки отзывов не выводятся."
+    },
+    { "type": "text", "id": "image_alt", "label": "Описание изображения (alt)" },
+    { "type": "url", "id": "link", "label": "Ссылка" },
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Пропорция",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Как у файла (без обрезки)" },
+        { "value": "4 / 1", "label": "4:1" },
+        { "value": "3 / 1", "label": "3:1" },
+        { "value": "21 / 9", "label": "21:9" },
+        { "value": "2 / 1", "label": "2:1" },
+        { "value": "16 / 9", "label": "16:9" },
+        { "value": "3 / 2", "label": "3:2" }
+      ]
+    },
+    { "type": "checkbox", "id": "full_width", "label": "Во всю ширину окна", "default": false },
+
     { "type": "header", "content": "Оформление заголовка" },
     { "type": "font_picker", "id": "heading_font", "label": "Шрифт", "default": "source_serif_4_n4" },
     { "type": "range", "id": "heading_size", "label": "Кегль", "min": 16, "max": 96, "step": 1, "unit": "px", "default": 44 },

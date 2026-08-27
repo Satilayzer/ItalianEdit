@@ -224,6 +224,22 @@ html body [id$="__1787193191f56eb69c"][id] * {
   margin-inline: calc((var(--ie-header-hit, 44px) - 22px) / 2);
 }
 
+/*
+ * Счётчик корзины — тем же бордо, что счётчик вишлиста: рядом стоят два
+ * одинаковых по смыслу бейджа, и разный цвет читался как разный статус.
+ *
+ * Своих правил не пишем: snippets/cart-bubble.liquid сам объявлен через
+ * --cart-bubble-background / --cart-bubble-text и берёт их с любого предка.
+ * По умолчанию он подставляет page_text_color на page_background_color,
+ * то есть тёмный кружок. Переменные вишлиста повторяем один в один
+ * (assets/wishlist.css, правило wishlist-count), чтобы цвет менялся
+ * у обоих сразу.
+ */
+.header {
+  --cart-bubble-background: var(--brand-accent, var(--ie-bordo));
+  --cart-bubble-text: #fff;
+}
+
 /* Пункты меню — санс, разрядка, неактивные приглушены. */
 .header .menu-list__link,
 .header__menu a {
