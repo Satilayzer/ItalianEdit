@@ -352,6 +352,45 @@ cart-icon.header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
 }
 
 /* ------------------------------------------------------------------ */
+/* Корзина                                                             */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Счётчик товаров у заголовка «Cart» — бордо с белой цифрой, как бейдж
+ * в шапке. Тема рисует его иначе: полупрозрачная чёрная плашка
+ * rgb(var(--color-foreground-rgb) / var(--opacity-10-25)) и чёрная цифра.
+ *
+ * На странице корзины это тот же компонент .cart-bubble, что и в шапке,
+ * но перекрыт правилами с префиксом .cart-title, и наши общие правила для
+ * .cart-bubble им проигрывают. Повторяем цепочку с тем же префиксом.
+ *
+ * У фона цепочки совпадают до знака — .cart-title .cart-bubble
+ * .cart-bubble__background, обе (0,3,0), — и спор решает порядок загрузки,
+ * а он не в нашу пользу: слой темы идёт после ie-design.css. Проверено на
+ * превью: правило с тем же весом проигрывало, плашка оставалась серой.
+ * Поэтому здесь добавлен тег span — (0,3,1). Цвету цифры тег не нужен:
+ * у темы это .cart-title .cart-bubble__text с весом (0,2,0).
+ */
+.cart-title .cart-bubble span.cart-bubble__background {
+  background-color: var(--brand-accent, var(--ie-bordo));
+}
+
+.cart-title .cart-bubble .cart-bubble__text {
+  color: #fff;
+}
+
+/*
+ * В шторке корзины бейдж собран из другой разметки — .theme-drawer__badge,
+ * а не .cart-bubble, поэтому правила выше до него не достают. Тег
+ * компонента даёт вес (0,1,1) против (0,1,0) у темы и заодно оставляет
+ * бейджи других шторок в покое.
+ */
+cart-drawer-component .theme-drawer__badge {
+  background-color: var(--brand-accent, var(--ie-bordo));
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------ */
 /* Карточка товара                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -545,4 +584,81 @@ p:has(> .product-designer) {
     width: 128px;
     max-width: none;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* FAQ                                                                 */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Аккордеон вопросов на /pages/faq. Разметка — родные <details>/<summary>
+ * в теле страницы (Online Store → Pages → FAQ), поэтому раскрытие работает
+ * без JS и без accordion-custom темы: одна страница не повод тащить в неё
+ * компонент, который живёт в секциях.
+ */
+.ie-faq {
+  margin-block: 0.75rem 2.75rem;
+  border-top: 1px solid var(--ie-line);
+}
+
+.ie-faq__item {
+  border-bottom: 1px solid var(--ie-line);
+}
+
+/*
+ * Маркер <details> убираем трижды, потому что браузеры прячут его
+ * по-разному: display: flex снимает его в Chrome, list-style — в Firefox,
+ * ::-webkit-details-marker — в Safari.
+ */
+.ie-faq__q {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 1.05rem;
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--ie-sans);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--ie-ink);
+  transition: color 0.2s ease;
+}
+
+.ie-faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.ie-faq__q:hover {
+  color: var(--ie-bordo);
+}
+
+/* Галка из двух границ: своя, а не глиф шрифта, — совпадает по цвету с текстом. */
+.ie-faq__q::after {
+  content: "";
+  flex: none;
+  align-self: center;
+  width: 9px;
+  height: 9px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.ie-faq__item[open] > .ie-faq__q::after {
+  transform: translateY(10%) rotate(-135deg);
+}
+
+.ie-faq__a {
+  padding-block-end: 1.35rem;
+  max-width: 62ch;
+}
+
+.ie-faq__a > :first-child {
+  margin-block-start: 0;
+}
+
+.ie-faq__a > :last-child {
+  margin-block-end: 0;
 }
