@@ -11,8 +11,12 @@
       (как страница /pages/designers): новый дизайнер с флагом появится сам,
       картинка берётся из collection.image → фото первого товара →
       фирменный фолбэк с именем;
-    * вручную — слайды-блоки: своё фото, подпись и ссылка у каждого.
-      Пригодится, когда карусель не про коллекции, а про что угодно ещё.
+    * вручную — слайды-блоки. У слайда указывается коллекция, куда он ведёт,
+      и при желании тег, которым её сузить: ссылка собирается сама маршрутом
+      /collections/<коллекция>/<тег> — тем же, которым фильтрует шапка.
+      Фото и подпись, если их не задали, берутся у той же коллекции, так что
+      слайд «Gucci» делается одним выбором коллекции. Поле ссылки остаётся
+      на случай, когда вести надо не в каталог.
 
   Разметка карточки у обоих источников общая — snippets/ie-designer-card.liquid.
 
@@ -34,7 +38,7 @@
     for block in section.blocks
       if block.type == 'slide'
         if dc_count == 0
-          assign dc_first = block.settings.name
+          assign dc_first = block.settings.name | default: block.settings.collection.title
         endif
         assign dc_count = dc_count | plus: 1
       endif
@@ -103,10 +107,45 @@
         {%- if dc_source == 'manual' -%}
           {%- for block in section.blocks -%}
             {%- if block.type == 'slide' -%}
+              {%- liquid
+                assign dc_col = block.settings.collection
+
+                comment
+                  Ссылку собираем сами: маршрут /collections/<коллекция>/<тег> —
+                  тот же, которым фильтрует переключатель в шапке. Тег
+                  прогоняем через handleize: в адресе он живёт хендлом,
+                  а в настройке его пишут как у товара («Miu Miu»).
+
+                  Поле «Ссылка вручную» перебивает всё: бывает, что вести
+                  надо не в каталог, а на страницу или наружу.
+                endcomment
+                assign dc_url = block.settings.link
+                if dc_url == blank and dc_col != blank
+                  assign dc_url = dc_col.url
+                  if block.settings.tag != blank
+                    assign dc_tag = block.settings.tag | strip | handleize
+                    assign dc_url = dc_url | append: '/' | append: dc_tag
+                  endif
+                endif
+
+                comment
+                  Подпись и фото недозаполненного слайда добираем у коллекции —
+                  теми же правилами, что в автоматическом режиме.
+                endcomment
+                assign dc_title = block.settings.name | default: dc_col.title
+
+                assign dc_img = block.settings.image
+                if dc_img == blank
+                  assign dc_img = dc_col.image
+                endif
+                if dc_img == blank
+                  assign dc_img = dc_col.products.first.featured_image
+                endif
+              -%}
               {%- render 'ie-designer-card',
-                image: block.settings.image,
-                title: block.settings.name,
-                url: block.settings.link,
+                image: dc_img,
+                title: dc_title,
+                url: dc_url,
                 index: dc_i,
                 card_width: dc_card_w,
                 attributes: block.shopify_attributes
@@ -148,7 +187,7 @@
                     type="button"
                     class="dc__dot{% if dc_j == 0 %} is-active{% endif %}"
                     data-dc-dot="{{ dc_j }}"
-                    aria-label="{{ block.settings.name | escape }}"
+                    aria-label="{{ block.settings.name | default: block.settings.collection.title | escape }}"
                   ></button>
                 </li>
                 {%- assign dc_j = dc_j | plus: 1 -%}
@@ -602,9 +641,11 @@
       "type": "slide",
       "name": "Слайд",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Фото" },
-        { "type": "text", "id": "name", "label": "Подпись", "info": "Показывается под каруселью и на карточке без фото." },
-        { "type": "url", "id": "link", "label": "Ссылка", "info": "Пусто — карточка не кликается." }
+        { "type": "image_picker", "id": "image", "label": "Фото", "info": "Пусто — возьмётся изображение коллекции, а если и его нет — фото первого товара." },
+        { "type": "collection", "id": "collection", "label": "Коллекция", "info": "Куда ведёт клик по карточке." },
+        { "type": "text", "id": "tag", "label": "Тег", "info": "Сузить коллекцию до тега: ссылка станет /collections/<коллекция>/<тег>. Пишите тег как он стоит у товаров." },
+        { "type": "text", "id": "name", "label": "Подпись", "info": "Показывается под каруселью и на карточке без фото. Пусто — возьмётся название коллекции." },
+        { "type": "url", "id": "link", "label": "Ссылка вручную", "info": "Заполнено — перебивает коллекцию и тег. Пусто и коллекция не выбрана — карточка не кликается." }
       ]
     }
   ],
