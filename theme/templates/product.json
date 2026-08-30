@@ -273,58 +273,10 @@
         "padding-block-start": 24,
         "padding-block-end": 24
       }
-    },
-    "collection_links_9Pc4EL": {
-      "type": "collection-links",
-      "blocks": {
-        "link": {
-          "type": "_collection-link",
-          "static": true,
-          "settings": {
-            "show_count": true
-          },
-          "blocks": {
-            "title": {
-              "type": "_inline-collection-title",
-              "static": true,
-              "settings": {
-                "font": "var(--font-body--family)",
-                "weight": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none"
-              },
-              "blocks": {}
-            },
-            "image": {
-              "type": "_image",
-              "static": true,
-              "settings": {
-                "height": "medium",
-                "ratio": "square",
-                "border_radius": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": []
-        }
-      },
-      "name": "t:names.collection_links_text",
-      "settings": {
-        "layout": "text",
-        "section_width": "page-width",
-        "alignment": "left",
-        "image_position": "right",
-        "background_color": "{{ settings.color_palette.color2 }}",
-        "padding-block-start": 60,
-        "padding-block-end": 60
-      }
     }
   },
   "order": [
     "main",
-    "product-recommendations",
-    "collection_links_9Pc4EL"
+    "product-recommendations"
   ]
 }
