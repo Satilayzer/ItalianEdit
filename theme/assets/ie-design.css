@@ -175,18 +175,37 @@ html body [id$="__1787193191f56eb69c"][id] * {
 /*
  * Свитчеры перенесены в левую колонку верхнего ряда (см. snippets/header-row.liquid),
  * поэтому растяжка на всю сетку и собственные отступы им больше не нужны.
+ *
+ * ВАЖНО: только в «меню»-режиме шапки. Ниже 750px и на любом тач-устройстве
+ * тема ставит шапке data-menu-style="drawer", распускает колонки
+ * (`.header__column { display: contents }`) и раскладывает всё пятиколоночной
+ * сеткой с бортиками по 44px: 'leftA leftB center rightA rightB'. Переключатель
+ * в ней встаёт отдельной строкой во всю ширину — своим `grid-column: 1 / -1`
+ * из header-switchers.liquid.
+ *
+ * Без этой оговорки оба правила ломали мобильную шапку: display: flex
+ * возвращал левой колонке коробку с несуществующей в той сетке grid-area,
+ * а grid-column: auto загонял переключатель в 44-пиксельный бортик — он
+ * наезжал на вишлист, аккаунт и корзину.
+ *
+ * Условие берём тем же, что у темы, а не по одной ширине: тач-планшет шире
+ * 750px тоже в drawer-режиме. `:not(...)` заодно оставляет правила рабочими,
+ * если атрибут не проставлен (скрипт в theme.liquid не отработал) — тогда
+ * и сама тема мобильную раскладку не включает.
  */
-.header__row--top .header__column--left {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.75rem, 1.5vw, 1.5rem);
-  flex-wrap: wrap;
-}
+@media (min-width: 750px) {
+  #header-component:not([data-menu-style='drawer']) .header__row--top .header__column--left {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    flex-wrap: wrap;
+  }
 
-.header__row--top .header-switchers {
-  grid-column: auto;
-  min-height: 0;
-  padding-block: 0;
+  #header-component:not([data-menu-style='drawer']) .header__row--top .header-switchers {
+    grid-column: auto;
+    min-height: 0;
+    padding-block: 0;
+  }
 }
 
 /*
