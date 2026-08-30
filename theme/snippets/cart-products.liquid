@@ -513,32 +513,44 @@
                     {%- endif -%}
                   </div>
 
-                  {%- comment -%}
-                    Выбора количества в строке нет — как и на странице товара.
-                    Осталось только удаление; чтобы взять две штуки, товар
-                    добавляют дважды.
-                  {%- endcomment -%}
-                  <div class="cart-items__actions">
-                    <button
-                      class="button cart-items__remove"
-                      type="button"
-                      aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
-                      on:click="/onLineItemRemove/{{ item.index | plus: 1 }}"
-                      {% assign can_remove = item.instructions.can_remove | default: true, allow_false: true %}
-                      {% if can_remove == false %}
-                        hidden
-                      {% endif %}
-                    >
-                      {{- 'icon-delete.svg' | inline_asset_content -}}
-                      <span class="visually-hidden">{{ 'accessibility.remove' | t }}</span>
-                    </button>
-                  </div>
+                </td>
+                {%- comment -%}
+                  Вишлист и удаление — столбиком в правом верхнем углу строки.
+                  Сердце берём общим сниппетом темы, но с своим контекстом:
+                  у 'card' оно absolute и в белом круге поверх фотографии,
+                  а нам нужна голая иконка. Неизвестный контекст даёт класс,
+                  под который в wishlist.css правил нет, — остаётся только
+                  базовое оформление, размер задаём здесь.
+
+                  Выбора количества в строке нет, как и на странице товара:
+                  чтобы взять две штуки, товар добавляют дважды.
+                {%- endcomment -%}
+                <td
+                  class="cart-items__actions"
+                  role="cell"
+                  headers="productInformation"
+                >
+                  {%- render 'wishlist-button', product: item.product, context: 'cart' -%}
+
+                  <button
+                    class="button cart-items__remove"
+                    type="button"
+                    aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
+                    on:click="/onLineItemRemove/{{ item.index | plus: 1 }}"
+                    {% assign can_remove = item.instructions.can_remove | default: true, allow_false: true %}
+                    {% if can_remove == false %}
+                      hidden
+                    {% endif %}
+                  >
+                    {{- 'icon-delete.svg' | inline_asset_content -}}
+                    <span class="visually-hidden">{{ 'accessibility.remove' | t }}</span>
+                  </button>
                 </td>
                 <td
                   class="cart-items__error hidden"
                   role="cell"
                   ref="cartItemErrorContainer-{{ item.index | plus: 1 }}"
-                  headers="quantity"
+                  headers="productInformation"
                 >
                   <div
                     class="cart-item__error"
@@ -618,16 +630,16 @@
   }
 
   /*
-   * Строка — две колонки: фотография и всё остальное. Колонок количества
-   * и итога по строке больше нет, поэтому и сетка простая: содержимое
-   * само выстраивается сверху вниз, как на странице товара.
+   * Строка — три колонки: фотография, содержимое и узкий столбец действий
+   * справа. Колонок количества и итога по строке больше нет, поэтому
+   * содержимое просто идёт сверху вниз, как на странице товара.
    */
   .cart-items__table-row {
     display: grid;
-    grid-template-columns: clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr);
+    grid-template-columns: clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr) auto;
     grid-template-areas:
-      'media details'
-      'media error';
+      'media details actions'
+      'media error error';
     column-gap: var(--gap-md);
     align-items: start;
     padding-bottom: var(--cart-items-gap);
@@ -900,8 +912,13 @@
     margin: 0;
   }
 
+  /* Сердце и корзина — столбиком, прижаты к правому краю строки. */
   .cart-items__actions {
-    margin-block-start: var(--margin-xs);
+    grid-area: actions;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
   }
 
   .cart-items__remove {
@@ -912,7 +929,12 @@
     justify-content: center;
     box-shadow: none;
     padding: 0;
-    margin-inline-start: calc(-1 * var(--padding-xs));
+  }
+
+  /* Сердцу — тот же след, что у корзины, чтобы иконки стояли по одной оси. */
+  .cart-items__actions .wishlist-button__control {
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
   }
 
   .cart-items__media {
