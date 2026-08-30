@@ -1,0 +1,57 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "ie-contact",
+      "blocks": {
+        "email": {
+          "type": "row",
+          "settings": {
+            "icon": "mail",
+            "label": "Email",
+            "sublabel": "hello@italian-edit.com — we reply within one business day",
+            "link": "mailto:hello@italian-edit.com",
+            "button_label": "Write us"
+          }
+        },
+        "faq": {
+          "type": "row",
+          "settings": {
+            "icon": "question",
+            "label": "Frequently asked questions",
+            "sublabel": "Orders, shipping, returns, authenticity",
+            "link": "/pages/faq",
+            "button_label": "Access"
+          }
+        }
+      },
+      "block_order": [
+        "email",
+        "faq"
+      ],
+      "settings": {
+        "show_title": true,
+        "intro": "<p>Our customer service team is at your complete disposal for any question about Italian Edit.</p>",
+        "whatsapp_show": true,
+        "whatsapp_number": "+1 727 463 1656",
+        "whatsapp_hours": "From Monday to Friday: 9:00–18:00 (EST)",
+        "whatsapp_button": "Open WhatsApp",
+        "whatsapp_qr": "shopify://shop_images/italian-edit-whatsapp-qr.png",
+        "footnote": "<p>By using WhatsApp, you confirm that you have read and understood our <a href=\"/policies/privacy-policy\">Privacy Policy</a>.</p><p>Call +1 727 463 1656</p><p>From Monday to Friday: 9:00–18:00 (EST)</p>",
+        "padding_top": 48,
+        "padding_bottom": 72
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
