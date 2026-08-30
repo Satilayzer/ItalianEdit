@@ -631,6 +631,7 @@ main[data-template='page.faq'] .text-block {
  * веса хватит своего.
  */
 main[data-template='page.faq'] h1 {
+  font-size: 1.25rem;
   font-weight: 900;
   -webkit-text-stroke: 0.5px currentColor;
 }
