@@ -37,10 +37,6 @@
 
   <label class="ie-sound__volume">
     <span class="ie-sound__label">{{ 'Громкость' }}</span>
-    {%- comment -%}
-      orient — для Firefox: он до сих пор поворачивает ползунок только по
-      атрибуту. Остальные браузеры разворачивают его через writing-mode.
-    {%- endcomment -%}
     <input
       class="ie-sound__range"
       type="range"
@@ -48,7 +44,6 @@
       max="100"
       step="1"
       value="40"
-      orient="vertical"
       data-sound-volume
     >
   </label>
@@ -98,9 +93,13 @@
   }
 
   /*
-   * Ползунок висит отдельной панелью под динамиком и разворачивается вниз.
-   * Раньше он раздвигался вбок и сдвигал соседние иконки шапки; так ряд
-   * стоит на месте, что бы ни делал ползунок.
+   * Ползунок висит отдельной панелью под динамиком: сам ряд иконок при
+   * его открытии не двигается, что бы ни делал ползунок.
+   *
+   * Панель прижата правым краем к динамику и растёт влево, а не от центра.
+   * Динамик стоит у правого края шапки, и центрованная панель уезжала бы
+   * за экран: на телефоне под него отведена колонка в 44px, а панель втрое
+   * шире.
    *
    * На тач-устройствах наведения нет, поэтому панель открывается ещё и по
    * фокусу: касание динамика и глушит звук, и показывает громкость.
@@ -108,12 +107,12 @@
   .ie-sound__volume {
     position: absolute;
     top: calc(100% + 8px);
-    left: 50%;
+    right: 0;
     z-index: 5;
     display: flex;
-    justify-content: center;
-    padding: 10px 7px;
-    translate: -50% -4px;
+    align-items: center;
+    padding: 7px 10px;
+    translate: 0 -4px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease, translate 0.2s ease;
@@ -123,7 +122,7 @@
   .ie-sound:focus-within .ie-sound__volume {
     opacity: 1;
     pointer-events: auto;
-    translate: -50% 0;
+    translate: 0 0;
   }
 
   /*
@@ -149,17 +148,10 @@
     white-space: nowrap;
   }
 
-  /*
-   * Размеры задаём физическими свойствами: при writing-mode: vertical-*
-   * inline-size — это высота, и логические свойства читались бы наоборот.
-   * direction: rtl ставит тихо внизу, громко вверху.
-   */
+  /* Обычный горизонтальный ползунок: тихо слева, громко справа. */
   .ie-sound__range {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    -webkit-appearance: slider-vertical;
-    width: 14px;
-    height: 72px;
+    width: 96px;
+    height: 14px;
     margin: 0;
     accent-color: currentcolor;
     cursor: pointer;
