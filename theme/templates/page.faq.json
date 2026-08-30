@@ -67,7 +67,7 @@
       ],
       "settings": {
         "content_direction": "column",
-        "gap": 24,
+        "gap": 72,
         "background_color": "{{ settings.color_palette.background }}",
         "padding-block-start": 60,
         "padding-block-end": 72
