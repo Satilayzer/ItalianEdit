@@ -5,30 +5,53 @@
   ЗА неё (translateX + scale + z-index). Скроллер зациклен: после последней —
   снова первая. Свайп/драг/стрелки/точки — всё на JS, нативного скролла нет.
 
-  Источник — коллекции с метаполем custom.designer_index = true (как страница
-  /pages/designers). Новый дизайнер с флагом появится сам.
+  Источников два, переключаются настройкой «Источник слайдов»:
 
-  Картинка: collection.image → фото первого товара → фирменный фолбэк
-  (карточка с именем на фирменном фоне).
+    * автоматически — коллекции с метаполем custom.designer_index = true
+      (как страница /pages/designers): новый дизайнер с флагом появится сам,
+      картинка берётся из collection.image → фото первого товара →
+      фирменный фолбэк с именем;
+    * вручную — слайды-блоки: своё фото, подпись и ссылка у каждого.
+      Пригодится, когда карусель не про коллекции, а про что угодно ещё.
+
+  Разметка карточки у обоих источников общая — snippets/ie-designer-card.liquid.
 
   Цвета и типографика заголовка настраиваются в редакторе темы.
 {% enddoc %}
 
 {%- liquid
+  assign dc_source = section.settings.source | default: 'auto'
   assign dc_max = section.settings.max_designers
+  assign dc_card_w = section.settings.card_width | default: 420
   assign dc_count = 0
   assign dc_first = ''
-  for c in collections
-    if c.metafields.custom.designer_index.value
-      if dc_max > 0 and dc_count >= dc_max
-        break
+
+  comment
+    Считаем слайды заранее: от их числа зависит, рисовать ли секцию вообще,
+    и какое имя стоит под каруселью до первого перелистывания.
+  endcomment
+  if dc_source == 'manual'
+    for block in section.blocks
+      if block.type == 'slide'
+        if dc_count == 0
+          assign dc_first = block.settings.name
+        endif
+        assign dc_count = dc_count | plus: 1
       endif
-      if dc_count == 0
-        assign dc_first = c.title
+    endfor
+  else
+    for c in collections
+      if c.metafields.custom.designer_index.value
+        if dc_max > 0 and dc_count >= dc_max
+          break
+        endif
+        if dc_count == 0
+          assign dc_first = c.title
+        endif
+        assign dc_count = dc_count | plus: 1
       endif
-      assign dc_count = dc_count | plus: 1
-    endif
-  endfor
+    endfor
+  endif
 
   # Сдвиг соседней карточки в процентах от ширины карточки.
   #
@@ -60,6 +83,7 @@
     class="section section--{{ section.settings.section_width }} designer-carousel"
     style="
       --dc-ratio: {{ section.settings.aspect_ratio }};
+      --dc-card-w-max: {{ dc_card_w }}px;
       --dc-shift-pct: {{ dc_shift }};
       --dc-card-bg: {{ section.settings.card_background | default: '#4e070d' }};
       --dc-card-fg: {{ section.settings.card_text_color | default: '#ffffff' }};
@@ -76,63 +100,76 @@
     <designer-carousel class="dc">
       <div class="dc__stage" ref="stage">
         {%- assign dc_i = 0 -%}
-        {%- for c in collections -%}
-          {%- if c.metafields.custom.designer_index.value -%}
-            {%- if dc_max > 0 and dc_i >= dc_max -%}{%- break -%}{%- endif -%}
-            {%- liquid
-              assign img = c.image
-              if img == blank
-                assign img = c.products.first.featured_image
-              endif
-            -%}
-            <a
-              class="dc__slide"
-              href="{{ c.url }}"
-              data-dc-name="{{ c.title | escape }}"
-              data-dc-index="{{ dc_i }}"
-            >
-              <span class="dc__card">
-                {%- if img != blank -%}
-                  {{
-                    img
-                    | image_url: width: 900
-                    | image_tag:
-                      loading: 'lazy',
-                      sizes: '(max-width: 749px) 62vw, 420px',
-                      widths: '360, 540, 720, 900',
-                      class: 'dc__img',
-                      alt: c.title | escape
-                  }}
-                {%- else -%}
-                  <span class="dc__fallback">
-                    <span class="dc__fallback-name">{{ c.title }}</span>
-                  </span>
-                {%- endif -%}
-                <span class="dc__scrim" aria-hidden="true"></span>
-              </span>
-            </a>
-            {%- assign dc_i = dc_i | plus: 1 -%}
-          {%- endif -%}
-        {%- endfor -%}
+        {%- if dc_source == 'manual' -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'slide' -%}
+              {%- render 'ie-designer-card',
+                image: block.settings.image,
+                title: block.settings.name,
+                url: block.settings.link,
+                index: dc_i,
+                card_width: dc_card_w,
+                attributes: block.shopify_attributes
+              -%}
+              {%- assign dc_i = dc_i | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for c in collections -%}
+            {%- if c.metafields.custom.designer_index.value -%}
+              {%- if dc_max > 0 and dc_i >= dc_max -%}{%- break -%}{%- endif -%}
+              {%- liquid
+                assign img = c.image
+                if img == blank
+                  assign img = c.products.first.featured_image
+                endif
+              -%}
+              {%- render 'ie-designer-card',
+                image: img,
+                title: c.title,
+                url: c.url,
+                index: dc_i,
+                card_width: dc_card_w
+              -%}
+              {%- assign dc_i = dc_i | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
       </div>
 
       <div class="dc__footer">
         <ol class="dc__dots" aria-label="Designers">
           {%- assign dc_j = 0 -%}
-          {%- for c in collections -%}
-            {%- if c.metafields.custom.designer_index.value -%}
-              {%- if dc_max > 0 and dc_j >= dc_max -%}{%- break -%}{%- endif -%}
-              <li>
-                <button
-                  type="button"
-                  class="dc__dot{% if dc_j == 0 %} is-active{% endif %}"
-                  data-dc-dot="{{ dc_j }}"
-                  aria-label="{{ c.title | escape }}"
-                ></button>
-              </li>
-              {%- assign dc_j = dc_j | plus: 1 -%}
-            {%- endif -%}
-          {%- endfor -%}
+          {%- if dc_source == 'manual' -%}
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'slide' -%}
+                <li>
+                  <button
+                    type="button"
+                    class="dc__dot{% if dc_j == 0 %} is-active{% endif %}"
+                    data-dc-dot="{{ dc_j }}"
+                    aria-label="{{ block.settings.name | escape }}"
+                  ></button>
+                </li>
+                {%- assign dc_j = dc_j | plus: 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for c in collections -%}
+              {%- if c.metafields.custom.designer_index.value -%}
+                {%- if dc_max > 0 and dc_j >= dc_max -%}{%- break -%}{%- endif -%}
+                <li>
+                  <button
+                    type="button"
+                    class="dc__dot{% if dc_j == 0 %} is-active{% endif %}"
+                    data-dc-dot="{{ dc_j }}"
+                    aria-label="{{ c.title | escape }}"
+                  ></button>
+                </li>
+                {%- assign dc_j = dc_j | plus: 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
         </ol>
         <p class="dc__label" ref="label">{{ dc_first }}</p>
       </div>
@@ -229,11 +266,30 @@
       }
     })();
   </script>
+{%- elsif request.design_mode -%}
+  {%- comment -%}
+    Пустая секция в редакторе читается как поломка: человек переключил
+    источник — и всё исчезло. На витрине подсказки нет, там пустая карусель
+    просто не рисуется.
+  {%- endcomment -%}
+  <div class="section section--page-width designer-carousel">
+    <p class="designer-carousel__empty">
+      {%- if dc_source == 'manual' -%}
+        Слайдов пока нет — добавьте их кнопкой «Добавить блок» слева.
+      {%- else -%}
+        Нет коллекций с включённым метаполем «Designer index».
+      {%- endif -%}
+    </p>
+  </div>
 {%- endif -%}
 
 {% stylesheet %}
   .designer-carousel {
-    --dc-card-w: min(74vw, 420px);
+    /*
+     * Потолок ширины приходит из настройки секции инлайновой переменной:
+     * {% stylesheet %} собирается один раз на тему и настроек не видит.
+     */
+    --dc-card-w: min(74vw, var(--dc-card-w-max, 420px));
     /*
      * На сколько уменьшается каждая следующая карточка в стеке.
      * Связан с расчётом сдвига в Liquid (там s₁ = 0.9): поменяется здесь —
@@ -253,8 +309,17 @@
    */
   @media screen and (max-width: 749px) {
     .designer-carousel {
-      --dc-card-w: min(62vw, 340px);
+      --dc-card-w: min(62vw, var(--dc-card-w-max, 420px));
     }
+  }
+
+  .designer-carousel__empty {
+    margin: 0;
+    padding-block: 3rem;
+    text-align: center;
+    font-family: var(--ie-sans);
+    font-size: 0.875rem;
+    color: var(--ie-muted, #9a9a9a);
   }
 
   /* Шрифт, кегль и цвет — из настроек секции (snippets/ie-heading-style.liquid). */
@@ -422,8 +487,24 @@
       "default": "Recommended Designers"
     },
     {
+      "type": "select",
+      "id": "source",
+      "label": "Источник слайдов",
+      "options": [
+        { "value": "auto", "label": "Автоматически — коллекции дизайнеров" },
+        { "value": "manual", "label": "Вручную — свои слайды" }
+      ],
+      "default": "auto"
+    },
+    {
       "type": "paragraph",
-      "content": "Показывает коллекции с включённым метаполем «Designer index». Картинка берётся из изображения коллекции (загрузите editorial-фото туда); пока его нет — карточка с именем на фирменном фоне."
+      "content": "Показывает коллекции с включённым метаполем «Designer index». Картинка берётся из изображения коллекции (загрузите editorial-фото туда); пока его нет — карточка с именем на фирменном фоне.",
+      "visible_if": "{{ section.settings.source == 'auto' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Слайды добавляются кнопкой ниже: своё фото, подпись и ссылка у каждого. Коллекции и метаполе в этом режиме не участвуют.",
+      "visible_if": "{{ section.settings.source == 'manual' }}"
     },
     {
       "type": "range",
@@ -444,7 +525,8 @@
       "max": 20,
       "step": 1,
       "default": 12,
-      "info": "0 — показывать всех"
+      "info": "0 — показывать всех",
+      "visible_if": "{{ section.settings.source == 'auto' }}"
     },
     {
       "type": "select",
@@ -456,6 +538,17 @@
         { "value": "1 / 1", "label": "Square" }
       ],
       "default": "4 / 5"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Ширина карточки",
+      "min": 240,
+      "max": 640,
+      "step": 10,
+      "unit": "px",
+      "default": 420,
+      "info": "Потолок ширины активной карточки. На узких экранах карточка всё равно ужимается по ширине экрана."
     },
     {
       "type": "select",
@@ -504,6 +597,18 @@
     { "type": "color", "id": "dots_color", "label": "Точки-пагинация", "default": "#111111" },
     { "type": "color", "id": "label_color", "label": "Имя дизайнера под каруселью", "default": "#111111" }
   ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Слайд",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Фото" },
+        { "type": "text", "id": "name", "label": "Подпись", "info": "Показывается под каруселью и на карточке без фото." },
+        { "type": "url", "id": "link", "label": "Ссылка", "info": "Пусто — карточка не кликается." }
+      ]
+    }
+  ],
+  "max_blocks": 20,
   "presets": [
     { "name": "Designer carousel" }
   ]

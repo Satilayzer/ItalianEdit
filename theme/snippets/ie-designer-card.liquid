@@ -1,0 +1,51 @@
+{%- doc -%}
+  Карточка карусели дизайнеров.
+
+  Одна разметка на оба источника секции `designer-carousel`: и на коллекции
+  с метаполем «Designer index», и на слайды, заведённые руками. Вынесена
+  в сниппет, чтобы источники не разъезжались по вёрстке — размеры картинки
+  и слои карточки правятся в одном месте.
+
+  Стили живут в {% stylesheet %} самой секции: сниппет рисуется только
+  внутри неё, и таскать их отдельно незачем.
+
+  @param {object} [image] - Картинка карточки; пусто — фирменный фолбэк с именем
+  @param {string} title - Имя дизайнера
+  @param {string} [url] - Ссылка; пусто — карточка не кликается
+  @param {number} index - Порядковый номер слайда, от нуля
+  @param {number} [card_width] - Ширина карточки на десктопе, px (для sizes)
+  @param {string} [attributes] - shopify_attributes блока, если слайд — блок
+{%- enddoc -%}
+
+{%- liquid
+  assign dc_w = card_width | default: 420
+  assign dc_sizes = '(max-width: 749px) 62vw, ' | append: dc_w | append: 'px'
+-%}
+
+<a
+  class="dc__slide"
+  {% if url != blank %}href="{{ url }}"{% endif %}
+  data-dc-name="{{ title | escape }}"
+  data-dc-index="{{ index }}"
+  {{ attributes }}
+>
+  <span class="dc__card">
+    {%- if image != blank -%}
+      {{
+        image
+        | image_url: width: 900
+        | image_tag:
+          loading: 'lazy',
+          sizes: dc_sizes,
+          widths: '360, 540, 720, 900',
+          class: 'dc__img',
+          alt: title | escape
+      }}
+    {%- else -%}
+      <span class="dc__fallback">
+        <span class="dc__fallback-name">{{ title }}</span>
+      </span>
+    {%- endif -%}
+    <span class="dc__scrim" aria-hidden="true"></span>
+  </span>
+</a>
