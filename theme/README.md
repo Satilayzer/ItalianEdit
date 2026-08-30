@@ -45,6 +45,7 @@
 | `templates/404.json` | 404. |
 | `templates/page.designers.json` | Страница `/pages/designers`. Была алфавитным указателем на `custom-liquid`; заменена нашей секцией `ie-designers`. |
 | `templates/page.contact.json` | Страница `/pages/contact`. Была штатной `main-page` с формой обратной связи; заменена нашей секцией `ie-contact`. Формы в макете нет, поэтому её сняли — писать теперь в WhatsApp или на почту. |
+| `templates/page.faq.json` | Страница `/pages/faq`. От штатной отличается двумя вещами: заголовок выведен пресетом `h5` (мелкая подпись капсом, как в макете, вместо крупного серифного H1) и появилась зацепка `data-template="page.faq"` — по ней в `ie-design.css` бьют кегли раздела. Без своего шаблона пришлось бы целиться в `page` и задеть About Us и Sitemap. |
 | `templates/product.json` | Страница товара. Секция `main` — наша `ie-product`; «Goes well with…» и ссылки на коллекции остались штатными. |
 | `templates/page.chanel.json` и ещё семнадцать `page.<бренд>.json` | Страницы историй брендов на секции `ie-brand-story`. Тексты уже внутри, картинок нет — их подставляют в редакторе. Список: chanel, hermes, louis-vuitton, dior, gucci, prada, balenciaga, saint-laurent, cartier, bottega-veneta, fendi, loewe, miu-miu, loro-piana, tom-ford, rolex, celine, valentino. |
 

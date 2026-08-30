@@ -595,9 +595,48 @@ p:has(> .product-designer) {
  * в теле страницы (Online Store → Pages → FAQ), поэтому раскрытие работает
  * без JS и без accordion-custom темы: одна страница не повод тащить в неё
  * компонент, который живёт в секциях.
+ *
+ * Кегли на этой странице свои и заметно мельче общих. По макету заголовок
+ * страницы — не крупный серифный H1, а мелкая подпись капсом; названия
+ * разделов вдвое мельче обычного H2 темы. Поэтому у страницы свой шаблон
+ * `templates/page.faq.json`: он не столько меняет раскладку, сколько даёт
+ * зацепку `data-template="page.faq"` — иначе пришлось бы бить по `page`
+ * и задеть About Us и Sitemap, у которых типографика общая.
  */
+/*
+ * Ширину задаём контейнеру секции, а не текстовому блоку внутри: блок
+ * шире контейнера всё равно не станет, а насколько широк сам контейнер
+ * (page-width-content) — вопрос настроек темы. Так колонка получается
+ * ровно 46rem при любой из них, и остаётся по центру.
+ */
+main[data-template='page.faq'] .page-width-content {
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+main[data-template='page.faq'] .text-block {
+  max-width: none;
+}
+
+/* Подпись страницы: тот же кегль, что у вопросов, но жирная. */
+main[data-template='page.faq'] h1 {
+  font-weight: 600;
+}
+
+main[data-template='page.faq'] h2 {
+  font-size: 1.875rem;
+  letter-spacing: 0.02em;
+  margin-block-start: 2.75rem;
+}
+
+@media (max-width: 749px) {
+  main[data-template='page.faq'] h2 {
+    font-size: 1.5rem;
+  }
+}
+
 .ie-faq {
-  margin-block: 0.75rem 2.75rem;
+  margin-block: 1rem 2.25rem;
   border-top: 1px solid var(--ie-line);
 }
 
@@ -615,12 +654,12 @@ p:has(> .product-designer) {
   align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-block: 1.05rem;
+  padding-block: 0.85rem;
   list-style: none;
   cursor: pointer;
   font-family: var(--ie-sans);
-  font-size: 1rem;
-  line-height: 1.4;
+  font-size: 0.875rem;
+  line-height: 1.45;
   color: var(--ie-ink);
   transition: color 0.2s ease;
 }
@@ -633,13 +672,23 @@ p:has(> .product-designer) {
   color: var(--ie-bordo);
 }
 
+/*
+ * Рамка фокуса тонкая и по самой строке: у <summary> она всплывает
+ * и от мыши тоже, а жирный контур в две точки читался рамкой вокруг
+ * вопроса — будто у него другое состояние.
+ */
+.ie-faq__q:focus-visible {
+  outline: 1px solid var(--ie-bordo);
+  outline-offset: 0;
+}
+
 /* Галка из двух границ: своя, а не глиф шрифта, — совпадает по цвету с текстом. */
 .ie-faq__q::after {
   content: "";
   flex: none;
   align-self: center;
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-right: 1px solid currentColor;
   border-bottom: 1px solid currentColor;
   transform: translateY(-25%) rotate(45deg);
@@ -651,8 +700,10 @@ p:has(> .product-designer) {
 }
 
 .ie-faq__a {
-  padding-block-end: 1.35rem;
+  padding-block-end: 1.1rem;
   max-width: 62ch;
+  font-size: 0.875rem;
+  line-height: 1.7;
 }
 
 .ie-faq__a > :first-child {
