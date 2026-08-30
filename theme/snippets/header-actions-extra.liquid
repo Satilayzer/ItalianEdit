@@ -1,0 +1,95 @@
+{% doc %}
+  Наши правки шапки, которым нужно грузиться на каждой странице.
+  Вызывается из header-actions.liquid — там стоит ровно одна наша строка.
+
+  @param {string} [placement] - 'row' — отрисовать ТОЛЬКО ссылку вишлиста.
+    С этим параметром сниппет зовёт header-row.liquid, чтобы ссылка стала
+    отдельным элементом сетки шапки, а не ребёнком <header-actions>.
+    Без параметра — всё остальное: перенос фильтров и скрипт вишлиста.
+
+    Зачем так: на телефоне тема распускает колонки и раскладывает шапку
+    сеткой с бортиками по 44px. Внутри <header-actions> вишлист делил один
+    такой бортик с аккаунтом и корзиной — три иконки в 44px вылезали влево
+    и наезжали на вордмарк. Отдельным элементом сетки ссылку можно положить
+    во вторую строку, под иконки.
+
+    Разделение через параметр, а не два сниппета: так в header-actions.liquid
+    (файл темы) по-прежнему стоит ровно одна наша строка, и править его
+    не пришлось.
+{% enddoc %}
+
+{%- if placement == 'row' -%}
+  {%- comment -%}
+    Ссылку рисуем только когда страница вишлиста реально есть и опубликована:
+    иначе в шапке висела бы иконка, ведущая на 404.
+
+    display_style сюда не передаётся — и специально: чтобы не править
+    header-actions.liquid ради одного параметра, режим определяется по классу
+    header-actions--text, который тема сама ставит на <header-actions>.
+    Правила — в assets/wishlist.css.
+  {%- endcomment -%}
+  {%- assign wishlist_page = pages.wishlist -%}
+  {%- if wishlist_page != blank -%}
+    <a
+      href="{{ wishlist_page.url }}"
+      class="header-actions__action wishlist-link"
+      aria-label="{{ wishlist_page.title | default: 'Wishlist' | escape }}"
+    >
+      <span class="wishlist-link__text">{{ wishlist_page.title | default: 'Wishlist' }}</span>
+      <span class="wishlist-link__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l8.84 8.84 8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
+          />
+        </svg>
+      </span>
+      <wishlist-count class="wishlist-link__count" hidden>0</wishlist-count>
+    </a>
+  {%- endif -%}
+{%- else -%}
+  {%- comment -%} Перенос выбора фильтров при клике по меню {%- endcomment -%}
+  {% render 'browse-filter-persist' %}
+
+  {%- comment -%}
+    Вишлист. Скрипт грузим отсюда, а не из scripts.liquid: этот сниппет и так
+    есть на каждой странице с шапкой. Сама разметка уехала в ветку выше, но
+    скрипту всё равно, где она, — он ищет её по классам.
+  {%- endcomment -%}
+  <script
+    src="{{ 'wishlist.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{%- endif -%}
+
+{% stylesheet %}
+  /*
+   * Мобильный ряд категорий (navigation bar) тема рисует своим
+   * шрифтом: Source Sans Pro 15px без капса. На десктопе те же
+   * категории идут Source Serif 4 13px капсом. Приводим к одному виду.
+   */
+  .header__navigation-bar-row .menu-list__item {
+    font-family: var(--font-accent--family, var(--font-heading--family));
+    font-weight: var(--font-accent--weight, 400);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /*
+   * На 375px шесть пунктов капсом не влезали и MORE уходил за край.
+   * Ширину едят не буквы, а промежутки (gap 15px × 5) и боковые
+   * отступы пунктов — режем их, кегль трогаем минимально.
+   */
+  @media screen and (max-width: 749px) {
+    .header__navigation-bar-row .menu-list__list {
+      gap: 8px;
+    }
+
+    .header__navigation-bar-row .menu-list__item {
+      font-size: 0.6875rem;
+      letter-spacing: 0.02em;
+      padding-inline: 4px;
+    }
+  }
+{% endstylesheet %}

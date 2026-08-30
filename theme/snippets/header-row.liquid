@@ -111,6 +111,14 @@
             {% when 'drawer_search' %}
               {{ drawer_search }}
             {% when 'actions' %}
+              {%- comment -%}
+                Вишлист стоит перед аккаунтом и корзиной — ровно там, где был,
+                пока рисовался первым ребёнком <header-actions>. Вынесли его
+                оттуда, чтобы на телефоне он был отдельным элементом сетки
+                шапки: внутри header-actions три иконки делили один
+                44-пиксельный бортик и вылезали на вордмарк.
+              {%- endcomment -%}
+              {% render 'header-actions-extra', placement: 'row' %}
               {{ actions }}
           {% endcase %}
         {% endunless %}
