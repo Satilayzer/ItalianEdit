@@ -31,12 +31,7 @@
   fetchpriority="low"
 ></script>
 <script
-  src="{{ 'component-cart-quantity-selector.js' | asset_url }}"
-  type="module"
-  fetchpriority="low"
-></script>
-<script
-  src="{{ 'volume-pricing-info.js' | asset_url }}"
+  src="{{ 'ie-cart-variant.js' | asset_url }}"
   type="module"
   fetchpriority="low"
 ></script>
@@ -121,20 +116,6 @@
               >
                 {{ 'content.product_information' | t }}
               </th>
-              <th
-                id="quantity"
-                scope="col"
-                role="columnheader"
-              >
-                {{ 'content.quantity' | t }}
-              </th>
-              <th
-                id="productTotal"
-                scope="col"
-                role="columnheader"
-              >
-                {{ 'content.product_total' | t }}
-              </th>
             </tr>
           </thead>
 
@@ -143,7 +124,7 @@
               <tr
                 id="CartItem-{{ item.key }}"
                 role="row"
-                class="cart-items__table-row{% if item.parent_relationship.parent != null %} cart-items__nested-line{% endif %}{% if context == 'drawer' %}{% unless item.unit_price_measurement %} cart-items__table-row--full-width-variants{% endunless %}{% endif %}"
+                class="cart-items__table-row{% if item.parent_relationship.parent != null %} cart-items__nested-line{% endif %}"
                 ref="cartItemRows[]"
                 data-parent-key="{{ item.parent_relationship.parent.key }}"
                 data-key="{{ item.key }}"
@@ -248,152 +229,296 @@
                     {%- endif -%}
                   </div>
 
-                  <div class="cart-items__variants-wrapper">
-                    {%- if item.product.has_only_default_variant == false
-                      or item.properties.size != 0
-                      or item.selling_plan_allocation != null
-                    -%}
-                      {%- if item.product.has_only_default_variant == false and item.item_components.size == 0 -%}
-                        <dl class="cart-items__variants">
-                          {%- for option in item.options_with_values -%}
-                            <div class="cart-items__variant">
-                              <dt class="visually-hidden">{{ option.name }}:</dt>
-                              <dd>
-                                {{- option.value -}}
-                                {%- if forloop.last != true %},&nbsp;{% endif -%}
-                              </dd>
-                            </div>
-                          {%- endfor -%}
-                        </dl>
-                      {%- endif -%}
+                  {%- comment -%}
+                    Всё про цену — одной строкой: наша цена чёрным, прежняя
+                    серым и зачёркнутая, следом размер скидки. Отдельной
+                    колонки с итогом по строке больше нет — при количестве 1
+                    она повторяла ту же цифру, а в макете её нет.
 
-                      {%- liquid
-                        assign has_visible_properties = false
-                        for property in item.properties
-                          assign property_first_char = property.first | slice: 0
-                          if property.last != blank and property_first_char != '_'
-                            assign has_visible_properties = true
+                    Процент считаем ДО money-фильтров, пока цены — числа
+                    в центах, и по тем же двум числам, которые выводятся
+                    рядом, иначе он разойдётся с зачёркнутой ценой.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign line_price = item.original_price
+                    assign line_compare = item.variant.compare_at_price
+                    if item.original_price != item.final_price
+                      assign line_price = item.final_price
+                      if item.variant.compare_at_price <= item.original_price
+                        assign line_compare = item.original_price
+                      endif
+                    endif
+
+                    assign line_discount = 0
+                    if line_compare > line_price
+                      assign line_discount = line_compare | minus: line_price | times: 100.0 | divided_by: line_compare | round
+                    endif
+                  -%}
+                  <p class="cart-items__price-row">
+                    <span class="visually-hidden">
+                      {%- if line_compare > line_price -%}
+                        {{ 'content.price_sale' | t }}
+                      {%- else -%}
+                        {{ 'content.price' | t }}
+                      {%- endif -%}
+                    </span>
+                    <span class="cart-items__price-current">{{ line_price | money }}</span>
+                    {%- if line_compare > line_price -%}
+                      <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
+                      <s class="cart-items__price-compare">{{ line_compare | money }}</s>
+                      <span class="cart-items__discount">&#8722;{{ line_discount }}%</span>
+                    {%- endif -%}
+                  </p>
+
+                  {%- comment -%}
+                    Цвет и размер под ценой — как на странице товара.
+
+                    Цвет у нас не опция варианта, а тег товара: каталог едет
+                    из BrandsGateway, где цвет один на карточку. Поэтому он
+                    рисуется неинтерактивным кружком — переключать нечего.
+                    Таблица «тег = цвет» продублирована с настроек секции
+                    ie-product: секция и сниппет друг друга не видят, а в
+                    макете цвет есть и в корзине. Меняете список там —
+                    поправьте и здесь.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign size_words = 'size, размер, beden, taglia, taille, talla, größe' | downcase | split: ','
+                    assign color_table = 'Black = #111111|White = #ffffff|Grey = #9a9a9a|Gray = #9a9a9a|Beige = #e8dcc8|Brown = #6b4a2f|Blue = #2f4b8f|Navy = #1b2a4a|Green = #3f6b45|Yellow = #e8c53a|Orange = #e07b2f|Red = #a52128|Pink = #f0c2cf|Purple = #6b3f8f|Gold = #c8a24a|Silver = #c9ccce' | split: '|'
+
+                    assign line_product = item.product
+                    assign cur1 = item.variant.option1
+                    assign cur2 = item.variant.option2
+                    assign cur3 = item.variant.option3
+
+                    assign has_color_option = false
+                    unless line_product.has_only_default_variant
+                      for option in line_product.options_with_values
+                        assign option_key = option.name | downcase
+                        assign option_is_size = false
+                        for word in size_words
+                          assign needle = word | strip
+                          if needle != blank and option_key contains needle
+                            assign option_is_size = true
                             break
                           endif
                         endfor
-                      -%}
-                      {%- if has_visible_properties -%}
-                        <dl class="cart-items__properties">
-                          {%- for property in item.properties -%}
-                            {%- assign property_first_char = property.first | slice: 0 -%}
-                            {%- if property.last != blank and property_first_char != '_' -%}
-                              <div class="cart-items__property">
-                                <dt>{{ property.first }}:</dt>
-                                <dd>
-                                  {%- if property.last contains '/uploads/' -%}
-                                    <a href="{{ property.last }}">{{ property.last | split: '/' | last }}</a>
-                                  {%- else -%}
-                                    {{ property.last }}
-                                  {%- endif -%}
-                                </dd>
-                              </div>
-                            {%- endif -%}
-                          {%- endfor -%}
-                        </dl>
+                        unless option_is_size
+                          assign has_color_option = true
+                        endunless
+                      endfor
+                    endunless
+
+                    assign line_color_name = ''
+                    assign line_color_hex = ''
+                    unless has_color_option
+                      assign tag_key = line_product.tags | join: '~|~' | downcase | prepend: '~|~' | append: '~|~'
+                      for row in color_table
+                        assign parts = row | strip | split: '='
+                        assign candidate = parts[0] | strip
+                        assign candidate_hex = parts[1] | strip
+                        if candidate != blank and candidate_hex != blank
+                          assign candidate_key = candidate | downcase | prepend: '~|~' | append: '~|~'
+                          if tag_key contains candidate_key
+                            assign line_color_name = candidate
+                            assign line_color_hex = candidate_hex
+                            break
+                          endif
+                        endif
+                      endfor
+                    endunless
+                  -%}
+
+                  {%- if line_color_name != blank or line_product.has_only_default_variant == false -%}
+                    <div class="cart-items__options">
+                      {%- if line_color_name != blank -%}
+                        <div class="cart-items__option">
+                          <p class="cart-items__option-label">Color: {{ line_color_name }}</p>
+                          <div class="cart-items__values">
+                            <span
+                              class="cart-items__value cart-items__value--circle cart-items__value--static"
+                              style="--ie-swatch: {{ line_color_hex }};"
+                            >
+                              <span class="cart-items__value-face"></span>
+                            </span>
+                          </div>
+                        </div>
                       {%- endif -%}
 
-                      {%- if item.selling_plan_allocation -%}
-                        <p>{{ item.selling_plan_allocation.selling_plan.name }}</p>
-                      {%- endif -%}
+                      {%- unless line_product.has_only_default_variant -%}
+                        {%- for option in line_product.options_with_values -%}
+                          {%- liquid
+                            assign opt_index = forloop.index
+                            assign option_key = option.name | downcase
 
-                      {%- if item.line_level_discount_allocations.size > 0 -%}
-                        <ul
-                          class="list-unstyled"
-                          role="list"
-                        >
-                          {%- for discount in item.line_level_discount_allocations -%}
-                            <li>{{ discount.discount_application.title | escape }}</li>
-                          {%- endfor -%}
-                        </ul>
-                      {%- endif -%}
+                            comment
+                              Размер выбирают по надписи, всё остальное — глазами,
+                              поэтому размеры рисуем прямоугольниками, а прочее
+                              кружками. Правило то же, что на странице товара.
+                            endcomment
+                            assign is_size = false
+                            for word in size_words
+                              assign needle = word | strip
+                              if needle != blank and option_key contains needle
+                                assign is_size = true
+                                break
+                              endif
+                            endfor
+
+                            assign current_value = cur1
+                            if opt_index == 2
+                              assign current_value = cur2
+                            elsif opt_index == 3
+                              assign current_value = cur3
+                            endif
+                          -%}
+
+                          <fieldset
+                            class="cart-items__option"
+                            data-ie-cart-option-group
+                            data-ie-current-value="{{ current_value | escape }}"
+                          >
+                            <legend class="cart-items__option-label">
+                              {{ option.name }}: {{ current_value }}
+                            </legend>
+
+                            <div class="cart-items__values">
+                              {%- for value in option.values -%}
+                                {%- liquid
+                                  comment
+                                    Какой вариант получится, если сменить ТОЛЬКО эту
+                                    опцию: остальные держим как в строке корзины.
+                                    Ищем его здесь, чтобы браузеру не пришлось знать
+                                    ничего про матрицу вариантов — в разметку уходит
+                                    готовый id.
+                                  endcomment
+                                  assign want1 = cur1
+                                  assign want2 = cur2
+                                  assign want3 = cur3
+                                  if opt_index == 1
+                                    assign want1 = value.name
+                                  elsif opt_index == 2
+                                    assign want2 = value.name
+                                  else
+                                    assign want3 = value.name
+                                  endif
+
+                                  assign target_id = ''
+                                  assign target_available = false
+                                  assign target_image = ''
+                                  for candidate in line_product.variants
+                                    if candidate.option1 == want1 and candidate.option2 == want2 and candidate.option3 == want3
+                                      assign target_id = candidate.id
+                                      assign target_available = candidate.available
+                                      assign target_image = candidate.image
+                                      break
+                                    endif
+                                  endfor
+
+                                  assign fill = ''
+                                  unless is_size
+                                    if value.swatch.color
+                                      assign fill = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                                    elsif value.swatch.image
+                                      assign fill = value.swatch.image | image_url: width: 80 | prepend: 'url(' | append: ')'
+                                    elsif target_image != blank
+                                      assign fill = target_image | image_url: width: 80 | prepend: 'url(' | append: ')'
+                                    endif
+                                  endunless
+
+                                  assign is_current = false
+                                  if value.name == current_value
+                                    assign is_current = true
+                                  endif
+                                -%}
+
+                                <label
+                                  class="cart-items__value cart-items__value--{% if is_size %}box{% else %}circle{% endif %}{% unless target_available %} cart-items__value--out{% endunless %}"
+                                  {% if fill != blank %}style="--ie-swatch: {{ fill }};"{% endif %}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="ie-cart-option-{{ item.key }}-{{ opt_index }}"
+                                    value="{{ value.name | escape }}"
+                                    data-ie-cart-option
+                                    data-line-key="{{ item.key }}"
+                                    data-quantity="{{ item.quantity }}"
+                                    data-variant-id="{{ target_id }}"
+                                    {% if is_current %}checked{% endif %}
+                                    {% if target_id == blank or target_available == false %}disabled{% endif %}
+                                  >
+                                  <span class="cart-items__value-face">
+                                    {%- if is_size -%}
+                                      {{ value.name }}
+                                    {%- else -%}
+                                      <span class="visually-hidden">{{ value.name }}</span>
+                                    {%- endif -%}
+                                  </span>
+                                </label>
+                              {%- endfor -%}
+                            </div>
+                          </fieldset>
+                        {%- endfor -%}
+                      {%- endunless -%}
+                    </div>
+                  {%- endif -%}
+
+                  {%- comment -%}
+                    Свойства строки, план подписки и скидки заказа. Значения
+                    опций отсюда убраны — они теперь показаны переключателем выше.
+                  {%- endcomment -%}
+                  <div class="cart-items__variants-wrapper">
+                    {%- liquid
+                      assign has_visible_properties = false
+                      for property in item.properties
+                        assign property_first_char = property.first | slice: 0
+                        if property.last != blank and property_first_char != '_'
+                          assign has_visible_properties = true
+                          break
+                        endif
+                      endfor
+                    -%}
+                    {%- if has_visible_properties -%}
+                      <dl class="cart-items__properties">
+                        {%- for property in item.properties -%}
+                          {%- assign property_first_char = property.first | slice: 0 -%}
+                          {%- if property.last != blank and property_first_char != '_' -%}
+                            <div class="cart-items__property">
+                              <dt>{{ property.first }}:</dt>
+                              <dd>
+                                {%- if property.last contains '/uploads/' -%}
+                                  <a href="{{ property.last }}">{{ property.last | split: '/' | last }}</a>
+                                {%- else -%}
+                                  {{ property.last }}
+                                {%- endif -%}
+                              </dd>
+                            </div>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </dl>
+                    {%- endif -%}
+
+                    {%- if item.selling_plan_allocation -%}
+                      <p>{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                    {%- endif -%}
+
+                    {%- if item.line_level_discount_allocations.size > 0 -%}
+                      <ul
+                        class="list-unstyled"
+                        role="list"
+                      >
+                        {%- for discount in item.line_level_discount_allocations -%}
+                          <li>{{ discount.discount_application.title | escape }}</li>
+                        {%- endfor -%}
+                      </ul>
                     {%- endif -%}
                   </div>
 
-                  <div class="cart-items__unit-price-wrapper">
-                    <div>
-                      {%- comment -%}
-                        Размер скидки строкой цены — как в snippets/price.liquid.
-                        Процент считаем ДО money-фильтров, пока цены ещё числа
-                        в центах, и округляем к ближайшему. Сравниваем ровно те
-                        два числа, которые ниже и выводятся, иначе процент
-                        разойдётся с зачёркнутой ценой.
-                      {%- endcomment -%}
-                      {%- liquid
-                        assign line_price = item.original_price
-                        assign line_compare = item.variant.compare_at_price
-                        if item.original_price != item.final_price
-                          assign line_price = item.final_price
-                          if item.variant.compare_at_price <= item.original_price
-                            assign line_compare = item.original_price
-                          endif
-                        endif
-
-                        assign line_discount = 0
-                        if line_compare > line_price
-                          assign line_discount = line_compare | minus: line_price | times: 100.0 | divided_by: line_compare | round
-                        endif
-                      -%}
-                      {% if item.original_price != item.final_price %}
-                        <span class="visually-hidden">{{ 'content.price_sale' | t }}</span>
-                        <span>{{ item.final_price | money }}</span>
-                        <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
-                        <s class="compare-at-price">
-                          {% if item.variant.compare_at_price > item.original_price %}
-                            {{ item.variant.compare_at_price | money }}
-                          {% else %}
-                            {{ item.original_price | money }}
-                          {% endif %}
-                        </s>
-                      {% else %}
-                        {% if item.variant.compare_at_price > item.original_price %}
-                          <span class="visually-hidden">{{ 'content.price_sale' | t }}</span>
-                        {% else %}
-                          <span class="visually-hidden">{{ 'content.price' | t }}</span>
-                        {% endif %}
-
-                        <span>{{ item.original_price | money }}</span>
-
-                        {% if item.variant.compare_at_price > item.original_price %}
-                          <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
-                          <s class="compare-at-price">{{ item.variant.compare_at_price | money }}</s>
-                        {% endif %}
-                      {% endif %}
-                      {%- if line_discount > 0 -%}
-                        <span class="cart-items__discount">&#8722;{{ line_discount }}%</span>
-                      {%- endif -%}
-                    </div>
-                  </div>
-                </td>
-                <td
-                  class="cart-items__quantity"
-                  role="cell"
-                  headers="quantity"
-                >
-                  {% # Here I want to pass some arguments to the quantity block so it knows which value should the input be set to. Though quantity block could be a snippet instead %}
-                  {% assign can_update_quantity = item.instructions.can_update_quantity
-                    | default: true, allow_false: true
-                  %}
-                  <div class="cart-items__quantity-controls">
-                    {% render 'volume-pricing-info',
-                      variant: item.variant,
-                      unique_id: item.index,
-                      quantity: item.quantity
-                    %}
-
-                    {% render 'quantity-selector',
-                      product: item.product,
-                      variant: item.variant,
-                      in_cart_quantity: item.quantity,
-                      line_index: item.index,
-                      class: 'cart-primary-typography',
-                      can_update_quantity: can_update_quantity
-                    %}
-
+                  {%- comment -%}
+                    Выбора количества в строке нет — как и на странице товара.
+                    Осталось только удаление; чтобы взять две штуки, товар
+                    добавляют дважды.
+                  {%- endcomment -%}
+                  <div class="cart-items__actions">
                     <button
                       class="button cart-items__remove"
                       type="button"
@@ -427,27 +552,6 @@
                       ref="cartItemError-{{ item.index | plus: 1 }}"
                     ></small>
                   </div>
-                </td>
-                {%- liquid
-                  if settings.currency_code_enabled_cart_items
-                    assign price = item.final_line_price | money_with_currency
-                    assign unit_price = item.unit_price | money_with_currency
-                  else
-                    assign price = item.final_line_price | money
-                    assign unit_price = item.unit_price | money
-                  endif
-                -%}
-                <td
-                  class="cart-items__price cart-secondary-typography"
-                  role="cell"
-                  headers="productTotal"
-                >
-                  <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
-                  {%- if item.unit_price_measurement -%}
-                    <div class="cart-items__price-unit cart-secondary-typography">
-                      {% render 'unit-price', price: unit_price, measurement: item.unit_price_measurement %}
-                    </div>
-                  {%- endif -%}
                 </td>
               </tr>
             {% endfor %}
@@ -513,15 +617,17 @@
     margin: 0;
   }
 
+  /*
+   * Строка — две колонки: фотография и всё остальное. Колонок количества
+   * и итога по строке больше нет, поэтому и сетка простая: содержимое
+   * само выстраивается сверху вниз, как на странице товара.
+   */
   .cart-items__table-row {
-    --cart-item-price-width: 6rem;
-
     display: grid;
-    grid-template-columns: clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto);
+    grid-template-columns: clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr);
     grid-template-areas:
-      'media details price'
-      'media quantity price'
-      'media error error';
+      'media details'
+      'media error';
     column-gap: var(--gap-md);
     align-items: start;
     padding-bottom: var(--cart-items-gap);
@@ -536,48 +642,6 @@
 
   .cart-items__product-info {
     min-width: 0;
-  }
-
-  /* Cart drawer: separate grid areas for variants and unit price */
-  .cart-items__table-row--full-width-variants {
-    grid-template-columns: clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr) auto;
-    grid-template-rows: repeat(4, min-content) 1fr;
-    grid-template-areas:
-      'media details price'
-      'media variants variants'
-      'media unit_price unit_price'
-      'media quantity quantity'
-      'media error error';
-
-    .cart-items__details {
-      display: contents;
-    }
-
-    .cart-items__product-info {
-      grid-area: details;
-    }
-
-    .cart-items__variants-wrapper {
-      grid-area: variants;
-
-      &:empty {
-        display: none;
-      }
-
-      p {
-        margin: 0;
-      }
-    }
-
-    .cart-items__unit-price-wrapper {
-      grid-area: unit_price;
-      font-size: var(--font-size--sm);
-    }
-
-    .cart-items__price {
-      min-width: auto;
-      width: max-content;
-    }
   }
 
   .cart-items__table-row.cart-items__nested-line td:first-child {
@@ -698,9 +762,128 @@
     margin-block-end: var(--margin-3xs);
   }
 
+  /*
+   * Цена. Наша — чёрным и в полную силу: у .cart-items__details цвет
+   * приглушён до 70%, и без явного правила цена читалась бы бледнее
+   * названия. Прежняя — серым и зачёркнутая, процент — бордо.
+   * Всё в одной строке, как на странице товара.
+   */
+  .cart-items__price-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: var(--margin-3xs) 0;
+    letter-spacing: 0.04em;
+  }
+
+  .cart-items__details .cart-items__price-current {
+    color: var(--ie-ink, #111);
+  }
+
+  .cart-items__details .cart-items__price-compare {
+    color: var(--ie-muted, #9a9a9a);
+  }
+
   .cart-items__details .cart-items__discount {
     color: var(--brand-accent, var(--ie-bordo, #4e070d));
     white-space: nowrap;
+  }
+
+  /*
+   * Цвет и размер под ценой. Визуальный язык взят со страницы товара
+   * (sections/ie-product.liquid): размеры — прямоугольники с надписью,
+   * прочие опции — кружки. Классы свои: правила той секции живут в её
+   * собственном stylesheet и до корзины не достают.
+   */
+  .cart-items__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-block-start: var(--margin-xs);
+  }
+
+  .cart-items__option {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .cart-items__option-label {
+    display: block;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.06em;
+  }
+
+  .cart-items__values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-block-start: 0.45rem;
+  }
+
+  .cart-items__value input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .cart-items__value-face {
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .cart-items__value input:focus-visible + .cart-items__value-face {
+    outline: 2px solid var(--ie-ink, #111);
+    outline-offset: 2px;
+  }
+
+  .cart-items__value--box .cart-items__value-face {
+    min-width: 2.5rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--ie-line, #e5e1da);
+    letter-spacing: 0.06em;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .cart-items__value--box input:checked + .cart-items__value-face {
+    border-color: var(--ie-ink, #111);
+  }
+
+  /* Разобранный размер видно, но выбрать нельзя: корзина его не примет. */
+  .cart-items__value--out .cart-items__value-face {
+    cursor: not-allowed;
+  }
+
+  .cart-items__value--box.cart-items__value--out .cart-items__value-face {
+    color: var(--ie-muted, #9a9a9a);
+    text-decoration: line-through;
+  }
+
+  .cart-items__value--circle .cart-items__value-face {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--ie-swatch, #ddd);
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .cart-items__value--circle input:checked + .cart-items__value-face {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 1px #fff, 0 0 0 2px var(--ie-ink, #111);
+  }
+
+  .cart-items__value--circle.cart-items__value--out .cart-items__value-face {
+    opacity: 0.35;
+  }
+
+  /* Цвет из тега показываем, но не предлагаем выбрать: вариант всего один. */
+  .cart-items__value--static .cart-items__value-face {
+    cursor: default;
   }
 
   .cart-items__variants {
@@ -717,32 +900,8 @@
     margin: 0;
   }
 
-  .cart-items__quantity {
-    grid-area: quantity;
+  .cart-items__actions {
     margin-block-start: var(--margin-xs);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--gap-xs);
-    width: fit-content;
-  }
-
-  .cart-items__quantity-controls {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--gap-xs);
-    width: fit-content;
-  }
-
-  .cart-items__quantity-controls > .volume-pricing-info {
-    margin-inline-start: calc(-1 * var(--minimum-touch-target) - var(--gap-xs));
-  }
-
-  .cart-items__quantity .quantity-selector {
-    display: inline-flex;
-    font-size: var(--font-size--sm);
-    height: auto;
   }
 
   .cart-items__remove {
@@ -753,26 +912,12 @@
     justify-content: center;
     box-shadow: none;
     padding: 0;
+    margin-inline-start: calc(-1 * var(--padding-xs));
   }
 
   .cart-items__media {
     grid-area: media;
     padding: 0;
-  }
-
-  .cart-items__price {
-    grid-area: price;
-    min-height: unset;
-    min-width: var(--cart-item-price-width);
-    text-align: end;
-    display: block;
-    font-size: var(--font-size--sm);
-    line-height: var(--line-height);
-  }
-
-  .cart-items__price-unit {
-    font-size: var(--font-size--xs);
-    padding-block-start: var(--padding-2xs);
   }
 
   .cart-items__media-container {
@@ -831,50 +976,6 @@
     height: var(--icon-size-xs);
     margin-inline: var(--margin-3xs) var(--margin-xs);
     margin-block-start: var(--margin-3xs);
-  }
-
-  @container cart-items (min-width: 720px) {
-    /* Cart page: original layout */
-    .cart-items__table-row {
-      --cart-item-price-width: 6rem;
-
-      grid-template-columns: 7.5rem 1fr 1fr minmax(var(--cart-item-price-width), auto);
-      grid-template-rows: min-content 1fr;
-      grid-template-areas:
-        'media details quantity price'
-        'media details error error';
-    }
-
-    .cart-items__quantity,
-    .cart-items__price {
-      grid-area: initial;
-    }
-
-    .cart-items__quantity {
-      margin-top: 0;
-    }
-
-    .cart-items__price {
-      min-height: var(--minimum-touch-target);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    /* Cart drawer: separate areas for variants and unit price */
-    .cart-items__table-row--full-width-variants {
-      grid-template-rows: min-content min-content min-content 1fr;
-      grid-template-areas:
-        'media details quantity price'
-        'media variants variants variants'
-        'media unit_price unit_price unit_price'
-        'media error error error';
-
-      .cart-items__quantity,
-      .cart-items__price {
-        grid-area: initial;
-      }
-    }
   }
 
   .cart__subtotal-container,
@@ -1009,23 +1110,6 @@
     display: inline;
     margin: 0;
     overflow-wrap: break-word;
-  }
-
-  @media screen and (min-width: 750px) {
-    .cart-items .quantity-selector {
-      --quantity-selector-width: 105px;
-      height: var(--button-size-md);
-      width: var(--quantity-selector-width);
-    }
-
-    .cart-items .quantity-selector button {
-      width: var(--button-size-md);
-      height: var(--button-size-md);
-    }
-
-    .cart-items .quantity-selector input {
-      max-width: calc(var(--quantity-selector-width) - var(--button-size-md) * 2);
-    }
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
