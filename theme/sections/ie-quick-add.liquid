@@ -1,0 +1,417 @@
+{%- comment -%}
+  Начинка быстрого добавления — то, что показывается в шторке по кнопке
+  «Choose» на карточке каталога.
+
+  Секция ни в одном шаблоне не стоит: её забирает Section Rendering API
+  по адресу /products/<handle>?section_id=ie-quick-add. Тот же приём уже
+  работает на странице вишлиста (assets/wishlist.js), только там просят
+  карточку, а здесь — сведения о товаре. Настройки берутся из значений
+  по умолчанию: секции нет в шаблоне, значит и настраивать её негде.
+
+  Почему не штатный быстрый выбор Horizon: его quick-add.js вытаскивает
+  со страницы товара узел [data-product-grid-content], а страница у нас
+  своя (sections/ie-product.liquid) и такого узла не содержит — шторка
+  открывалась пустой. Тянуть в неё всю страницу товара тоже незачем:
+  в шторке нужны фотография, цена, размеры и кнопка, а не описание,
+  лента фотографий и блоки рекомендаций.
+
+  Разметка и классы повторяют страницу товара: те же прямоугольники
+  размеров, те же кружки цвета, та же кнопка. Один макет — одно
+  оформление.
+
+  Оформление лежит в snippets/ie-quick-add-styles.liquid, а не в
+  {% stylesheet %} этой секции: на странице каталога секция не
+  рендерится, её CSS в сборку страницы не попадает, и вставленная
+  в шторку разметка приезжала бы голой.
+{%- endcomment -%}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign gallery = product.media
+
+  assign selected_index = 0
+  if variant.featured_media
+    assign selected_index = variant.featured_media.position | minus: 1
+  endif
+
+  comment
+    Надпись на кнопке отдаём в data-атрибутах: при переключении размера
+    скрипт возвращает её на место, иначе кнопка так и осталась бы
+    «Sold out» от первого варианта.
+  endcomment
+  assign add_label = 'products.product.add_to_cart' | t
+
+  assign can_add_to_cart = false
+  assign add_to_cart_text = 'products.product.unavailable' | t
+  if variant and variant.available
+    assign can_add_to_cart = true
+    assign add_to_cart_text = add_label
+  elsif variant
+    assign add_to_cart_text = 'products.product.sold_out' | t
+  endif
+
+  comment
+    Слова-признаки размера нужны дважды: чтобы решить, рисовать ли кружок
+    цвета из тега, и чтобы выбрать форму значения. Разбираем один раз.
+  endcomment
+  assign size_words = section.settings.size_words | downcase | split: ','
+
+  comment
+    Цвет у нас не опция варианта, а тег товара: каталог приезжает из
+    BrandsGateway, где цвет один на карточку. Рисуем его неинтерактивным
+    кружком — переключать нечего. Если у товара есть своя опция цвета,
+    кружок не дублируем.
+  endcomment
+  assign has_color_option = false
+  unless product.has_only_default_variant
+    for option in product.options_with_values
+      assign option_key = option.name | downcase
+      assign option_is_size = false
+      for word in size_words
+        assign needle = word | strip
+        if needle != blank and option_key contains needle
+          assign option_is_size = true
+          break
+        endif
+      endfor
+      unless option_is_size
+        assign has_color_option = true
+      endunless
+    endfor
+  endunless
+
+  assign color_name = ''
+  assign color_hex = ''
+  unless has_color_option
+    assign tag_key = product.tags | join: '~|~' | downcase | prepend: '~|~' | append: '~|~'
+    assign swatch_rows = section.settings.color_swatches | newline_to_br | replace: '<br />', '~~' | replace: '<br>', '~~'
+    assign swatch_lines = swatch_rows | split: '~~'
+    for line in swatch_lines
+      assign parts = line | strip | split: '='
+      assign candidate = parts[0] | strip
+      assign candidate_hex = parts[1] | strip
+      if candidate != blank and candidate_hex != blank
+        comment
+          Обрамляем разделителями, чтобы «Black» не совпал с «Blackberry».
+        endcomment
+        assign candidate_key = candidate | downcase | prepend: '~|~' | append: '~|~'
+        if tag_key contains candidate_key
+          assign color_name = candidate
+          assign color_hex = candidate_hex
+          break
+        endif
+      endif
+    endfor
+  endunless
+
+  assign product_form_id = 'ie-qa-form-' | append: product.id
+-%}
+
+{%- comment -%}
+  Обёртку ищет скрипт (assets/ie-quick-add.js) в ответе секции —
+  всё остальное из ответа отбрасывается.
+{%- endcomment -%}
+<div
+  class="ie-qa"
+  data-ie-qa
+  data-text-add="{{ add_label | escape }}"
+  data-text-sold-out="{{ 'products.product.sold_out' | t | escape }}"
+  data-text-unavailable="{{ 'products.product.unavailable' | t | escape }}"
+>
+  <div class="ie-qa__media">
+    {%- if gallery.size > 0 -%}
+      {%- assign main_media = gallery[selected_index] -%}
+      <img
+        class="ie-qa__main"
+        data-ie-qa-main
+        src="{{ main_media.preview_image | image_url: width: 900 }}"
+        srcset="
+          {{ main_media.preview_image | image_url: width: 450 }} 450w,
+          {{ main_media.preview_image | image_url: width: 700 }} 700w,
+          {{ main_media.preview_image | image_url: width: 900 }} 900w
+        "
+        sizes="(min-width: 750px) 380px, 45vw"
+        alt="{{ main_media.alt | default: product.title | escape }}"
+        width="{{ main_media.preview_image.width }}"
+        height="{{ main_media.preview_image.height }}"
+      >
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'ie-qa__main' }}
+    {%- endif -%}
+
+    {%- comment -%}
+      Лента миниатюр — без листалки: в шторке их немного и она сама
+      прокручивается вбок. Тянуть сюда ie-slider.js ради этого не стоит.
+    {%- endcomment -%}
+    {%- if gallery.size > 1 -%}
+      <div class="ie-qa__thumbs">
+        {%- for media in gallery -%}
+          <button
+            type="button"
+            class="ie-qa__thumb"
+            data-ie-qa-thumb
+            data-src="{{ media.preview_image | image_url: width: 900 }}"
+            data-srcset="{{ media.preview_image | image_url: width: 450 }} 450w, {{ media.preview_image | image_url: width: 700 }} 700w, {{ media.preview_image | image_url: width: 900 }} 900w"
+            data-alt="{{ media.alt | default: product.title | escape }}"
+            aria-label="{{ product.title | escape }} — {{ forloop.index }}"
+            {% if forloop.index0 == selected_index %}
+              aria-current="true"
+            {% endif %}
+          >
+            {{
+              media.preview_image
+              | image_url: width: 200
+              | image_tag: loading: 'lazy', widths: '80, 120, 200', sizes: '64px', alt: '', class: 'ie-qa__thumb-img'
+            }}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="ie-qa__info">
+    <div class="ie-qa__head">
+      <div class="ie-qa__names">
+        {%- if product.vendor != blank -%}
+          <p class="ie-qa__vendor">{{ product.vendor }}</p>
+        {%- endif -%}
+        {%- comment -%}
+          Название — ссылка на страницу товара: из шторки должен быть
+          выход к полному описанию.
+        {%- endcomment -%}
+        <a class="ie-qa__title" href="{{ product.url }}">{{ product.title }}</a>
+      </div>
+
+      {%- comment -%}
+        Вишлист тот же, что на странице товара: <wishlist-button> берёт
+        состояние из localStorage в connectedCallback, поэтому оживает
+        и будучи вставленным в шторку после загрузки страницы.
+      {%- endcomment -%}
+      <div class="ie-qa__wishlist">
+        {%- render 'wishlist-button', product: product, context: 'product' -%}
+      </div>
+    </div>
+
+    <p class="ie-qa__price">
+      <span data-ie-qa-price>{{ variant.price | money }}</span>
+      <s
+        class="ie-qa__price-compare"
+        data-ie-qa-compare
+        {% unless variant.compare_at_price > variant.price %}
+          hidden
+        {% endunless %}
+      >
+        {%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}
+      </s>
+      <span
+        class="ie-qa__discount"
+        data-ie-qa-discount
+        {% unless variant.compare_at_price > variant.price %}
+          hidden
+        {% endunless %}
+      >
+        {%- if variant.compare_at_price > variant.price -%}
+          −{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}%
+        {%- endif -%}
+      </span>
+    </p>
+
+    {%- if color_name != blank -%}
+      <div class="ie-qa__option">
+        <p class="ie-qa__option-label">{{ section.settings.color_label }}: {{ color_name }}</p>
+        <div class="ie-qa__values">
+          <span
+            class="ie-qa__value ie-qa__value--circle ie-qa__value--static"
+            style="--ie-qa-swatch: {{ color_hex }};"
+          >
+            <span class="ie-qa__value-face"></span>
+          </span>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- unless product.has_only_default_variant -%}
+      <div class="ie-qa__options">
+        {%- for option in product.options_with_values -%}
+          {%- liquid
+            assign option_index = forloop.index
+            assign option_key = option.name | downcase
+
+            assign is_size = false
+            for word in size_words
+              assign needle = word | strip
+              if needle != blank and option_key contains needle
+                assign is_size = true
+                break
+              endif
+            endfor
+          -%}
+
+          <fieldset class="ie-qa__option" data-ie-qa-option-group>
+            <legend class="ie-qa__option-label">
+              {{ option.name }}: <span data-ie-qa-option-value>{{ option.selected_value }}</span>
+            </legend>
+
+            <div class="ie-qa__values">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign fill = ''
+                  unless is_size
+                    if value.swatch.color
+                      assign fill = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                    elsif value.swatch.image
+                      assign fill = value.swatch.image | image_url: width: 80 | prepend: 'url(' | append: ')'
+                    elsif value.variant.image
+                      assign fill = value.variant.image | image_url: width: 80 | prepend: 'url(' | append: ')'
+                    endif
+                  endunless
+                -%}
+
+                <label
+                  class="ie-qa__value ie-qa__value--{% if is_size %}box{% else %}circle{% endif %}{% unless value.available %} ie-qa__value--out{% endunless %}"
+                  {% if fill != blank %}
+                    style="--ie-qa-swatch: {{ fill }};"
+                  {% endif %}
+                >
+                  <input
+                    type="radio"
+                    name="ie-qa-option-{{ option_index }}-{{ product.id }}"
+                    value="{{ value.name | escape }}"
+                    data-ie-qa-option
+                    {% if value.selected %}
+                      checked
+                    {% endif %}
+                  >
+                  <span class="ie-qa__value-face">
+                    {%- if is_size -%}
+                      {{ value.name }}
+                    {%- else -%}
+                      <span class="visually-hidden">{{ value.name }}</span>
+                    {%- endif -%}
+                  </span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+        {%- endfor -%}
+      </div>
+    {%- endunless -%}
+
+    {%- comment -%}
+      Форма темы целиком: <product-form-component> — свой элемент, он
+      оживает при вставке в документ, поэтому корзина-шторка, аналитика
+      и счётчик работают ровно как на странице товара. Своего запроса
+      в /cart/add мы не делаем намеренно.
+    {%- endcomment -%}
+    <product-form-component
+      class="ie-qa__form"
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product.id }}"
+      data-product-url="{{ product.url }}"
+      on:submit="/handleSubmit"
+      data-quantity-default="1"
+    >
+      <div
+        class="visually-hidden"
+        aria-live="assertive"
+        role="status"
+        aria-atomic="true"
+        ref="liveRegion"
+      ></div>
+
+      {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+        <input
+          type="hidden"
+          name="id"
+          ref="variantId"
+          value="{{ variant.id }}"
+        >
+        <input type="hidden" name="quantity" value="1">
+
+        <div class="product-form-buttons ie-qa__buttons" ref="productFormButtons">
+          <span class="product-form-text__error hidden" ref="addToCartTextError">
+            <span class="svg-wrapper">
+              {{- 'icon-error.svg' | inline_asset_content -}}
+            </span>
+          </span>
+
+          <span class="ie-qa__atc" data-ie-qa-add-to-cart>
+            {%- render 'add-to-cart-button',
+              class: 'ie-qa__atc-button',
+              can_add_to_cart: can_add_to_cart,
+              product: product,
+              add_to_cart_text: add_to_cart_text
+            -%}
+          </span>
+        </div>
+      {%- endform -%}
+    </product-form-component>
+
+    {%- if variant.sku != blank -%}
+      <p class="ie-qa__sku">
+        {{ section.settings.sku_label }}
+        <span data-ie-qa-sku>{{ variant.sku }}</span>
+      </p>
+    {%- endif -%}
+
+    <a class="ie-qa__more" href="{{ product.url }}">{{ section.settings.more_label }}</a>
+  </div>
+
+  {%- comment -%}
+    Цены отдаём уже отформатированными: правила форматирования валюты
+    живут в Liquid, и цена после смены размера выглядит так же, как при
+    загрузке. Доступность значений скрипт пересчитывает по этому же
+    списку — на сервер за ней он не ходит.
+  {%- endcomment -%}
+  <script type="application/json" data-ie-qa-variants>
+    [
+      {%- for v in product.variants -%}
+        {%- unless forloop.first -%},{%- endunless -%}
+        {
+          "id": {{ v.id }},
+          "options": {{ v.options | json }},
+          "available": {{ v.available }},
+          "price": {{ v.price | money | strip_html | json }},
+          "sku": {{ v.sku | json }},
+          {%- if v.compare_at_price > v.price -%}
+            "compare_at": {{ v.compare_at_price | money | strip_html | json }},
+            "discount": {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round | prepend: '−' | append: '%' | json }},
+          {%- else -%}
+            "compare_at": null,
+            "discount": null,
+          {%- endif -%}
+          "media_index": {% if v.featured_media %}{{ v.featured_media.position | minus: 1 }}{% else %}null{% endif %}
+        }
+      {%- endfor -%}
+    ]
+  </script>
+</div>
+
+{% schema %}
+{
+  "name": "Быстрое добавление",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Начинка шторки быстрого добавления. Секция не ставится в шаблон — её забирает скрипт по адресу товара, поэтому значения ниже работают как есть."
+    },
+    { "type": "text", "id": "color_label", "label": "Подпись цвета", "default": "Color" },
+    {
+      "type": "textarea",
+      "id": "color_swatches",
+      "label": "Цвета из тегов",
+      "default": "Black = #111111\nWhite = #ffffff\nGrey = #9a9a9a\nGray = #9a9a9a\nBeige = #e8dcc8\nBrown = #6b4a2f\nBlue = #2f4b8f\nNavy = #1b2a4a\nGreen = #3f6b45\nYellow = #e8c53a\nOrange = #e07b2f\nRed = #a52128\nPink = #f0c2cf\nPurple = #6b3f8f\nGold = #c8a24a\nSilver = #c9ccce",
+      "info": "По строке на цвет: название тега = цвет кружка. Держите список таким же, как у секции товара."
+    },
+    {
+      "type": "text",
+      "id": "size_words",
+      "label": "Слова, по которым узнаём размер",
+      "default": "size, размер, beden, taglia, taille, talla, größe",
+      "info": "Через запятую. Опции с такими словами в названии показываются прямоугольниками, остальные — цветными кружками."
+    },
+    { "type": "text", "id": "sku_label", "label": "Подпись артикула", "default": "Ref." },
+    { "type": "text", "id": "more_label", "label": "Ссылка на страницу товара", "default": "View full details" }
+  ]
+}
+{% endschema %}

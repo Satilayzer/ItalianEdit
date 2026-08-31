@@ -1,0 +1,352 @@
+{%- doc -%}
+  Оформление шторки быстрого добавления.
+
+  @example
+  {% render 'ie-quick-add-styles' %}
+{%- enddoc -%}
+
+{%- comment -%}
+  Отдельным сниппетом, как у темы (quick-add-styles, quick-add-modal-styles),
+  и рендерится из snippets/quick-add-modal.liquid — то есть один раз на
+  страницу и только там, где шторка есть.
+
+  Почему не в assets/ie-design.css и не в {% stylesheet %} самой секции:
+  в ie-design.css лежит оформление страниц, а эта разметка приезжает
+  запросом; у секции же CSS собирается вместе с её выводом, а на странице
+  каталога секция не рендерится — начинка приезжала бы голой.
+
+  Оформление повторяет страницу товара: прямоугольники размеров, кружки
+  цвета, кнопка без иконки. Классы свои (.ie-qa__*) — правила страницы
+  товара привязаны к её сетке.
+{%- endcomment -%}
+
+{% stylesheet %}
+  .ie-qa-modal.quick-add-modal {
+    padding: 0;
+    border: 1px solid var(--ie-line);
+    border-radius: 0;
+    background: #fff;
+    color: var(--ie-ink);
+  }
+
+  /* Размер шторки задаём сами: тема тянет его из своих переменных. */
+  @media screen and (min-width: 750px) {
+    .ie-qa-modal.quick-add-modal {
+      width: min(860px, calc(100vw - 3rem));
+      height: auto;
+      max-height: min(640px, calc(100vh - 3rem));
+    }
+  }
+
+  .ie-qa-modal__content {
+    display: block;
+    overflow-y: auto;
+    max-height: inherit;
+  }
+
+  .ie-qa-modal .quick-add-modal__close {
+    color: var(--ie-ink);
+  }
+
+  /* Пустая коробка на время запроса: без неё шторка прыгает по высоте. */
+  .ie-qa--loading {
+    min-height: 320px;
+  }
+
+  .ie-qa {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    padding: 1.5rem;
+    font-family: var(--ie-sans);
+    color: var(--ie-ink);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ie-qa {
+      grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+      gap: 2rem;
+      padding: 2rem 2.5rem 2rem 2rem;
+    }
+  }
+
+  /* ---------- Фотографии ---------- */
+
+  .ie-qa__media {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .ie-qa__main {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--ie-card-ratio, 2 / 3);
+    object-fit: cover;
+    background: var(--ie-cream);
+  }
+
+  /*
+   * Лента миниатюр прокручивается вбок внутри себя: места в шторке мало,
+   * а фотографий у товара бывает десяток.
+   */
+  .ie-qa__thumbs {
+    display: flex;
+    gap: 0.375rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ie-qa__thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ie-qa__thumb {
+    flex: 0 0 auto;
+    width: 56px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    /* Невыбранные притушены — как лента на странице товара. */
+    opacity: 0.45;
+    transition: opacity 0.2s ease;
+  }
+
+  .ie-qa__thumb[aria-current='true'] {
+    opacity: 1;
+  }
+
+  .ie-qa__thumb-img {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--ie-card-ratio, 2 / 3);
+    object-fit: cover;
+  }
+
+  /* ---------- Сведения ---------- */
+
+  .ie-qa__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .ie-qa__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    /* Кнопка закрытия у темы стоит absolute в углу — освобождаем ей место. */
+    padding-inline-end: 2rem;
+  }
+
+  .ie-qa__names {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .ie-qa__vendor {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+  }
+
+  .ie-qa__title {
+    color: var(--ie-ink);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .ie-qa__title:hover {
+    text-decoration: underline;
+  }
+
+  .ie-qa__wishlist .wishlist-button__control {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  /* Подпись у сердца не нужна, но в разметке она держит состояние. */
+  .ie-qa__wishlist .wishlist-button__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .ie-qa__price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+  }
+
+  .ie-qa__price-compare {
+    color: var(--ie-muted);
+  }
+
+  .ie-qa__discount {
+    color: var(--ie-bordo);
+  }
+
+  /* ---------- Опции ---------- */
+
+  .ie-qa__options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ie-qa__option {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .ie-qa__option-label {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+  }
+
+  .ie-qa__values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+
+  .ie-qa__value input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ie-qa__value-face {
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .ie-qa__value input:focus-visible + .ie-qa__value-face {
+    outline: 2px solid var(--ie-ink);
+    outline-offset: 2px;
+  }
+
+  /* Размер — прямоугольник с надписью. */
+  .ie-qa__value--box .ie-qa__value-face {
+    min-width: 2.75rem;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--ie-line);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .ie-qa__value--box input:checked + .ie-qa__value-face {
+    border-color: var(--ie-ink);
+  }
+
+  /* Значения без остатка не прячем: покупателю видно, что размер есть. */
+  .ie-qa__value--box.ie-qa__value--out .ie-qa__value-face {
+    color: var(--ie-muted);
+    text-decoration: line-through;
+  }
+
+  /* Остальные опции — кружок с цветом. */
+  .ie-qa__value--circle .ie-qa__value-face {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--ie-qa-swatch, #ddd);
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .ie-qa__value--circle input:checked + .ie-qa__value-face {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 1px #fff, 0 0 0 2px var(--ie-ink);
+  }
+
+  .ie-qa__value--circle.ie-qa__value--out .ie-qa__value-face {
+    opacity: 0.35;
+  }
+
+  /* Цвет из тега показываем, но не предлагаем выбрать: вариант один. */
+  .ie-qa__value--static .ie-qa__value-face {
+    cursor: default;
+  }
+
+  /* ---------- Кнопка и подписи ---------- */
+
+  .ie-qa__form,
+  .ie-qa__buttons,
+  .ie-qa__atc {
+    display: block;
+  }
+
+  .ie-qa__atc .ie-qa__atc-button {
+    width: 100%;
+    border: 1px solid var(--ie-ink);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ie-ink);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding-block: 0.9rem;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .ie-qa__atc .ie-qa__atc-button:hover:not(:disabled) {
+    background: var(--ie-ink);
+    color: #fff;
+  }
+
+  .ie-qa__atc .ie-qa__atc-button:disabled {
+    border-color: var(--ie-line);
+    color: var(--ie-muted);
+  }
+
+  /* Иконку корзины из кнопки темы убираем — в макете только надпись. */
+  .ie-qa__atc .add-to-cart-icon {
+    display: none;
+  }
+
+  .ie-qa__sku {
+    margin: 0;
+    color: var(--ie-muted);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+  }
+
+  .ie-qa__more {
+    color: var(--ie-ink);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-underline-offset: 4px;
+  }
+{% endstylesheet %}

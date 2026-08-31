@@ -1,0 +1,49 @@
+{%- comment -%}
+  Шторка быстрого добавления.
+
+  Оболочка осталась темной: <quick-add-dialog> — это DialogComponent
+  Horizon, он умеет открывать и закрывать окно, держать замок прокрутки,
+  ловушку фокуса и закрываться сам после успешного добавления в корзину.
+  Переписывать это ради своего оформления незачем.
+
+  Заменена только начинка: вместо <product-component>, куда тема
+  морфила кусок страницы товара, стоит пустой контейнер — его наполняет
+  assets/ie-quick-add.js разметкой из sections/ie-quick-add.liquid.
+  Идентификатор quick-add-modal-content оставлен прежним: на него
+  смотрит штатный assets/quick-add.js, и без него он падал бы в консоль.
+
+  Отсюда же грузится наш скрипт: сниппет рисуется один раз на страницу,
+  а quick-add.liquid — на каждую карточку.
+{%- endcomment -%}
+
+<quick-add-dialog id="quick-add-dialog">
+  <dialog
+    class="quick-add-modal ie-qa-modal dialog-modal color-custom-popover"
+    ref="dialog"
+    scroll-lock
+  >
+    <button
+      ref="closeButton"
+      on:click="/closeDialog"
+      class="button button-unstyled close-button quick-add-modal__close"
+      aria-label="{{ 'accessibility.close_dialog' | t }}"
+    >
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+
+    <div
+      id="quick-add-modal-content"
+      class="ie-qa-modal__content"
+    ></div>
+  </dialog>
+</quick-add-dialog>
+
+<script src="{{ 'ie-quick-add.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{%- comment -%}
+  Стили темы оставлены: в них размер и появление самого окна, а также
+  `#quick-add-dialog { display: contents }` — без него оболочка ломает
+  раскладку. Наши правила идут следом и перекрывают что нужно.
+{%- endcomment -%}
+{% render 'quick-add-modal-styles' %}
+{% render 'ie-quick-add-styles' %}
