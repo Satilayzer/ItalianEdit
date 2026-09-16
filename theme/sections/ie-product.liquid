@@ -405,6 +405,67 @@
   </div>
 
   {%- comment -%}
+    Полноэкранный просмотр фотографии.
+
+    Родной <dialog> с showModal: он сам даёт затемнение (::backdrop), замок
+    прокрутки, ловушку фокуса и закрытие по Esc. Писать это руками — значит
+    переписывать то, что браузер уже умеет, и обычно хуже.
+
+    Разметка одна на все фотографии: картинку внутри подменяет ie-product.js
+    по тому же индексу, что и большая картинка на странице. Поэтому стрелки
+    листают и просмотр, и страницу под ним — закрыв просмотр, покупатель
+    видит ту фотографию, на которой остановился.
+
+    Рисуем только когда фотографий больше нуля: без них открывать нечего.
+  {%- endcomment -%}
+  {%- if gallery.size > 0 -%}
+    <dialog class="ie-pdp__zoom" data-ie-zoom aria-label="{{ product.title | escape }}">
+      <div class="ie-pdp__zoom-stage" data-ie-zoom-stage>
+        <img class="ie-pdp__zoom-img" data-ie-zoom-image alt="">
+      </div>
+
+      <button
+        type="button"
+        class="ie-pdp__zoom-close"
+        data-ie-zoom-close
+        aria-label="{{ 'accessibility.close' | t | default: 'Закрыть' | escape }}"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      {%- comment -%}
+        Стрелки нужны только когда есть между чем листать.
+      {%- endcomment -%}
+      {%- if gallery.size > 1 -%}
+        <button
+          type="button"
+          class="ie-pdp__zoom-arrow ie-pdp__zoom-arrow--prev"
+          data-ie-zoom-prev
+          aria-label="{{ 'Назад' | escape }}"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="ie-pdp__zoom-arrow ie-pdp__zoom-arrow--next"
+          data-ie-zoom-next
+          aria-label="{{ 'Вперёд' | escape }}"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <p class="ie-pdp__zoom-counter" data-ie-zoom-counter aria-hidden="true"></p>
+      {%- endif -%}
+    </dialog>
+  {%- endif -%}
+
+  {%- comment -%}
     Цены отдаём уже отформатированными: правила форматирования валюты живут
     в Liquid, и цена после смены размера выглядит так же, как при загрузке.
   {%- endcomment -%}
@@ -482,6 +543,33 @@
   }
 
   /*
+   * На телефоне лента фотографий идёт сразу под большой картинкой.
+   *
+   * В разметке порядок другой — картинка, сведения, лента, — потому что на
+   * десктопе лента лежит во всю ширину под обеими колонками, и в потоке ей
+   * место последней. На узком экране колонка одна, и лента уезжала вниз, под
+   * цену, размеры и кнопку: чтобы посмотреть второе фото, надо было
+   * пролистать всю карточку.
+   *
+   * Переставляем order, а не разметку: так десктоп остаётся как есть, а
+   * порядок чтения для скринридера меняется только там, где меняется и
+   * порядок на экране.
+   */
+  @media (max-width: 989px) {
+    .ie-pdp__media {
+      order: 1;
+    }
+
+    .ie-pdp__gallery {
+      order: 2;
+    }
+
+    .ie-pdp__info {
+      order: 3;
+    }
+  }
+
+  /*
    * Левая колонка — половина страницы, но фотография занимает не всю её
    * ширину: ставим по центру, чтобы вокруг оставались одинаковые поля.
    */
@@ -490,6 +578,18 @@
     justify-content: center;
   }
 
+  /*
+   * Картинка кликабельная — открывает полноэкранный просмотр, поэтому и
+   * курсор об этом говорит. touch-action: pan-y оставляет странице
+   * вертикальную прокрутку, а горизонтальный жест забирает себе скрипт:
+   * свайпом по большой картинке листаются фотографии.
+   *
+   * Фона у картинки нет намеренно. Раньше стояла серая подложка #f4f4f4, и
+   * при переключении фотографии она проглядывала, пока грузилась следующая —
+   * на телефоне это читалось как мигающий серый экран. Теперь скрипт ждёт
+   * загрузки и только потом подменяет src, так что подложка не нужна, а
+   * заодно её нечему и показывать.
+   */
   .ie-pdp__main {
     display: block;
     width: 100%;
@@ -497,7 +597,9 @@
     height: auto;
     aspect-ratio: var(--ie-pdp-media-ratio, 2 / 3);
     object-fit: cover;
-    background: #f4f4f4;
+    cursor: zoom-in;
+    touch-action: pan-y;
+    -webkit-user-drag: none;
   }
 
   /* ------------------------------------------------------------------ */
@@ -871,6 +973,131 @@
     .ie-pdp__track {
       scroll-behavior: auto;
     }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Полноэкранный просмотр                                              */
+  /* ------------------------------------------------------------------ */
+
+  /*
+   * Диалог растягиваем на весь экран сами: браузер по умолчанию ужимает его
+   * по содержимому и центрирует, а нам нужна тёмная комната во всю ширину.
+   * Поля и рамку снимаем по той же причине — они у <dialog> свои.
+   *
+   * Закрытый диалог не показываем вовсе: без display: none он остаётся
+   * в потоке нулевой высоты, но его absolute-потомки (стрелки, крестик)
+   * продолжают ловить клики поверх страницы.
+   */
+  .ie-pdp__zoom {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: var(--ie-ink);
+    overflow: hidden;
+  }
+
+  .ie-pdp__zoom:not([open]) {
+    display: none;
+  }
+
+  .ie-pdp__zoom::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  /*
+   * Картинка вписывается целиком: в полноэкранном просмотре смотрят вещь,
+   * а не композицию, и обрезать её по краям здесь незачем — в отличие от
+   * карточки, где всем фотографиям нужна одна пропорция.
+   */
+  .ie-pdp__zoom-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: clamp(0.5rem, 3vw, 2.5rem);
+    touch-action: pan-y;
+  }
+
+  .ie-pdp__zoom-img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    -webkit-user-drag: none;
+  }
+
+  .ie-pdp__zoom-close,
+  .ie-pdp__zoom-arrow {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ie-ink);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .ie-pdp__zoom-close:hover,
+  .ie-pdp__zoom-arrow:hover:not(:disabled) {
+    background: var(--ie-cream);
+  }
+
+  .ie-pdp__zoom-close {
+    top: clamp(0.75rem, 2vw, 1.5rem);
+    inset-inline-end: clamp(0.75rem, 2vw, 1.5rem);
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  /*
+   * Стрелки — под палец: 44px это минимальная цель нажатия, ниже неё
+   * промахиваются. По вертикали ставим по центру картинки.
+   */
+  .ie-pdp__zoom-arrow {
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    transform: translateY(-50%);
+  }
+
+  .ie-pdp__zoom-arrow--prev {
+    inset-inline-start: clamp(0.5rem, 2vw, 1.5rem);
+  }
+
+  .ie-pdp__zoom-arrow--next {
+    inset-inline-end: clamp(0.5rem, 2vw, 1.5rem);
+  }
+
+  /* Просмотр зациклен, так что гасить стрелки на краях не нужно. */
+  .ie-pdp__zoom-close svg,
+  .ie-pdp__zoom-arrow svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .ie-pdp__zoom-counter {
+    position: absolute;
+    inset-inline: 0;
+    bottom: clamp(0.75rem, 2vw, 1.5rem);
+    margin: 0;
+    text-align: center;
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--ie-muted);
   }
 {% endstylesheet %}
 

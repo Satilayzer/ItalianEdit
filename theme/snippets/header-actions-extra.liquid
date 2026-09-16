@@ -60,6 +60,54 @@
     type="module"
     fetchpriority="low"
   ></script>
+
+  {%- comment -%}
+    Пункт меню «More» — только раскрывашка, переход по нему отключён.
+
+    В навигации магазина у него стоит адрес /collections — служебный список
+    ВСЕХ коллекций магазина. Туда попадали покупатели, и видели там служебные
+    наборы: MIU MIU, HOMEPAGE, Matching Sets. Меню при этом нужное: под «More»
+    лежат Jewelry, Accessories и Kids.
+
+    Гасим переход, а не правим адрес в навигации: у пункта с подпунктами
+    осмысленного адреса нет, а пустой Shopify в навигации не принимает.
+
+    Ничего не ломаем: на десктопе список раскрывается по наведению (тема сама
+    ставит aria-expanded, проверено на превью), а в шторке на телефоне
+    подпункты и так выведены плоским списком сразу под пунктом. Без JS
+    поведение остаётся прежним — переход на /collections, то есть не хуже,
+    чем было.
+
+    Бьём по адресу, а не по тексту «More»: название пункта менеджер может
+    переписать в любой момент, а служебный адрес списка коллекций один.
+    Область ограничена шапкой и шторкой — на случай, если ссылка на этот
+    список когда-нибудь понадобится в теле страницы.
+  {%- endcomment -%}
+  <script>
+    (() => {
+      const INDEX = '{{ routes.collections_url }}'.replace(/\/$/, '');
+      const SCOPE = '#header-component, .header, [class*="menu-drawer"], [id^="HeaderDrawer"]';
+
+      document.addEventListener(
+        'click',
+        (event) => {
+          const link = event.target.closest?.('a[href]');
+          if (!link || !link.closest(SCOPE)) return;
+
+          let path;
+          try {
+            path = new URL(link.href, window.location.origin).pathname;
+          } catch {
+            return;
+          }
+
+          if (path.replace(/\/$/, '') !== INDEX) return;
+          event.preventDefault();
+        },
+        true
+      );
+    })();
+  </script>
 {%- endif -%}
 
 {% stylesheet %}
@@ -68,6 +116,16 @@
    * шрифтом: Source Sans Pro 15px без капса. На десктопе те же
    * категории идут Source Serif 4 13px капсом. Приводим к одному виду.
    */
+  /*
+   * «More» ведёт в служебный список всех коллекций, и переход по нему
+   * отключён скриптом выше. Курсор приводим в соответствие: стрелка вместо
+   * пальца, иначе пункт обещает переход, которого не будет.
+   */
+  #header-component a[href$="/collections"],
+  [class*="menu-drawer"] a[href$="/collections"] {
+    cursor: default;
+  }
+
   .header__navigation-bar-row .menu-list__item {
     font-family: var(--font-accent--family, var(--font-heading--family));
     font-weight: var(--font-accent--weight, 400);
