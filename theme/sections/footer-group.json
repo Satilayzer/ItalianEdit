@@ -120,24 +120,12 @@
     "utilities": {
       "type": "footer-utilities",
       "blocks": {
-        "social_links_BD6DCt": {
-          "type": "social-links",
-          "name": "t:names.social_media_links",
+        "ie_instagram": {
+          "type": "ie-instagram",
           "settings": {
-            "icon_color": "",
-            "facebook_url": "",
-            "instagram_url": "https://www.instagram.com/italian__edit/",
-            "youtube_url": "",
-            "tiktok_url": "",
-            "twitter_url": "",
-            "threads_url": "",
-            "linkedin_url": "",
-            "bluesky_url": "",
-            "snapchat_url": "",
-            "pinterest_url": "",
-            "tumblr_url": "",
-            "vimeo_url": "",
-            "custom_url": ""
+            "url": "https://www.instagram.com/italian__edit/",
+            "label": "Follow Our Instagram",
+            "icon_size": 32
           },
           "blocks": {}
         },
@@ -154,7 +142,7 @@
         }
       },
       "block_order": [
-        "social_links_BD6DCt",
+        "ie_instagram",
         "footer_copyright_gF93Yj"
       ],
       "settings": {

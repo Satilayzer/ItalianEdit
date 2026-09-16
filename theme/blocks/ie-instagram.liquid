@@ -1,0 +1,109 @@
+{%- comment -%}
+  Крупная ссылка на инстаграм для нижней строки футера.
+
+  Зачем свой блок, а не штатный social-links: тот рисует ряд значков по
+  24px и подпись к ним прячет намертво своими стилями
+  (.social-icons__icon-label { display: none }). По правке нужна заметная
+  ссылка — крупный значок плюс текст, — причём текст должен остаться
+  редактируемым в редакторе темы, а не жить в CSS.
+
+  Значок берём из snippets/icon.liquid, тот же, что у штатного блока:
+  поменяется иконография темы — поменяется и здесь.
+{%- endcomment -%}
+
+{%- liquid
+  assign url = block.settings.url
+  assign label = block.settings.label
+-%}
+
+{%- if url != blank -%}
+  <a
+    class="ie-instagram"
+    href="{{ url }}"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="--ie-instagram-size: {{ block.settings.icon_size }}px;"
+    {%- if label == blank %} aria-label="Instagram"{% endif %}
+    {{ block.shopify_attributes }}
+  >
+    <svg
+      class="ie-instagram__icon"
+      aria-hidden="true"
+      focusable="false"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+    >
+      {%- render 'icon', icon: 'instagram' -%}
+    </svg>
+    {%- if label != blank -%}
+      <span class="ie-instagram__label">{{ label }}</span>
+    {%- endif -%}
+  </a>
+{%- elsif request.design_mode -%}
+  <p class="ie-instagram__hint">Инстаграм: укажите ссылку в настройках блока.</p>
+{%- endif -%}
+
+{% stylesheet %}
+  .ie-instagram {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    text-decoration: none;
+  }
+
+  /*
+   * Нижняя строка футера красит свои ссылки приглушённым цветом
+   * (.utilities a), и на кремовом фоне это почти шёпот. По правке ссылка
+   * должна бросаться в глаза, поэтому берём обычный цвет текста — тот же,
+   * что у пунктов меню строкой выше. Селектор с запасом по весу:
+   * у правила секции тоже два класса, и порядок stylesheet-блоков
+   * между темой и нами не гарантирован.
+   */
+  .utilities a.ie-instagram {
+    color: var(--color-foreground, currentColor);
+  }
+
+  /*
+   * fill задаём явно: у путей в snippets/icon.liquid своего fill нет,
+   * а по умолчанию в SVG он чёрный — значок не подхватил бы цвет ссылки.
+   */
+  .ie-instagram__icon {
+    display: block;
+    flex-shrink: 0;
+    width: var(--ie-instagram-size, 32px);
+    height: var(--ie-instagram-size, 32px);
+    fill: currentColor;
+  }
+
+  .ie-instagram__label {
+    font-family: var(--font-accent--family, var(--font-heading--family));
+    font-weight: var(--font-accent--weight, 400);
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .ie-instagram:hover .ie-instagram__label {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .ie-instagram__hint {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Инстаграм",
+  "settings": [
+    { "type": "url", "id": "url", "label": "Ссылка на профиль" },
+    { "type": "text", "id": "label", "label": "Подпись", "default": "Follow Our Instagram" },
+    { "type": "range", "id": "icon_size", "label": "Размер значка", "unit": "px", "min": 20, "max": 64, "step": 2, "default": 32 }
+  ],
+  "presets": [{ "name": "IE — Инстаграм" }]
+}
+{% endschema %}
