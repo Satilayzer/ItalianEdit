@@ -173,6 +173,43 @@
         </div>
       </div>
 
+      {%- comment -%}
+        Оценка товара. Берётся из стандартных метаполей Shopify
+        (reviews.rating / reviews.rating_count) — их заполняет приложение
+        отзывов, и пишут их все распространённые: Judge.me, Loox, Fera.
+        Поэтому строка не привязана к конкретному приложению и сама
+        появляется, как только отзывы у товара есть.
+
+        Пока отзывов нет — не рисуем ничего: пустые звёзды на карточке
+        люксовой вещи читаются как «никто не купил».
+
+        Звёзды — два слоя текста: серый ряд снизу, цветной сверху, обрезанный
+        по доле оценки. Так дробная оценка показывается без полудюжины SVG
+        и без картинок.
+      {%- endcomment -%}
+      {%- liquid
+        assign rating = product.metafields.reviews.rating.value
+        assign rating_count = product.metafields.reviews.rating_count.value | default: 0
+        assign rating_pct = 0
+        if rating != blank and rating.scale_max > 0
+          assign rating_pct = rating.rating | times: 100.0 | divided_by: rating.scale_max
+        endif
+      -%}
+      {%- if rating_count > 0 and rating_pct > 0 -%}
+        <a class="ie-pdp__rating" href="#ie-pdp-reviews">
+          <span
+            class="ie-pdp__stars"
+            style="--ie-rating-pct: {{ rating_pct }}%;"
+            aria-hidden="true"
+          >
+            <i></i>
+          </span>
+          <span class="ie-pdp__rating-text">
+            {{- rating.rating | round: 1 }} ({{ rating_count }})
+          </span>
+        </a>
+      {%- endif -%}
+
       <p class="ie-pdp__price">
         <span data-ie-price>{{ variant.price | money }}</span>
         <s
@@ -403,6 +440,31 @@
       </div>
     {%- endif -%}
   </div>
+
+  {%- comment -%}
+    Место под виджет отзывов.
+
+    Своей разметки отзывов у нас нет намеренно: сбор, модерация, письма
+    покупателю после доставки и хранение фотографий — это работа приложения,
+    а не темы. Здесь только площадка, куда его блок кладётся из редактора
+    (Товар → Добавить блок → Приложения).
+
+    Блок общий, `@app`, поэтому площадка не привязана к конкретному
+    приложению: поменяют Judge.me на другое — блок просто переставят.
+
+    Контейнер рисуется, только когда блок добавили: пустой заголовок
+    «Отзывы» под товаром без отзывов не нужен.
+  {%- endcomment -%}
+  {%- if section.blocks.size > 0 -%}
+    <div class="ie-pdp__reviews" id="ie-pdp-reviews">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when '@app' -%}
+            {% render block %}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
 
   {%- comment -%}
     Полноэкранный просмотр фотографии.
@@ -696,6 +758,65 @@
 
   .ie-pdp__discount {
     color: var(--ie-bordo);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Оценка и отзывы                                                     */
+  /* ------------------------------------------------------------------ */
+
+  .ie-pdp__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    text-decoration: none;
+    color: var(--ie-muted);
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .ie-pdp__rating:hover .ie-pdp__rating-text {
+    color: var(--ie-ink);
+  }
+
+  /*
+   * Звёзды двумя слоями: серый ряд задаёт ширину, цветной лежит поверх
+   * и обрезан по доле оценки. Разрядку обоим слоям задаём одну, иначе
+   * верхний ряд разъедется с нижним и обрезка встанет не по звезде.
+   */
+  .ie-pdp__stars {
+    position: relative;
+    display: inline-block;
+    color: var(--ie-line);
+    letter-spacing: 0.1em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .ie-pdp__stars::before,
+  .ie-pdp__stars i::before {
+    content: "\2605\2605\2605\2605\2605";
+  }
+
+  .ie-pdp__stars i {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--ie-rating-pct, 0%);
+    overflow: hidden;
+    color: var(--ie-bordo);
+    font-style: normal;
+    letter-spacing: inherit;
+  }
+
+  /*
+   * Площадка под виджет отзывов идёт во всю ширину под карточкой товара:
+   * приложения рисуют там свою сетку с фотографиями, и половина колонки
+   * ей мала. Отбивка сверху — чтобы виджет не слипался с лентой фотографий.
+   */
+  .ie-pdp__reviews {
+    margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
   }
 
   /* ------------------------------------------------------------------ */
@@ -1154,6 +1275,7 @@
     { "type": "range", "id": "padding_top", "label": "Сверху", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 24 },
     { "type": "range", "id": "padding_bottom", "label": "Снизу", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 }
   ],
+  "blocks": [{ "type": "@app" }],
   "presets": [{ "name": "IE — Товар" }]
 }
 {% endschema %}
