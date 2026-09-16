@@ -71,6 +71,18 @@ class IeProduct extends HTMLElement {
       return;
     }
 
+    // Стрелки у большой картинки листают тот же индекс, что лента и просмотр.
+    if (event.target.closest('[data-ie-media-prev]')) {
+      event.preventDefault();
+      this.#step(-1);
+      return;
+    }
+    if (event.target.closest('[data-ie-media-next]')) {
+      event.preventDefault();
+      this.#step(1);
+      return;
+    }
+
     // Клик по большой картинке — полноэкранный просмотр. После свайпа его
     // не открываем: палец уехал в сторону, значит листали, а не нажимали.
     if (this.main && event.target === this.main && !this.swiped) {

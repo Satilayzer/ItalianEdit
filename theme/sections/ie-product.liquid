@@ -155,6 +155,43 @@
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag: 'ie-pdp__main' }}
       {%- endif -%}
+
+      {%- comment -%}
+        Стрелки листания у большой фотографии.
+
+        Свайп по картинке есть, но он подсказывает о себе только пальцем:
+        на десктопе мышью его не нащупать, и покупатель видел одну фотографию,
+        не догадываясь, что их четыре. Стрелки стоят в полях слева и справа
+        от снимка — колонка шире картинки, место там свободное.
+
+        Листание общее с лентой миниатюр и полноэкранным просмотром: все три
+        двигают один и тот же индекс, поэтому что бы покупатель ни трогал,
+        выбранной остаётся одна фотография.
+
+        Гасить их на краях не нужно — листание зациклено.
+      {%- endcomment -%}
+      {%- if gallery.size > 1 -%}
+        <button
+          type="button"
+          class="ie-pdp__media-arrow ie-pdp__media-arrow--prev"
+          data-ie-media-prev
+          aria-label="{{ 'Назад' | escape }}"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="ie-pdp__media-arrow ie-pdp__media-arrow--next"
+          data-ie-media-next
+          aria-label="{{ 'Вперёд' | escape }}"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      {%- endif -%}
     </div>
 
     <div class="ie-pdp__info">
@@ -636,8 +673,52 @@
    * ширину: ставим по центру, чтобы вокруг оставались одинаковые поля.
    */
   .ie-pdp__media {
+    position: relative;
     display: flex;
     justify-content: center;
+  }
+
+  /*
+   * Стрелки стоят у краёв колонки, а не у краёв снимка: колонка шире
+   * фотографии, и в этих полях они никому не мешают. На узком экране полей
+   * нет, и стрелки ложатся поверх картинки — поэтому фон полупрозрачный
+   * белый, как у стрелок ленты.
+   *
+   * 2.75rem — 44px, минимальная цель нажатия: ниже неё промахиваются пальцем.
+   */
+  .ie-pdp__media-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--ie-line);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ie-ink);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: background 0.2s ease;
+  }
+
+  .ie-pdp__media-arrow:hover {
+    background: var(--ie-cream);
+  }
+
+  .ie-pdp__media-arrow svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .ie-pdp__media-arrow--prev {
+    inset-inline-start: 0;
+  }
+
+  .ie-pdp__media-arrow--next {
+    inset-inline-end: 0;
   }
 
   /*
