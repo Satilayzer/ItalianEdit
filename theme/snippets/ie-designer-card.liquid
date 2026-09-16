@@ -10,7 +10,8 @@
   внутри неё, и таскать их отдельно незачем.
 
   @param {object} [image] - Картинка карточки; пусто — фирменный фолбэк с именем
-  @param {string} title - Имя дизайнера
+  @param {string} title - Имя дизайнера: alt картинки и надпись на карточке без фото
+  @param {string} [caption] - Подпись под каруселью; пусто — подписи нет
   @param {string} [url] - Ссылка; пусто — карточка не кликается
   @param {number} index - Порядковый номер слайда, от нуля
   @param {number} [card_width] - Ширина карточки на десктопе, px (для sizes)
@@ -25,7 +26,7 @@
 <a
   class="dc__slide"
   {% if url != blank %}href="{{ url }}"{% endif %}
-  data-dc-name="{{ title | escape }}"
+  data-dc-name="{{ caption | escape }}"
   data-dc-index="{{ index }}"
   {{ attributes }}
 >

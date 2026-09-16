@@ -1,0 +1,123 @@
+{% doc %}
+  Страница вишлиста.
+
+  Секция сознательно отдаётся ПУСТОЙ: список у каждого свой, а страница
+  кешируется CDN одна для всех. Карточки добирает wishlist.js через
+  Section Rendering API — см. sections/wishlist-card.liquid.
+{% enddoc %}
+
+<div
+  class="section section--{{ section.settings.section_width }} wishlist"
+  style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;"
+>
+  {%- comment -%}
+    data-state="init" — состояние до гидратации. В нём не показываем ни
+    «загрузку», ни «пусто»: без JS атрибут так и останется, и вечное
+    «Loading…» выглядело бы поломкой. Случай «JS выключен» закрывает <noscript>.
+  {%- endcomment -%}
+  <wishlist-grid
+    data-card-section="wishlist-card"
+    data-root="{{ routes.root_url }}"
+    data-state="init"
+  >
+    <ul class="wishlist__items" data-wishlist-items></ul>
+
+    <p class="wishlist__note">{{ section.settings.loading_text }}</p>
+
+    <div class="wishlist__empty">
+      <p class="wishlist__empty-text">{{ section.settings.empty_text }}</p>
+      <a
+        class="button"
+        href="{{ routes.all_products_collection_url }}"
+      >
+        {{- section.settings.empty_link_text -}}
+      </a>
+    </div>
+
+    <noscript>
+      <p class="wishlist__note">Your wishlist needs JavaScript enabled.</p>
+    </noscript>
+  </wishlist-grid>
+</div>
+
+{% stylesheet %}
+  /*
+   * На телефоне сетка выходила за поля страницы и упиралась в края экрана:
+   * assets/wishlist.css растягивает её отрицательным margin-inline, повторяя
+   * каталог, где сетка намеренно во всю ширину. Но здесь над сеткой стоит
+   * заголовок страницы с обычным полем, и товары читались съехавшими левее
+   * него. Возвращаем сетку в поля — левый край встаёт под букву заголовка.
+   *
+   * Вес (0,2,0) взят классом секции: у правила в wishlist.css (0,1,0), но
+   * порядок подключения файлов темы не наш, и на него полагаться нельзя.
+   */
+  @media screen and (max-width: 749px) {
+    .wishlist .wishlist__items {
+      margin-inline: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Список хранится в браузере покупателя, поэтому в редакторе темы секция выглядит пустой — это норма."
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty wishlist message",
+      "default": "Your wishlist is empty."
+    },
+    {
+      "type": "text",
+      "id": "empty_link_text",
+      "label": "Empty wishlist button",
+      "default": "Continue shopping"
+    },
+    {
+      "type": "text",
+      "id": "loading_text",
+      "label": "Loading message",
+      "default": "Loading your wishlist…"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ]
+}
+{% endschema %}

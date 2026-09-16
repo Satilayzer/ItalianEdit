@@ -14,8 +14,22 @@
     ни на одном товаре нет, коллекция пустая. Чтобы под баннером не висели
     плейсхолдеры, в этом случае показываем товары витрины целиком.
   endcomment
+  assign used_fallback = false
   if products.size == 0 and section.settings.fallback_to_all
     assign products = collections.all.products
+    assign used_fallback = true
+  endif
+
+  comment
+    Кнопка ведёт туда же, откуда взялись товары над ней. Иначе выходило так:
+    коллекция «New» пустая, полоса подменила её товарами витрины, а «Shop now»
+    по-прежнему вела в /collections/new — и открывалась «NO PRODUCTS FOUND».
+    Как только коллекцию наполнят, подмена выключится сама и ссылка вернётся
+    на заданную в редакторе.
+  endcomment
+  assign cta_url = section.settings.button_link | default: section.settings.collection.url
+  if used_fallback or cta_url == blank
+    assign cta_url = routes.all_products_collection_url
   endif
 -%}
 
@@ -63,7 +77,7 @@
 
   {%- if section.settings.button_label != blank -%}
     <div class="ie-product-row__cta">
-      <a class="ie-pill" href="{{ section.settings.button_link | default: section.settings.collection.url }}">
+      <a class="ie-pill" href="{{ cta_url }}">
         {{- section.settings.button_label -}}
       </a>
     </div>
