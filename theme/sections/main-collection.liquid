@@ -1,0 +1,375 @@
+
+
+<script
+  src="{{ 'results-list.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{% javascript %}
+  const url = new URL(window.location.href);
+  if (url.hash) {
+    document.addEventListener(
+      'DOMContentLoaded',
+      () => {
+        const card = document.getElementById(url.hash.slice(1));
+        if (card) {
+          card.scrollIntoView({ behavior: 'instant' });
+        }
+      },
+      { once: true }
+    );
+  }
+{% endjavascript %}
+
+{% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
+{% liquid
+  if section.settings.background_color != blank
+    render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
+  endif
+%}
+
+{%- liquid
+  comment
+    Потолок товаров у коллекции — метаполе custom.max_products.
+
+    Нужен для «New»: там показываем последние 50 товаров, а не весь каталог.
+    Сделано метаполем, а не отдельным шаблоном: шаблон пришлось бы целиком
+    копировать вместе со всем деревом блоков — фильтры, карточка товара, —
+    а так любую коллекцию можно ограничить из админки, не трогая тему.
+
+    Потолок 50 не от балды: без тега paginate шаблонизатор отдаёт из
+    collection.products не больше пятидесяти товаров в принципе. Порядок —
+    собственная сортировка коллекции, у «New» это «по дате, новые → старые»,
+    так что в выборку попадают именно самые свежие.
+
+    Подгрузка и постраничная навигация при ограничении выключены: добирать там
+    нечего, а стрелка «следующая страница» вела бы за предел потолка.
+    Счётчик у фильтров тоже урезаем — иначе он обещал бы весь каталог.
+  endcomment
+  assign max_products = collection.metafields.custom.max_products.value | default: 0 | at_most: 50
+  assign is_capped = false
+  if max_products > 0
+    assign is_capped = true
+  endif
+
+  assign results_size = collection.products_count
+  if is_capped
+    assign results_size = results_size | at_most: max_products
+  endif
+
+  assign infinite_scroll = section.settings.enable_infinite_scroll
+  if is_capped
+    assign infinite_scroll = false
+  endif
+
+  comment
+    Тег, для которого фотография вписывается в карточку целиком.
+
+    Каталог общий, и одна пропорция на всех. Одежде это идёт: кадр вертикальный,
+    обрезка по краям её только собирает. А у обуви кадр горизонтальный, и та же
+    обрезка съедала носок и задник — заказчик на это и пожаловался.
+
+    Бьём по тегу, а не по типу товара: тип у поставщика дробный (Sneakers,
+    Loafers, Boots), а тег «Shoes» стоит на всей обуви — по нему же собраны
+    и коллекции обуви. Тег вынесен в настройку: появится другая группа с
+    горизонтальным кадром — её добавят из редактора, без правки темы.
+  endcomment
+  assign contain_tag = section.settings.contain_tag | strip
+-%}
+
+<div
+  class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+></div>
+{% # theme-check-disable-next-line UnknownFilter %}
+<collection-component view-event-payload="{{ collection | standard_event_data: 'view' | escape }}">
+  <results-list
+    class="section product-grid-container{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+    style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
+    section-id="{{ section.id }}"
+    infinite-scroll="{{ infinite_scroll }}"
+  >
+    {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
+
+    <div
+      class="collection-wrapper grid gap-style{% if section.settings.product_grid_width == 'full-width' %} collection-wrapper--grid-full-width{% endif %}"
+    >
+      {% content_for 'block',
+        type: 'filters',
+        id: 'filters',
+        results: collection,
+        results_size: results_size
+      %}
+
+      {% if is_capped %}
+        {% capture children %}
+          {% for product in collection.products limit: max_products %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="1"
+              data-product-id="{{ product.id }}"
+              {% if contain_tag != blank and product.tags contains contain_tag %}data-ie-fit="contain"{% endif %}
+              ref="cards[]"
+            >
+              {% content_for 'block',
+                type: '_product-card',
+                id: 'product-card',
+                closest.product: product,
+                product_view_context: 'collection'
+              %}
+            </li>
+          {% endfor %}
+        {% endcapture %}
+
+        {% render 'product-grid',
+          section: section,
+          children: children,
+          products: collection.products,
+          enable_infinite_scroll: false
+        %}
+      {% else %}
+        {% assign products_per_page = 24 %}
+
+        {% if section.settings.enable_infinite_scroll == false %}
+          {% assign products_per_page = section.settings.products_per_page %}
+        {% endif %}
+
+        {% paginate collection.products by products_per_page %}
+          {% capture children %}
+            {% for product in collection.products %}
+              <li
+                id="{{ section.id }}-{{ product.id }}"
+                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+                data-page="{{ paginate.current_page }}"
+                data-product-id="{{ product.id }}"
+                {% if contain_tag != blank and product.tags contains contain_tag %}data-ie-fit="contain"{% endif %}
+                ref="cards[]"
+              >
+                {% content_for 'block',
+                  type: '_product-card',
+                  id: 'product-card',
+                  closest.product: product,
+                  product_view_context: 'collection'
+                %}
+              </li>
+            {% endfor %}
+          {% endcapture %}
+
+          {% render 'product-grid',
+            section: section,
+            children: children,
+            products: collection.products,
+            paginate: paginate,
+            enable_infinite_scroll: section.settings.enable_infinite_scroll
+          %}
+        {% endpaginate %}
+      {% endif %}
+    </div>
+  </results-list>
+</collection-component>
+
+{% stylesheet %}
+  /*
+   * Обувь показываем целиком, не обрезая по краям.
+   *
+   * Пропорция карточки остаётся общей — меняется только то, как в неё ложится
+   * кадр: cover обрезает, contain вписывает и оставляет поля сверху и снизу.
+   * Фотографии у поставщика на белом фоне, так что поля не читаются пустотой.
+   *
+   * Правило тут, а не в ie-design.css: атрибут data-ie-fit проставляет эта же
+   * секция, и держать разметку и её оформление в одном файле проще.
+   */
+  .product-grid__item[data-ie-fit='contain'] .product-media__image {
+    object-fit: contain;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.collection_container",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout_type",
+      "label": "t:settings.type",
+      "options": [
+        {
+          "value": "grid",
+          "label": "t:options.grid"
+        },
+        {
+          "value": "organic",
+          "label": "t:options.editorial"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "text",
+      "id": "contain_tag",
+      "label": "Тег: показывать фотографию целиком",
+      "default": "Shoes",
+      "info": "У товаров с этим тегом фотография вписывается в карточку, а не обрезается по краям. Нужно обуви: кадр у неё горизонтальный. Пусто — обрезаются все."
+    },
+    {
+      "type": "select",
+      "id": "product_card_size",
+      "label": "t:settings.card_size",
+      "options": [
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "extra-large",
+          "label": "t:options.extra_large"
+        }
+      ],
+      "default": "medium",
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_product_card_size",
+      "label": "t:settings.mobile_card_size",
+      "options": [
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_scroll",
+      "label": "t:settings.auto_load_products",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:settings.products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 24,
+      "visible_if": "{{ section.settings.enable_infinite_scroll == false }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "product_grid_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "centered",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "centered"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_on_mobile",
+      "label": "t:settings.full_width_on_mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.product_grid_width != 'full-width' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_horizontal",
+      "label": "t:settings.horizontal_gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_vertical",
+      "label": "t:settings.vertical_gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.section_layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": []
+}
+{% endschema %}
