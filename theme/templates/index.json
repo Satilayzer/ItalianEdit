@@ -60,15 +60,15 @@
           "settings": {
             "image": "shopify://shop_images/Swipe-16-9_7.png",
             "label": "Men",
-            "link": "/collections/all"
+            "link": "/collections/all/Men"
           }
         },
         "women": {
           "type": "panel",
           "settings": {
-            "image": "shopify://shop_images/magnifics_upscale_precision_bv09AQ8aTC5YamCYns0S_Swipe_16_9_5_2.png",
+            "image": "shopify://shop_images/Swipe-16-9_6.png",
             "label": "Women",
-            "link": "/collections/all"
+            "link": "/collections/all/Women"
           }
         }
       },
@@ -85,11 +85,61 @@
     },
     "designer_carousel": {
       "type": "designer-carousel",
+      "blocks": {
+        "slide_V4VnLP": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/gch.png",
+            "collection": "",
+            "tag": "",
+            "name": "",
+            "link": ""
+          }
+        },
+        "slide_JQQdkT": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/mm.png",
+            "collection": "",
+            "tag": "",
+            "name": "",
+            "link": ""
+          }
+        },
+        "slide_L8Gjmf": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/m.png",
+            "collection": "miu-miu",
+            "tag": "",
+            "name": "",
+            "link": ""
+          }
+        },
+        "slide_cm8fjC": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/image_111.png",
+            "collection": "",
+            "tag": "",
+            "name": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_V4VnLP",
+        "slide_JQQdkT",
+        "slide_L8Gjmf",
+        "slide_cm8fjC"
+      ],
       "settings": {
         "heading": "Recommended Designers",
+        "source": "manual",
         "side_reveal": 50,
         "max_designers": 12,
         "aspect_ratio": "4 / 5",
+        "card_width": 420,
         "section_width": "full-width",
         "padding_top": 56,
         "padding_bottom": 56,
@@ -285,7 +335,7 @@
         "subheading": "",
         "slide_width": 300,
         "gap": 16,
-        "ratio": "4 / 3",
+        "ratio": "1 / 1",
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
         "heading_color": "#633f47",
