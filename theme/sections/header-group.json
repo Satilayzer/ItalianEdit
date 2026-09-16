@@ -69,7 +69,8 @@
         "text_color_top": "{{ settings.color_palette.foreground }}",
         "enable_transparent_header_home": false,
         "enable_transparent_header_product": false,
-        "enable_transparent_header_collection": false
+        "enable_transparent_header_collection": false,
+        "customer_account_menu": ""
       }
     }
   },
