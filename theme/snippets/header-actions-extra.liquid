@@ -108,6 +108,65 @@
       );
     })();
   </script>
+
+  {%- comment -%}
+    Выпадашка аккаунта выравнивается по строке категорий.
+
+    Панель рисует компонент Shopify <shopify-account> в теневом дереве.
+    Сдвинуть её можно только через ::part(dialog) — правило лежит в
+    ie-design.css, а величину сдвига считаем здесь.
+
+    Почему считаем, а не зашиваем числом: компонент ставит панель по-разному
+    гостю и вошедшему покупателю. У гостя она оказывалась на 107px ниже
+    строки категорий, у вошедшего — на 20px. Любая константа подошла бы
+    одному случаю из двух, а вошедшего я вживую проверить не могу.
+
+    Меряем от нулевого сдвига: иначе к положению примешалась бы прошлая
+    поправка и панель уезжала бы с каждым открытием.
+
+    Сам компонент ищем не сразу, а в момент клика: в разметке шапки он идёт
+    после этого скрипта, и на момент разбора страницы его ещё нет. Кроме того,
+    тема умеет перерисовывать шапку целиком — сохранённая ссылка протухла бы.
+
+    Скрипт намеренно молчалив. Не нашёл компонент, теневое дерево или строку
+    категорий — просто не ставит атрибут, и панель остаётся там, куда её
+    поставил Shopify. Компонент чужой, его внутренности могут поменяться,
+    и цена такой поломки должна быть нулевой.
+  {%- endcomment -%}
+  <script>
+    (() => {
+      const DESKTOP = '(min-width: 990px)';
+
+      const align = () => {
+        const account = document.querySelector('shopify-account');
+        const row = document.querySelector('.header__row--bottom');
+        const panel = account?.shadowRoot?.querySelector('dialog');
+        if (!account || !row || !panel?.open) return;
+
+        if (!window.matchMedia(DESKTOP).matches) {
+          account.removeAttribute('data-ie-aligned');
+          return;
+        }
+
+        account.style.setProperty('--ie-account-popover-shift', '0px');
+        account.setAttribute('data-ie-aligned', '');
+
+        const shift = row.getBoundingClientRect().top - panel.getBoundingClientRect().top;
+        account.style.setProperty('--ie-account-popover-shift', `${shift}px`);
+      };
+
+      // Клик по кнопке внутри теневого дерева всплывает уже от самого
+      // компонента. Двух кадров хватает, чтобы панель открылась и встала
+      // на место; повтор — на случай, если открытие анимировано.
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest?.('shopify-account')) return;
+        requestAnimationFrame(() => requestAnimationFrame(align));
+        setTimeout(align, 250);
+      });
+
+      window.addEventListener('resize', align, { passive: true });
+    })();
+  </script>
 {%- endif -%}
 
 {% stylesheet %}
