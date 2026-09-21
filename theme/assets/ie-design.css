@@ -606,8 +606,17 @@ p:has(> .product-designer) {
  * Насыщенность и разрядку бренду задаёт ещё и стиль секции (600 / 0.06em),
  * а он грузится после нашего слоя. Повторяем класс, чтобы наше правило
  * оказалось специфичнее и бренд был именно жирным.
+ *
+ * display: block — тоже здесь, а не только в стиле блока. Отдельной
+ * строкой бренд ставит {% stylesheet %} блока blocks/product-title, но
+ * Shopify подключает его только там, где блок отрисован сразу. Блоки,
+ * приехавшие позже скриптом, — «Goes well with…» на карточке товара —
+ * остаются без этих стилей, и бренд с названием слипались в одну строку
+ * («GucciBeige Calf…»). Для вишлиста по той же причине то же правило
+ * лежит в wishlist.css.
  */
 .product-designer.product-designer {
+  display: block;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -689,8 +698,15 @@ p:has(> .product-designer) {
 }
 
 /*
- * Сетка из волосяных линий между товарами: каталог, поиск, New и полоса
- * «New» на главной — на телефоне, планшете и ПК.
+ * Сетка из волосяных линий между товарами — везде, где товаров больше
+ * одного, на телефоне, планшете и ПК:
+ *   .product-grid — каталог, страница поиска, New;
+ *   .ie-grid — полоса «New» на главной;
+ *   .resource-list--grid — «Goes well with…» на карточке товара;
+ *   .wishlist__items — вишлист;
+ *   .predictive-search-results__wrapper-products — выпадающий поиск;
+ *   .resource-list__carousel — «You may also like» в корзине (карусель,
+ *     про неё отдельно ниже).
  *
  * Каждая карточка рисует две линии посередине промежутка до соседей:
  * справа (::after) и снизу (::before). Всё, что при этом вылезает за
@@ -733,20 +749,68 @@ p:has(> .product-designer) {
   }
 }
 
+/*
+ * У resource-list тема держит промежутки отдельными переменными, уже с
+ * поправкой на телефон, — берём их как есть, и линии идут за настройкой
+ * секции сами. У выпадающего поиска промежуток один на обе оси, --gap-md.
+ */
+.resource-list--grid {
+  --ie-grid-row-gap: var(--resource-list-row-gap);
+  --ie-grid-col-gap: var(--resource-list-column-gap);
+}
+
+.predictive-search-results__wrapper-products {
+  --ie-grid-row-gap: var(--gap-md);
+  --ie-grid-col-gap: var(--gap-md);
+}
+
+/* Вишлист: числа из assets/wishlist.css — 12px на телефоне, 16px шире. */
+.wishlist__items {
+  --ie-grid-row-gap: 12px;
+  --ie-grid-col-gap: 12px;
+}
+
+@media screen and (min-width: 750px) {
+  .wishlist__items {
+    --ie-grid-row-gap: 16px;
+    --ie-grid-col-gap: 16px;
+  }
+}
+
 .product-grid,
-.ie-grid {
+.ie-grid,
+.resource-list--grid,
+.wishlist__items {
   overflow: clip;
 }
 
+/*
+ * У сетки выпадающего поиска снизу свой внутренний отступ
+ * (padding-block-end), и overflow: clip — он режет по краю отступа —
+ * оставил бы линию под последним рядом. Режем по краю содержимого.
+ */
+.predictive-search-results__wrapper-products {
+  clip-path: inset(0 0 var(--padding-sm, 0px) 0);
+}
+
 .product-grid > .product-grid__item,
-.ie-grid > .ie-card {
+.ie-grid > .ie-card,
+.resource-list--grid > .resource-list__item,
+.wishlist__items > .wishlist__item,
+.predictive-search-results__wrapper-products > .predictive-search-results__card {
   position: relative;
 }
 
 .product-grid > .product-grid__item::before,
 .product-grid > .product-grid__item::after,
 .ie-grid > .ie-card::before,
-.ie-grid > .ie-card::after {
+.ie-grid > .ie-card::after,
+.resource-list--grid > .resource-list__item::before,
+.resource-list--grid > .resource-list__item::after,
+.wishlist__items > .wishlist__item::before,
+.wishlist__items > .wishlist__item::after,
+.predictive-search-results__wrapper-products > .predictive-search-results__card::before,
+.predictive-search-results__wrapper-products > .predictive-search-results__card::after {
   content: "";
   position: absolute;
   background: var(--ie-line, #e5e1da);
@@ -760,18 +824,78 @@ p:has(> .product-designer) {
  * оставить; сквозная вертикаль, пересекающая горизонталь, не понравилась.
  */
 .product-grid > .product-grid__item::after,
-.ie-grid > .ie-card::after {
+.ie-grid > .ie-card::after,
+.resource-list--grid > .resource-list__item::after,
+.wishlist__items > .wishlist__item::after,
+.predictive-search-results__wrapper-products > .predictive-search-results__card::after {
   inset-block: 0;
   inset-inline-end: calc(var(--ie-grid-col-gap) / -2 - 0.5px);
   width: 1px;
 }
 
+/*
+ * У последней карточки вертикали нет. Стоит она в последней колонке —
+ * линию и так срезал бы край сетки; стоит раньше (неполный ряд, список
+ * из одного товара в «Recently viewed» поиска) — линия упиралась бы
+ * в пустоту. Считаем среди карточек (`of …`): тема кладёт в сетку
+ * и посторонних детей, вроде <script> первым в каталоге.
+ */
+.product-grid > .product-grid__item:nth-last-child(1 of .product-grid__item)::after,
+.ie-grid > .ie-card:nth-last-child(1 of .ie-card)::after,
+.resource-list--grid > .resource-list__item:nth-last-child(1 of .resource-list__item)::after,
+.wishlist__items > .wishlist__item:nth-last-child(1 of .wishlist__item)::after,
+.predictive-search-results__wrapper-products
+  > .predictive-search-results__card:nth-last-child(1 of .predictive-search-results__card)::after {
+  content: none;
+}
+
 /* Горизонтальная — снизу, посередине промежутка между рядами. */
 .product-grid > .product-grid__item::before,
-.ie-grid > .ie-card::before {
+.ie-grid > .ie-card::before,
+.resource-list--grid > .resource-list__item::before,
+.wishlist__items > .wishlist__item::before,
+.predictive-search-results__wrapper-products > .predictive-search-results__card::before {
   inset-inline: calc(var(--ie-grid-col-gap) / -2);
   inset-block-end: calc(var(--ie-grid-row-gap) / -2 - 0.5px);
   height: 1px;
+}
+
+/*
+ * Карусель — «You may also like» в корзине. Ряд один, поэтому линии
+ * только вертикальные, между слайдами; после последнего слайда её нет.
+ *
+ * Срезать края, как у сеток, здесь нельзя: лента карусели — сама
+ * прокрутка, overflow у неё трогать нельзя. Зато тема прячет
+ * содержимое у каждого слайда общим правилом slideshow-slide
+ * { overflow: hidden } — оно нужно слайдерам с фото, а линия в
+ * промежутке оказалась бы срезана. Карточки товаров свои картинки
+ * обрезают сами, поэтому у слайдов именно этой карусели открываем.
+ * Промежуток — переменная темы, та же, что у ленты.
+ *
+ * Одного overflow мало: у слайдов ещё content-visibility: auto, а оно
+ * включает изоляцию отрисовки (paint containment) — всё, что за краем
+ * слайда, не рисуется вовсе. По замерам линия стояла на месте, а на
+ * экране её не было. Та же история, что с печатью в подвале. Экономия
+ * отрисовки на восьми слайдах ничтожна, выключаем.
+ *
+ * Вес (0,3,0): у темы content-visibility задаёт правило
+ * .resource-list__carousel :is(slideshow-slide:has(+ …[aria-hidden]), …)
+ * с весом (0,2,2), и простое «класс + класс» ему проигрывало.
+ */
+.resource-list.resource-list__carousel .resource-list__slide {
+  position: relative;
+  overflow: visible;
+  content-visibility: visible;
+}
+
+.resource-list.resource-list__carousel .resource-list__slide:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(var(--resource-list-column-gap) / -2 - 0.5px);
+  width: 1px;
+  background: var(--ie-line, #e5e1da);
+  pointer-events: none;
 }
 
 /* ------------------------------------------------------------------ */
