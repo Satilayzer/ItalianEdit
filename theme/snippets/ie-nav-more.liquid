@@ -1,0 +1,220 @@
+{% doc %}
+  «More» в мобильной строке категорий раскрывает то же подменю, что на ПК
+  открывается наведением: Jewelry, Accessories, Kids.
+
+  Строку рисует блок темы blocks/_header-menu.liquid (ветка navigation_bar)
+  плоским списком ссылок — подменю там нет вовсе. Сам блок почти не правим:
+  в нём две наши строки, обе вызывают этот сниппет.
+
+  @param {string} part - 'toggle' — кнопка вместо ссылки у одного пункта
+    (для остальных пунктов сниппет ничего не выводит, и блок рисует свою
+    ссылку); 'panels' — панели с подпунктами, стили и скрипт.
+  @param {object} [link] - пункт меню (для 'toggle').
+  @param {number} [index] - номер пункта в меню (для 'toggle').
+  @param {object[]} [links] - все пункты меню (для 'panels').
+  @param {string} block_id - id блока меню: из него собираются id панелей.
+
+  Какие пункты раскрываются: с подпунктами И ведущие на служебный список
+  всех коллекций (/collections). Это ровно «More» — тот же признак, по
+  которому header-actions-extra гасит переход. Остальные пункты с
+  подпунктами (Clothing, Shoes…) ведут на свои коллекции, и по тапу
+  человек ждёт перехода, а не меню. Название пункта не проверяем:
+  менеджер может переписать «More» в любой момент.
+
+  Панель — родной popover. Он рисуется в верхнем слое страницы, поэтому
+  его не обрезает прокрутка строки категорий (overflow-x: auto у её
+  контейнера обрезал бы любой выпадающий блок внутри). Закрытие по Esc
+  браузер делает сам. Тап мимо — тоже, но у popover он проходит
+  насквозь на страницу, поэтому под списком своя подложка (см. стили).
+{% enddoc %}
+
+{%- liquid
+  assign index_url = routes.collections_url
+-%}
+
+{%- if part == 'toggle' -%}
+  {%- if link.links.size > 0 and link.url == index_url -%}
+    <button
+      type="button"
+      class="menu-list__item ie-more-toggle"
+      popovertarget="ie-more-{{ block_id }}-{{ index }}"
+      aria-haspopup="true"
+    >
+      {{- link.title -}}
+    </button>
+  {%- endif -%}
+{%- elsif part == 'panels' -%}
+  {%- for link in links -%}
+    {%- if link.links.size > 0 and link.url == index_url -%}
+      <div
+        id="ie-more-{{ block_id }}-{{ forloop.index }}"
+        class="ie-more-panel"
+        popover
+      >
+        <ul class="ie-more-panel__list list-unstyled" role="list">
+          {%- for child in link.links -%}
+            <li>
+              <a
+                href="{{ child.url }}"
+                class="ie-more-panel__link"
+                {% if child.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{- child.title -}}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- comment -%}
+    Панель в верхнем слое по умолчанию встаёт в центр экрана. Ставим её
+    вплотную под строкой категорий: высоту меряем в момент открытия —
+    шапка на телефоне бывает разной высоты (прокрутка, второй ряд,
+    баннер сверху). При прокрутке закрываем: шапка уедет, а панель
+    осталась бы висеть посреди страницы.
+  {%- endcomment -%}
+  <script>
+    (() => {
+      document.querySelectorAll('.ie-more-panel').forEach((panel) => {
+        if (panel.dataset.ieBound) return;
+        panel.dataset.ieBound = 'true';
+
+        const toggle = document.querySelector(`[popovertarget="${panel.id}"]`);
+
+        const place = () => {
+          const row = panel.parentElement;
+          const bottom = row ? row.getBoundingClientRect().bottom : 0;
+          panel.style.setProperty('--ie-more-top', `${Math.max(0, bottom)}px`);
+        };
+
+        panel.addEventListener('beforetoggle', (event) => {
+          const open = event.newState === 'open';
+          toggle?.toggleAttribute('data-open', open);
+          if (open) place();
+        });
+
+        // Поворот телефона с открытым меню меняет высоту шапки.
+        window.addEventListener('resize', () => {
+          if (panel.matches(':popover-open')) place();
+        });
+
+        // Тап в подложку под списком: цель события — сама панель.
+        panel.addEventListener('click', (event) => {
+          if (event.target === panel) panel.hidePopover();
+        });
+
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (panel.matches(':popover-open')) panel.hidePopover();
+          },
+          { passive: true }
+        );
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  /*
+   * Кнопка выглядит как соседние ссылки. Шрифт, кегль и капс приезжают
+   * по классу .menu-list__item (правило в header-actions-extra), здесь
+   * только сбрасываем то, что браузер даёт кнопке сам.
+   */
+  .ie-more-toggle {
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-foreground);
+    line-height: inherit;
+    cursor: pointer;
+  }
+
+  .ie-more-toggle[data-open] {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  /*
+   * Без поддержки popover атрибут браузер просто не поймёт, и панель
+   * встала бы в строку открытой. Поэтому скрыта она всегда, а видна —
+   * только в состоянии :popover-open. Старый браузер правило с незнакомым
+   * псевдоклассом отбросит целиком, и панель останется скрытой: кнопка
+   * ничего не сделает, то есть как было до правки.
+   */
+  .ie-more-panel {
+    display: none;
+  }
+
+  /*
+   * Панель тянется до низа экрана: верх — список, всё ниже — лёгкая
+   * подложка. Нужна она не для красоты. Подложку ::backdrop у popover
+   * стандарт делает прозрачной для касаний (pointer-events: none), и тап
+   * «мимо меню» закрывал его, но проходил насквозь — на превью так
+   * открылась карточка товара под пальцем. Теперь тап приходится в саму
+   * панель, скрипт выше её закрывает, и дальше он не идёт.
+   */
+  .ie-more-panel:popover-open {
+    display: block;
+    position: fixed;
+    inset: var(--ie-more-top, 0px) 0 0 0;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(0 0 0 / 0.08);
+    color: var(--color-foreground, #111);
+  }
+
+  .ie-more-panel__list {
+    margin: 0;
+    padding: 0.25rem 0 0.5rem;
+    border-block: 1px solid var(--ie-line, #e5e1da);
+    background: var(--color-background, #fff);
+  }
+
+  .ie-more-panel::backdrop {
+    background: transparent;
+  }
+
+  /*
+   * Панель лежит внутри строки категорий, и на её пункты действуют
+   * правила темы для пунктов строки: .menu-list--mobile li даёт
+   * padding-block 11px, а li:first-of-type / :last-of-type — ещё 15px
+   * сбоку (0,2,1). Без сброса строки выходили по 66px, а Jewelry
+   * съезжал вправо. :popover-open добавляет вес до (0,3,1): порядок
+   * подключения стилей темы и наших не гарантирован.
+   */
+  .ie-more-panel:popover-open .ie-more-panel__list > li {
+    padding: 0;
+  }
+
+  /* Строки по 44px — палец попадает, не целясь. */
+  .ie-more-panel__link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--ie-gutter, 24px);
+    font-family: var(--font-accent--family, var(--font-heading--family));
+    font-weight: var(--font-accent--weight, 400);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ie-more-panel__link[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+{% endstylesheet %}

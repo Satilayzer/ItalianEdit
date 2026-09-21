@@ -675,6 +675,12 @@ p:has(> .product-designer) {
  * числе и одна при нечётном, и в обоих случаях нечётная из них попадает
  * в :nth-last-child(-n + 2).
  *
+ * Считаем именно среди карточек — `of .product-grid__item`, а не всех детей
+ * сетки. Тема кладёт первым ребёнком списка <script>, и простой
+ * :nth-child(odd) попадал в правый столбец: вертикальная линия уезжала
+ * за край экрана, горизонтальная рисовалась только под правым товаром.
+ * Так и было до этой правки — разделителей на телефоне почти не было видно.
+ *
  * Весь расчёт верен ровно для двух столбцов, поэтому и целимся в них: число
  * столбцов на телефоне задаётся в редакторе и приезжает инлайновой
  * переменной --mobile-columns. Поставят три — правила просто не применятся,
@@ -691,8 +697,8 @@ p:has(> .product-designer) {
     position: relative;
   }
 
-  .product-grid[style*="--mobile-columns: 2"] .product-grid__item:nth-child(odd)::after,
-  .product-grid[style*="--mobile-columns: 2"] .product-grid__item:nth-child(odd)::before {
+  .product-grid[style*="--mobile-columns: 2"] .product-grid__item:nth-child(odd of .product-grid__item)::after,
+  .product-grid[style*="--mobile-columns: 2"] .product-grid__item:nth-child(odd of .product-grid__item)::before {
     content: "";
     position: absolute;
     background: var(--ie-line, #e5e1da);
@@ -700,7 +706,7 @@ p:has(> .product-designer) {
   }
 
   /* Вертикальная — в промежутке между столбцами. */
-  .product-grid[style*="--mobile-columns: 2"] .product-grid__item:nth-child(odd)::after {
+  .product-grid[style*="--mobile-columns: 2"] .product-grid__item:nth-child(odd of .product-grid__item)::after {
     inset-block: 0;
     inset-inline-end: calc(var(--ie-catalog-gap) / -2);
     width: 1px;
@@ -708,7 +714,7 @@ p:has(> .product-designer) {
 
   /* Горизонтальная — под рядом, на всю его ширину. */
   .product-grid[style*="--mobile-columns: 2"]
-    .product-grid__item:nth-child(odd):not(:nth-last-child(-n + 2))::before {
+    .product-grid__item:nth-child(odd of .product-grid__item):not(:nth-last-child(-n + 2 of .product-grid__item))::before {
     inset-block-end: calc(var(--ie-catalog-gap) / -2);
     inset-inline-start: 0;
     width: calc(200% + var(--ie-catalog-gap));

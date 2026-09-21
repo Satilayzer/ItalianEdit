@@ -46,6 +46,11 @@
           >
             {% for link in block_settings.menu.links %}
               <li>
+                {%- comment -%} Italian Edit: «More» открывает подменю, см. ie-nav-more {%- endcomment -%}
+                {%- capture ie_more_toggle -%}{% render 'ie-nav-more', part: 'toggle', link: link, index: forloop.index, block_id: block.id %}{%- endcapture -%}
+                {%- if ie_more_toggle != blank -%}
+                  {{ ie_more_toggle }}
+                {%- else -%}
                 <a
                   href="{{ link.url }}"
                   id="MenuItem-{{ link.handle }}"
@@ -56,10 +61,12 @@
                 >
                   {{- link.title -}}
                 </a>
+                {%- endif -%}
               </li>
             {% endfor %}
           </ul>
         </div>
+        {% render 'ie-nav-more', part: 'panels', links: block_settings.menu.links, block_id: block.id %}
       </div>
     {% endif %}
   {% else %}
