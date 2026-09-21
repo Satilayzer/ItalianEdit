@@ -698,6 +698,24 @@ p:has(> .product-designer) {
 }
 
 /*
+ * Вишлист — так же, как каталог: четыре в ряд на ПК, три на планшете,
+ * на телефоне две (это задаёт сам assets/wishlist.css). У вишлиста свои
+ * колонки — «сколько влезет» по 340px, на 1440px выходило три. Вес
+ * (0,2,0) против (0,1,0) у wishlist.css.
+ */
+@media screen and (min-width: 750px) {
+  .wishlist .wishlist__items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .wishlist .wishlist__items {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/*
  * Сетка из волосяных линий между товарами — везде, где товаров больше
  * одного, на телефоне, планшете и ПК:
  *   .product-grid — каталог, страница поиска, New;
