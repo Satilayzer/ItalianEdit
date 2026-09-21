@@ -237,7 +237,7 @@
         "number_size": 14,
         "video": "shopify://files/videos/0818 (1)(1).mp4",
         "alt": "",
-        "sound": true,
+        "sound": false,
         "heading_font": "source_serif_4_n4",
         "heading_size": 44,
         "heading_color": "#633f47",

@@ -154,10 +154,17 @@
         "padding-block-start": 0,
         "padding-block-end": 36
       }
+    },
+    "ie_music": {
+      "type": "ie-background-music",
+      "settings": {
+        "audio_url": "https://cdn.shopify.com/s/files/1/0798/9533/1047/files/0825.mp3?v=1789979012"
+      }
     }
   },
   "order": [
     "footer_QAE7jb",
-    "utilities"
+    "utilities",
+    "ie_music"
   ]
 }

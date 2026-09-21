@@ -13,7 +13,7 @@
       "type": "ie-hero",
       "settings": {
         "video": "shopify://files/videos/0825.mp4",
-        "sound": true,
+        "sound": false,
         "alt": "Italian Edit",
         "heading": "",
         "link": "",

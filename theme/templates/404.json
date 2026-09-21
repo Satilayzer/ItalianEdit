@@ -1,8 +1,18 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "not_found": {
       "type": "ie-404",
       "settings": {
+        "video": "shopify://files/videos/0818 (2).mp4",
         "sound": false,
         "heading": "",
         "button_label": "",
@@ -10,5 +20,7 @@
       }
     }
   },
-  "order": ["not_found"]
+  "order": [
+    "not_found"
+  ]
 }
