@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-page-editorial",
+      "settings": {
+        "eyebrow": "",
+        "image": "shopify://shop_images/about-us-yulia.png",
+        "image_ratio": "7 / 8",
+        "image_position": "center",
+        "text_align": "center",
+        "cta": "",
+        "cta_link": "",
+        "cta_color": "#633f47"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

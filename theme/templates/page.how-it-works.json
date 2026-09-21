@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-page-editorial",
+      "settings": {
+        "eyebrow": "",
+        "image": "shopify://shop_images/how-it-works-flatlay.png",
+        "image_ratio": "4 / 5",
+        "image_position": "top",
+        "text_align": "start",
+        "cta": "Didn't find what you're looking for?\nMessage us on WhatsApp and we'll help you choose the right option.",
+        "cta_link": "https://wa.me/17275806602",
+        "cta_color": "#633f47"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
