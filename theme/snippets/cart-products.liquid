@@ -661,6 +661,18 @@
     margin-bottom: var(--margin-lg);
   }
 
+  /*
+   * Шторка корзины: фото крупнее. На 15cqi оно выходило ~66px — мелко
+   * рядом с текстом. 22% ширины: ~97px в шторке на ПК (≈440px шириной),
+   * ~75px в шторке на телефоне. Больше нельзя: на телефоне тексту тогда
+   * не хватает 12rem, и строка «Italian Size …» (≈183px) переносится —
+   * на 24% так и вышло. Потолок 8rem — на случай широкой шторки.
+   * Страницу корзины правило не трогает.
+   */
+  .cart-drawer__items .cart-items__table-row {
+    grid-template-columns: clamp(2.5rem, 22cqi, 8rem) minmax(0, 12rem) auto;
+  }
+
   .cart-items__details {
     grid-area: details;
     min-width: 0;
