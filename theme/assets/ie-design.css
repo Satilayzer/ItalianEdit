@@ -911,6 +911,12 @@ p:has(> .product-designer) {
  * в линию уже справа. На главной (.ie-card) текст по центру, там
  * симметричный отступ его и оставляет по центру.
  *
+ * Снизу под ценой ещё --ie-card-text-bottom: без него горизонтальная
+ * линия сетки шла почти вплотную под ценой (≈8px). Линию двигаем не
+ * саму — она стоит посередине промежутка между рядами, — а через высоту
+ * карточки: карточка чуть выше, линия ниже, до следующего ряда то же
+ * расстояние, вертикали вытягиваются следом.
+ *
  * Карточки разные по разметке, поэтому селекторов несколько:
  *   product-card — каталог, поиск, «Goes well with…», карусель корзины;
  *     группа с текстом идёт прямым потомком .product-card__content после
@@ -921,6 +927,7 @@ p:has(> .product-designer) {
  */
 :root {
   --ie-card-text-inset: 16px;
+  --ie-card-text-bottom: 12px;
 }
 
 product-card .product-card__content > .group-block,
@@ -929,6 +936,7 @@ product-card .product-card__content > .product-grid-view-zoom-out--details,
 .ie-card__body,
 .wishlist__item .wishlist-card-text {
   padding-inline: var(--ie-card-text-inset);
+  padding-block-end: var(--ie-card-text-bottom);
 }
 
 /*
