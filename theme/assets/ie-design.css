@@ -603,6 +603,19 @@ p:has(> .product-designer) {
 }
 
 /*
+ * То же в вишлисте. Карточки там собирает assets/wishlist.css, и регистр
+ * он берёт у пресета темы — text-transform: var(--font-h5--case), то есть
+ * капс, — чтобы выглядеть как каталог до нашей правки выше. В каталоге
+ * капс давно снят, а в вишлисте названия оставались заглавными.
+ * Вес (0,5,0): у wishlist.css правило для потомков весит (0,4,0), и
+ * порядок подключения файлов не наш.
+ */
+.wishlist .wishlist__items .wishlist__item .wishlist-card-text.wishlist-card-text,
+.wishlist .wishlist__items .wishlist__item .wishlist-card-text.wishlist-card-text * {
+  text-transform: none;
+}
+
+/*
  * Насыщенность и разрядку бренду задаёт ещё и стиль секции (600 / 0.06em),
  * а он грузится после нашего слоя. Повторяем класс, чтобы наше правило
  * оказалось специфичнее и бренд был именно жирным.
