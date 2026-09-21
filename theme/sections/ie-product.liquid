@@ -431,6 +431,7 @@
                   class="ie-pdp__thumb"
                   data-ie-thumb
                   data-src="{{ media.preview_image | image_url: width: 1400 }}"
+                  data-zoom-src="{{ media.preview_image | image_url: width: 2400 }}"
                   data-srcset="{{ media.preview_image | image_url: width: 600 }} 600w, {{ media.preview_image | image_url: width: 900 }} 900w, {{ media.preview_image | image_url: width: 1400 }} 1400w"
                   data-alt="{{ media.alt | default: product.title | escape }}"
                   aria-label="{{ product.title | escape }} — {{ forloop.index }}"
@@ -522,6 +523,27 @@
       <div class="ie-pdp__zoom-stage" data-ie-zoom-stage>
         <img class="ie-pdp__zoom-img" data-ie-zoom-image alt="">
       </div>
+
+      {%- comment -%}
+        Кнопка зума — подсказка, что фото можно увеличить: щелчок и щипок
+        сами по себе не видны. Значок меняется с «+» на «−» по data-zoomed
+        у диалога (см. стили).
+      {%- endcomment -%}
+      <button
+        type="button"
+        class="ie-pdp__zoom-toggle"
+        data-ie-zoom-toggle
+        aria-pressed="false"
+        aria-label="Zoom in"
+        data-label-in="Zoom in"
+        data-label-out="Zoom out"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <circle cx="10.5" cy="10.5" r="6" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M15 15l5 5M8 10.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path class="ie-pdp__zoom-plus" d="M10.5 8v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
 
       <button
         type="button"
@@ -1225,9 +1247,21 @@
     width: 100%;
     height: 100%;
     padding: clamp(0.5rem, 3vw, 2.5rem);
-    touch-action: pan-y;
+    /*
+     * Все жесты на сцене наши: щипок увеличивает фото, палец двигает
+     * увеличенное, свайп листает. Отдай браузеру хоть pan-y — щипок
+     * увеличивал бы всю страницу под диалогом, а не фотографию.
+     */
+    touch-action: none;
   }
 
+  /*
+   * Зум — transform поверх вписанной картинки: раскладка не меняется,
+   * меняется только отрисовка, и браузер двигает её без пересчёта
+   * страницы. Переход плавный на щелчок и кнопку; во время щипка и
+   * ведения пальцем (data-gesture) его нет — иначе фото отставало бы
+   * от пальца.
+   */
   .ie-pdp__zoom-img {
     display: block;
     max-width: 100%;
@@ -1236,9 +1270,22 @@
     height: auto;
     object-fit: contain;
     -webkit-user-drag: none;
+    user-select: none;
+    transform-origin: center;
+    transition: transform 0.25s ease;
+    cursor: zoom-in;
+  }
+
+  .ie-pdp__zoom[data-zoomed] .ie-pdp__zoom-img {
+    cursor: zoom-out;
+  }
+
+  .ie-pdp__zoom[data-gesture] .ie-pdp__zoom-img {
+    transition: none;
   }
 
   .ie-pdp__zoom-close,
+  .ie-pdp__zoom-toggle,
   .ie-pdp__zoom-arrow {
     position: absolute;
     display: grid;
@@ -1253,6 +1300,7 @@
   }
 
   .ie-pdp__zoom-close:hover,
+  .ie-pdp__zoom-toggle:hover,
   .ie-pdp__zoom-arrow:hover:not(:disabled) {
     background: var(--ie-cream);
   }
@@ -1284,7 +1332,20 @@
   }
 
   /* Просмотр зациклен, так что гасить стрелки на краях не нужно. */
+  /* Лупа — слева от крестика, тем же размером. */
+  .ie-pdp__zoom-toggle {
+    top: clamp(0.75rem, 2vw, 1.5rem);
+    inset-inline-end: calc(clamp(0.75rem, 2vw, 1.5rem) + 3.25rem);
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .ie-pdp__zoom[data-zoomed] .ie-pdp__zoom-plus {
+    display: none;
+  }
+
   .ie-pdp__zoom-close svg,
+  .ie-pdp__zoom-toggle svg,
   .ie-pdp__zoom-arrow svg {
     width: 1.125rem;
     height: 1.125rem;

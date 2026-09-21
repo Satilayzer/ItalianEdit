@@ -11,11 +11,25 @@
  *
  * Прокрутка ленты миниатюр — на общем ie-slider.js: стрелки, край,
  * перетаскивание мышью. Здесь выбор фотографии, свайп по большой картинке
- * и полноэкранный просмотр.
+ * и полноэкранный просмотр с зумом.
  */
 
 /** Насколько далеко надо провести пальцем, чтобы это считалось свайпом, px. */
 const SWIPE_THRESHOLD = 40;
+
+/** Во сколько раз увеличивают щелчок, тап и кнопка лупы. */
+const ZOOM_STEP = 2.5;
+
+/**
+ * Потолок щипка. Исходники у товаров около 1000px: при 4× экран уже
+ * показывает четверть кадра, дальше видны только пиксели.
+ */
+const ZOOM_MAX = 4;
+
+/** Сдвиг пальца, после которого касание — перетаскивание, а не тап, px. */
+const TAP_SLOP = 6;
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
 class IeProduct extends HTMLElement {
   connectedCallback() {
@@ -25,6 +39,12 @@ class IeProduct extends HTMLElement {
     this.zoom = this.querySelector('[data-ie-zoom]');
     this.zoomImage = this.querySelector('[data-ie-zoom-image]');
     this.zoomCounter = this.querySelector('[data-ie-zoom-counter]');
+    this.zoomToggle = this.querySelector('[data-ie-zoom-toggle]');
+
+    // Масштаб и сдвиг фото в просмотре. Сдвиг — от центра, в пикселях экрана.
+    this.zoomScale = 1;
+    this.zoomX = 0;
+    this.zoomY = 0;
 
     this.variants = this.#readVariants();
     this.variantInput = this.querySelector('input[name="id"]');
@@ -152,7 +172,7 @@ class IeProduct extends HTMLElement {
    * мышь и перо. Вертикальную прокрутку не забираем — за это отвечает
    * touch-action: pan-y в стилях.
    */
-  #bindSwipe(element) {
+  #bindSwipe(element, canSwipe = () => true) {
     if (!element) return;
 
     let startX = null;
@@ -166,6 +186,13 @@ class IeProduct extends HTMLElement {
 
     const finish = (event) => {
       if (startX === null) return;
+
+      // Увеличенное фото палец двигает, а не листает.
+      if (!canSwipe()) {
+        startX = null;
+        startY = null;
+        return;
+      }
 
       const dx = event.clientX - startX;
       const dy = event.clientY - startY;
@@ -201,6 +228,17 @@ class IeProduct extends HTMLElement {
         this.zoom.close();
         return;
       }
+      if (event.target.closest('[data-ie-zoom-toggle]')) {
+        this.#toggleZoom();
+        return;
+      }
+
+      // Щелчок по самому фото — зум туда и обратно. После щипка,
+      // перетаскивания или свайпа это не щелчок, а конец жеста.
+      if (event.target === this.zoomImage) {
+        if (!this.zoomMoved && !this.swiped) this.#toggleZoom(event);
+        return;
+      }
       if (event.target.closest('[data-ie-zoom-prev]')) {
         this.#step(-1);
         return;
@@ -211,7 +249,13 @@ class IeProduct extends HTMLElement {
       }
 
       // Клик мимо картинки — тоже закрытие: так ведут себя все просмотрщики.
+      // Кроме увеличенного фото: там тап по фону сначала возвращает его
+      // целиком — человек смотрел деталь, а не собирался уходить.
       if (event.target.closest('[data-ie-zoom-stage]') && event.target !== this.zoomImage) {
+        if (this.zoomScale > 1) {
+          if (!this.zoomMoved) this.#zoomTo(1);
+          return;
+        }
         this.zoom.close();
       }
     });
@@ -225,9 +269,269 @@ class IeProduct extends HTMLElement {
         event.preventDefault();
         this.#step(-1);
       }
+      if (event.key === '+' || event.key === '=') {
+        event.preventDefault();
+        this.#zoomTo(ZOOM_STEP);
+      }
+      if (event.key === '-') {
+        event.preventDefault();
+        this.#zoomTo(1);
+      }
     });
 
-    this.#bindSwipe(this.zoom.querySelector('[data-ie-zoom-stage]'));
+    // Закрыли просмотр — в следующий раз он откроется с фото целиком.
+    this.zoom.addEventListener('close', () => this.#resetZoom());
+
+    const stage = this.zoom.querySelector('[data-ie-zoom-stage]');
+    this.#bindSwipe(stage, () => this.zoomScale === 1 && !this.zoomGestured);
+    this.#bindZoomGestures(stage);
+  }
+
+  /*
+   * Зум в просмотре.
+   *
+   * Мышь: щелчок увеличивает, дальше фото ходит за курсором — курсор
+   * у левого края показывает левый край фото. Так смотрят вещь на
+   * люксовых витринах, и ничего не надо перетаскивать.
+   *
+   * Палец: тап увеличивает и возвращает, щипок — плавно до ZOOM_MAX,
+   * увеличенное фото ведётся пальцем. Пока фото увеличено, свайп не
+   * листает (условие у #bindSwipe выше).
+   */
+  #bindZoomGestures(stage) {
+    if (!stage) return;
+
+    const pointers = new Map();
+    let gesture = null;
+
+    const startGesture = () => {
+      const points = [...pointers.values()];
+      if (points.length >= 2) {
+        const [a, b] = points;
+        gesture = {
+          type: 'pinch',
+          distance: Math.hypot(b.x - a.x, b.y - a.y) || 1,
+          scale: this.zoomScale,
+          mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+          x: this.zoomX,
+          y: this.zoomY,
+        };
+      } else if (points.length === 1 && this.zoomScale > 1) {
+        gesture = { type: 'pan', start: { ...points[0] }, x: this.zoomX, y: this.zoomY };
+      } else {
+        gesture = null;
+      }
+    };
+
+    stage.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') {
+        this.zoomMoved = false;
+        return;
+      }
+
+      // Новое касание с чистого листа: прошлый жест кончился.
+      if (pointers.size === 0) {
+        this.zoomMoved = false;
+        this.zoomGestured = false;
+      }
+
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pointers.size >= 2) this.zoomGestured = true;
+      startGesture();
+    });
+
+    stage.addEventListener('pointermove', (event) => {
+      // Мышь: увеличенное фото следует за курсором.
+      if (event.pointerType === 'mouse') {
+        if (this.zoomScale > 1) this.#followPointer(event);
+        return;
+      }
+
+      if (!pointers.has(event.pointerId)) return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (!gesture) return;
+
+      const points = [...pointers.values()];
+
+      if (gesture.type === 'pinch' && points.length >= 2) {
+        const [a, b] = points;
+        const distance = Math.hypot(b.x - a.x, b.y - a.y);
+        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        this.zoomMoved = true;
+
+        // Точка фото под серединой пальцев в начале щипка остаётся под ней
+        // и дальше: так щипок одновременно и увеличивает, и двигает.
+        const center = this.#zoomCenter();
+        const localX = (gesture.mid.x - center.x - gesture.x) / gesture.scale;
+        const localY = (gesture.mid.y - center.y - gesture.y) / gesture.scale;
+        const scale = clamp((gesture.scale * distance) / gesture.distance, 1, ZOOM_MAX);
+
+        this.zoomScale = scale;
+        this.zoomX = mid.x - center.x - localX * scale;
+        this.zoomY = mid.y - center.y - localY * scale;
+        this.#clampZoom();
+        this.#applyZoom(false);
+        return;
+      }
+
+      if (gesture.type === 'pan' && points.length === 1) {
+        const [point] = points;
+        const dx = point.x - gesture.start.x;
+        const dy = point.y - gesture.start.y;
+        if (Math.hypot(dx, dy) > TAP_SLOP) this.zoomMoved = true;
+
+        this.zoomX = gesture.x + dx;
+        this.zoomY = gesture.y + dy;
+        this.#clampZoom();
+        this.#applyZoom(false);
+      }
+    });
+
+    const release = (event) => {
+      if (!pointers.delete(event.pointerId)) return;
+
+      if (gesture?.type === 'pinch' && pointers.size < 2) {
+        // Почти не увеличили — возвращаем фото целиком, а не на 1.03×.
+        if (this.zoomScale < 1.05) this.#zoomTo(1);
+        else this.#loadZoomSource();
+      }
+
+      // Один палец остался после щипка — он продолжает вести фото.
+      startGesture();
+      if (pointers.size === 0) this.#applyZoom(true);
+    };
+
+    stage.addEventListener('pointerup', release);
+    stage.addEventListener('pointercancel', release);
+  }
+
+  /** Центр вписанного фото на экране: сцена ставит его в центр диалога. */
+  #zoomCenter() {
+    const box = this.zoom.getBoundingClientRect();
+    return { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+  }
+
+  /**
+   * Насколько фото может уйти от центра, чтобы его край не отрывался от
+   * края экрана. offsetWidth — размер без transform, то есть вписанный.
+   */
+  #zoomLimits() {
+    const img = this.zoomImage;
+    return {
+      x: Math.max(0, (img.offsetWidth * this.zoomScale - this.zoom.clientWidth) / 2),
+      y: Math.max(0, (img.offsetHeight * this.zoomScale - this.zoom.clientHeight) / 2),
+    };
+  }
+
+  #clampZoom() {
+    const limits = this.#zoomLimits();
+    this.zoomX = clamp(this.zoomX, -limits.x, limits.x);
+    this.zoomY = clamp(this.zoomY, -limits.y, limits.y);
+  }
+
+  /** Курсор у края экрана показывает этот же край фото. */
+  #followPointer(event) {
+    const box = this.zoom.getBoundingClientRect();
+    const limits = this.#zoomLimits();
+    const u = clamp((event.clientX - box.left) / box.width, 0, 1);
+    const v = clamp((event.clientY - box.top) / box.height, 0, 1);
+
+    this.zoomX = (0.5 - u) * 2 * limits.x;
+    this.zoomY = (0.5 - v) * 2 * limits.y;
+    this.#applyZoom(false);
+  }
+
+  /**
+   * Увеличить до scale так, чтобы точка (x, y) экрана осталась на месте.
+   * Без точки — вокруг центра (кнопка лупы, клавиши).
+   */
+  #zoomTo(scale, x, y) {
+    const center = this.#zoomCenter();
+    const px = x ?? center.x;
+    const py = y ?? center.y;
+    const from = this.zoomScale;
+    const to = clamp(scale, 1, ZOOM_MAX);
+
+    const localX = (px - center.x - this.zoomX) / from;
+    const localY = (py - center.y - this.zoomY) / from;
+
+    this.zoomScale = to;
+    this.zoomX = to === 1 ? 0 : px - center.x - localX * to;
+    this.zoomY = to === 1 ? 0 : py - center.y - localY * to;
+    this.#clampZoom();
+
+    if (to > 1) this.#loadZoomSource();
+    this.#applyZoom(true);
+  }
+
+  /**
+   * Туда и обратно. Для мыши сдвиг сразу считаем по курсору: иначе фото
+   * встало бы по точке щелчка, а на первом же движении мыши перескочило
+   * на правило «курсор у края — край фото».
+   */
+  #toggleZoom(event) {
+    if (this.zoomScale > 1) {
+      this.#zoomTo(1);
+      return;
+    }
+
+    this.#zoomTo(ZOOM_STEP, event?.clientX, event?.clientY);
+    if (event && this.#mouseLike(event)) this.#followPointer(event);
+  }
+
+  /**
+   * Щелчок мышью или тап? У click нет pointerType в старых Safari, поэтому
+   * запасной признак — устройство с наведением (там почти всегда мышь).
+   */
+  #mouseLike(event) {
+    if (event.pointerType) return event.pointerType === 'mouse';
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }
+
+  #applyZoom(animate) {
+    if (!this.zoomImage) return;
+
+    const zoomed = this.zoomScale > 1;
+    this.zoom.toggleAttribute('data-zoomed', zoomed);
+    this.zoom.toggleAttribute('data-gesture', !animate);
+    this.zoomImage.style.transform = zoomed
+      ? `translate(${this.zoomX}px, ${this.zoomY}px) scale(${this.zoomScale})`
+      : '';
+
+    if (this.zoomToggle) {
+      this.zoomToggle.setAttribute('aria-pressed', String(zoomed));
+      const label = zoomed ? this.zoomToggle.dataset.labelOut : this.zoomToggle.dataset.labelIn;
+      if (label) this.zoomToggle.setAttribute('aria-label', label);
+    }
+  }
+
+  #resetZoom() {
+    this.zoomScale = 1;
+    this.zoomX = 0;
+    this.zoomY = 0;
+    this.#applyZoom(false);
+  }
+
+  /**
+   * На увеличении подменяем фото на крупное (2400px). Сначала догружаем
+   * копию и только потом меняем src — иначе на время загрузки просмотр
+   * опустел бы. Если исходник меньше 2400, Shopify отдаст исходник,
+   * и подмена ничего не испортит.
+   */
+  #loadZoomSource() {
+    const thumb = this.thumbs[this.#currentIndex()];
+    const source = thumb?.dataset.zoomSrc;
+    if (!source || !this.zoomImage || this.zoomImage.dataset.zoomSrc === source) return;
+
+    this.zoomImage.dataset.zoomSrc = source;
+    const preload = new Image();
+    preload.src = source;
+    preload
+      .decode()
+      .then(() => {
+        if (this.zoomImage.dataset.zoomSrc === source) this.zoomImage.src = source;
+      })
+      .catch(() => {});
   }
 
   #openZoom() {
@@ -239,6 +543,10 @@ class IeProduct extends HTMLElement {
   #renderZoom(index) {
     const thumb = this.thumbs[index];
     if (!this.zoomImage || !thumb) return;
+
+    // Другое фото — снова целиком и снова обычного размера.
+    this.#resetZoom();
+    delete this.zoomImage.dataset.zoomSrc;
 
     this.zoomImage.src = thumb.dataset.src;
     this.zoomImage.alt = thumb.dataset.alt || '';
