@@ -898,6 +898,58 @@ p:has(> .product-designer) {
   pointer-events: none;
 }
 
+/*
+ * Текст карточек — бренд, название, цена — отодвинут от линий сетки
+ * до уровня сердечка.
+ *
+ * Сердечко (assets/wishlist.css): кнопка 36px стоит на 8px от края
+ * карточки, значок 20px — по центру кнопки, то есть его левый край на
+ * 8 + (36 − 20) / 2 = 16px. Столько же и тексту. Поменяют положение
+ * сердечка — поменять и --ie-card-text-inset.
+ *
+ * Отступ с обеих сторон: только слева — и длинное название упиралось бы
+ * в линию уже справа. На главной (.ie-card) текст по центру, там
+ * симметричный отступ его и оставляет по центру.
+ *
+ * Карточки разные по разметке, поэтому селекторов несколько:
+ *   product-card — каталог, поиск, «Goes well with…», карусель корзины;
+ *     группа с текстом идёт прямым потомком .product-card__content после
+ *     картинки; второй селектор — подпись в виде «уменьшить»;
+ *   .resource-card__content — выпадающий поиск;
+ *   .ie-card__body — «New» на главной;
+ *   .wishlist-card-text — вишлист.
+ */
+:root {
+  --ie-card-text-inset: 16px;
+}
+
+product-card .product-card__content > .group-block,
+product-card .product-card__content > .product-grid-view-zoom-out--details,
+.predictive-search-results__card .resource-card__content,
+.ie-card__body,
+.wishlist__item .wishlist-card-text {
+  padding-inline: var(--ie-card-text-inset);
+}
+
+/*
+ * Телефон, сетка во всю ширину экрана (каталог, поиск): тема сама
+ * отодвигает содержимое карточки от края экрана на --padding-xs (8px) —
+ * padding-inline: max(var(--padding-xs), …) у .product-grid__card. Наши
+ * 16px ложились поверх, и текст уходил на 24px, левее сердечка на 8.
+ * Здесь вычитаем тему, в сумме выходит те же 16px. Условие повторяет
+ * тему дословно; расчёт верен, пока у карточки в редакторе боковые
+ * отступы 0 (сейчас так).
+ */
+@media screen and (max-width: 749px) {
+  :is(.collection-wrapper--full-width, .collection-wrapper--full-width-on-mobile)
+    [product-grid-view='default']
+    product-card
+    .product-card__content
+    > :is(.group-block, .product-grid-view-zoom-out--details) {
+    padding-inline: calc(var(--ie-card-text-inset) - var(--padding-xs, 8px));
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Подвал                                                              */
 /* ------------------------------------------------------------------ */
