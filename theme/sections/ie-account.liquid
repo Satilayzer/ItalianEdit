@@ -1,7 +1,8 @@
 {%- comment -%}
-  Личный кабинет вошедшего покупателя: /pages/account. Слева меню
+  Личный кабинет покупателя: /pages/account. Слева меню
   (Orders, Profile, Continue shopping), справа карточки — по макету,
-  который повторяет штатный кабинет Shopify.
+  который повторяет штатный кабинет Shopify. Гостю — те же вкладки
+  с приглашением войти.
 
   Своя страница, а не штатный кабинет, потому что у магазина новые
   customer accounts: они живут на shopify.com, и ни нашу шапку, ни наш
@@ -22,7 +23,19 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign profile_url = 'https://shopify.com/' | append: shop.id | append: '/account/profile'
+  # Адрес профиля в кабинете Shopify — по рецепту из документации: у
+  # routes.account_url бывает хвост с параметрами, путь вставляем до него.
+  assign account_url_parts = routes.account_url | split: '?'
+  assign profile_url = account_url_parts.first | append: '/profile'
+  if account_url_parts.size > 1
+    assign profile_url = profile_url | append: '?' | append: account_url_parts.last
+  endif
+
+  # Вход с возвратом сюда же. routes.account_login_url после входа увёл бы
+  # в заказы кабинета Shopify, return_to возвращает на витрину (только
+  # относительный адрес). Вкладку к адресу дописывает скрипт ниже.
+  assign return_to = request.path | url_encode
+  assign signin_url = '/customer_authentication/login?return_to=' | append: return_to
 
   assign empty_image = section.settings.empty_image
   if empty_image == blank and section.settings.empty_product != blank
@@ -37,15 +50,15 @@
 >
   <h1 class="visually-hidden">{{ page.title | default: 'Account' }}</h1>
 
-  {%- if customer -%}
-    <nav class="ie-account__nav" aria-label="Account">
-      <a class="ie-account__nav-link" href="#orders" data-ie-account-tab="orders" aria-current="page">Orders</a>
-      <a class="ie-account__nav-link" href="#profile" data-ie-account-tab="profile">Profile</a>
-      <a class="ie-account__nav-link" href="{{ section.settings.continue_url | default: routes.root_url }}">
-        {{- section.settings.continue_label -}}
-      </a>
-    </nav>
+  <nav class="ie-account__nav" aria-label="Account">
+    <a class="ie-account__nav-link" href="#orders" data-ie-account-tab="orders" aria-current="page">Orders</a>
+    <a class="ie-account__nav-link" href="#profile" data-ie-account-tab="profile">Profile</a>
+    <a class="ie-account__nav-link" href="{{ section.settings.continue_url | default: routes.root_url }}">
+      {{- section.settings.continue_label -}}
+    </a>
+  </nav>
 
+  {%- if customer -%}
     <div class="ie-account__main">
       {%- comment -%} Заказы {%- endcomment -%}
       <div class="ie-account__panel" id="ie-account-orders" data-ie-account-panel="orders">
@@ -226,52 +239,83 @@
       </div>
     </div>
   {%- else -%}
-    <div class="ie-account__main ie-account__main--guest">
-      <div class="ie-account__card ie-account__welcome">
-        <div class="ie-account__welcome-head">
-          <div>
-            <p class="ie-account__welcome-title">{{ section.settings.guest_title }}</p>
-            <p class="ie-account__welcome-sub">{{ section.settings.guest_subtitle }}</p>
+    {%- comment -%}
+      Гость. Сюда же приводят кнопки Orders и Profile из выпадашки шапки
+      (перехват в snippets/header-actions-extra.liquid), поэтому раскладка
+      та же, что у вошедшего: меню и две вкладки, только вместо данных —
+      приглашение войти. После входа Shopify возвращает сюда же.
+    {%- endcomment -%}
+    <div class="ie-account__main">
+      <div class="ie-account__panel" id="ie-account-orders" data-ie-account-panel="orders">
+        <div class="ie-account__card ie-account__welcome">
+          <div class="ie-account__welcome-head">
+            <div>
+              <p class="ie-account__welcome-title">{{ section.settings.guest_title }}</p>
+              <p class="ie-account__welcome-sub">{{ section.settings.guest_orders_text }}</p>
+            </div>
+            <a class="ie-account__button" href="{{ signin_url }}" data-ie-account-signin>Sign in</a>
           </div>
-          <a class="ie-account__button" href="{{ routes.account_login_url }}">Sign in</a>
+
+          {%- if empty_image != blank -%}
+            <div class="ie-account__welcome-media">
+              {{ empty_image | image_url: width: 800 | image_tag: widths: '300, 500, 800', sizes: '(min-width: 750px) 320px, 70vw', alt: empty_image.alt, loading: 'lazy' }}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="ie-account__panel" id="ie-account-profile" data-ie-account-panel="profile">
+        <div class="ie-account__card ie-account__welcome">
+          <div class="ie-account__welcome-head">
+            <div>
+              <p class="ie-account__welcome-title">{{ section.settings.guest_title }}</p>
+              <p class="ie-account__welcome-sub">{{ section.settings.guest_profile_text }}</p>
+            </div>
+            <a class="ie-account__button" href="{{ signin_url }}" data-ie-account-signin>Sign in</a>
+          </div>
         </div>
       </div>
     </div>
   {%- endif -%}
 </section>
 
-{%- if customer -%}
-  <script>
-    (() => {
-      const root = document.currentScript.previousElementSibling;
-      if (!root || !root.matches('[data-ie-account]')) return;
+<script>
+  (() => {
+    const root = document.currentScript.previousElementSibling;
+    if (!root || !root.matches('[data-ie-account]')) return;
 
-      const tabs = root.querySelectorAll('[data-ie-account-tab]');
-      const panels = root.querySelectorAll('[data-ie-account-panel]');
-      const names = Array.from(tabs, (tab) => tab.dataset.ieAccountTab);
+    const tabs = root.querySelectorAll('[data-ie-account-tab]');
+    const panels = root.querySelectorAll('[data-ie-account-panel]');
+    const signins = root.querySelectorAll('[data-ie-account-signin]');
+    const names = Array.from(tabs, (tab) => tab.dataset.ieAccountTab);
 
-      // После подписки форма `customer` возвращает на страницу с
-      // ?customer_posted=true, а хеш теряется — открываем профиль, откуда
-      // подписывались, а не заказы.
-      const fallback = /[?&]customer_posted=true/.test(location.search) ? 'profile' : names[0];
+    // После подписки форма `customer` возвращает на страницу с
+    // ?customer_posted=true, а хеш теряется — открываем профиль, откуда
+    // подписывались, а не заказы.
+    const fallback = /[?&]customer_posted=true/.test(location.search) ? 'profile' : names[0];
 
-      const show = () => {
-        const hash = location.hash.slice(1);
-        const current = names.includes(hash) ? hash : fallback;
-        panels.forEach((panel) => {
-          panel.hidden = panel.dataset.ieAccountPanel !== current;
-        });
-        tabs.forEach((tab) => {
-          if (tab.dataset.ieAccountTab === current) tab.setAttribute('aria-current', 'page');
-          else tab.removeAttribute('aria-current');
-        });
-      };
+    const show = () => {
+      const hash = location.hash.slice(1);
+      const current = names.includes(hash) ? hash : fallback;
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.ieAccountPanel !== current;
+      });
+      tabs.forEach((tab) => {
+        if (tab.dataset.ieAccountTab === current) tab.setAttribute('aria-current', 'page');
+        else tab.removeAttribute('aria-current');
+      });
+      // Гость вернётся после входа на ту вкладку, с которой уходил.
+      signins.forEach((link) => {
+        const url = new URL(link.href);
+        url.searchParams.set('return_to', `${location.pathname}#${current}`);
+        link.href = url.pathname + url.search;
+      });
+    };
 
-      show();
-      window.addEventListener('hashchange', show);
-    })();
-  </script>
-{%- endif -%}
+    show();
+    window.addEventListener('hashchange', show);
+  })();
+</script>
 
 {% stylesheet %}
   /*
@@ -340,12 +384,6 @@
   .ie-account__main {
     min-width: 0;
     max-width: 48rem;
-  }
-
-  @media (min-width: 990px) {
-    .ie-account__main--guest {
-      grid-column: 2;
-    }
   }
 
   .ie-account__card {
@@ -654,11 +692,12 @@
     { "type": "text", "id": "empty_subtitle", "label": "Подзаголовок", "default": "Ready to shop?" },
     { "type": "text", "id": "empty_button_label", "label": "Подпись кнопки", "default": "Shop now" },
     { "type": "url", "id": "empty_button_url", "label": "Куда ведёт кнопка", "info": "Пусто — все товары." },
-    { "type": "image_picker", "id": "empty_image", "label": "Картинка", "info": "Лучше PNG без фона. Не выбрана — берётся фото товара ниже." },
+    { "type": "image_picker", "id": "empty_image", "label": "Картинка", "info": "Показывается, пока заказов нет, и гостю на вкладке Orders. Лучше PNG без фона. Не выбрана — берётся фото товара ниже." },
     { "type": "product", "id": "empty_product", "label": "Товар для картинки" },
     { "type": "header", "content": "Гость (не вошёл)" },
     { "type": "text", "id": "guest_title", "label": "Заголовок", "default": "Welcome" },
-    { "type": "text", "id": "guest_subtitle", "label": "Подзаголовок", "default": "Sign in to see your orders and profile." },
+    { "type": "text", "id": "guest_orders_text", "label": "Текст на вкладке Orders", "default": "Sign in to see your orders" },
+    { "type": "text", "id": "guest_profile_text", "label": "Текст на вкладке Profile", "default": "Sign in to manage your profile" },
     { "type": "header", "content": "Отступы" },
     { "type": "range", "id": "padding_top", "label": "Сверху", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 32 },
     { "type": "range", "id": "padding_bottom", "label": "Снизу", "min": 0, "max": 240, "step": 8, "unit": "px", "default": 120 }
