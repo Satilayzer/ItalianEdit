@@ -13,7 +13,7 @@
       "type": "ie-hero",
       "settings": {
         "video": "shopify://files/videos/0825.mp4",
-        "sound": true,
+        "sound": false,
         "alt": "Italian Edit",
         "heading": "",
         "link": "",
@@ -58,7 +58,7 @@
         "men": {
           "type": "panel",
           "settings": {
-            "image": "shopify://shop_images/Swipe-16-9_7.png",
+            "image": "shopify://shop_images/ie-split-men.jpg",
             "label": "Men",
             "link": "/collections/all/Men"
           }
