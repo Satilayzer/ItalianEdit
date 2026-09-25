@@ -1,0 +1,668 @@
+{%- comment -%}
+  Личный кабинет вошедшего покупателя: /pages/account. Слева меню
+  (Orders, Profile, Continue shopping), справа карточки — по макету,
+  который повторяет штатный кабинет Shopify.
+
+  Своя страница, а не штатный кабинет, потому что у магазина новые
+  customer accounts: они живут на shopify.com, и ни нашу шапку, ни наш
+  подвал туда не поставить. Здесь страница темы, и подвал у неё тот же,
+  что на остальных страницах, — его рисует footer-group из layout.
+
+  Данные берём из Liquid-объекта `customer`: вход через новый кабинет
+  заводит и сессию витрины, так что заказы, адреса и почта здесь
+  доступны. А вот менять их витрина не умеет — правка контактов,
+  адресов, отписка от рассылки и выход на всех устройствах живут только
+  в кабинете Shopify. Кнопки EDIT и эти действия ведут туда, на
+  /account/profile. Подписаться, наоборот, можно и отсюда: штатная форма
+  `customer` с тегом newsletter ставит согласие на рассылку.
+
+  Вкладки переключаются по хешу (#orders, #profile) без перезагрузки —
+  на эти адреса можно ссылаться из выпадашки в шапке. Без скрипта видны
+  обе панели подряд.
+{%- endcomment -%}
+
+{%- liquid
+  assign profile_url = 'https://shopify.com/' | append: shop.id | append: '/account/profile'
+
+  assign empty_image = section.settings.empty_image
+  if empty_image == blank and section.settings.empty_product != blank
+    assign empty_image = section.settings.empty_product.featured_image
+  endif
+-%}
+
+<section
+  class="ie-account"
+  data-ie-account
+  style="--ie-account-accent: {{ section.settings.accent_color }}; --ie-account-top: {{ section.settings.padding_top }}px; --ie-account-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <h1 class="visually-hidden">{{ page.title | default: 'Account' }}</h1>
+
+  {%- if customer -%}
+    <nav class="ie-account__nav" aria-label="Account">
+      <a class="ie-account__nav-link" href="#orders" data-ie-account-tab="orders" aria-current="page">Orders</a>
+      <a class="ie-account__nav-link" href="#profile" data-ie-account-tab="profile">Profile</a>
+      <a class="ie-account__nav-link" href="{{ section.settings.continue_url | default: routes.root_url }}">
+        {{- section.settings.continue_label -}}
+      </a>
+    </nav>
+
+    <div class="ie-account__main">
+      {%- comment -%} Заказы {%- endcomment -%}
+      <div class="ie-account__panel" id="ie-account-orders" data-ie-account-panel="orders">
+        {%- paginate customer.orders by 10 -%}
+          {%- if customer.orders.size == 0 -%}
+            <div class="ie-account__card ie-account__welcome">
+              <div class="ie-account__welcome-head">
+                <div>
+                  <p class="ie-account__welcome-title">{{ section.settings.empty_title }}</p>
+                  <p class="ie-account__welcome-sub">{{ section.settings.empty_subtitle }}</p>
+                </div>
+                <a class="ie-account__button" href="{{ section.settings.empty_button_url | default: routes.all_products_collection_url }}">
+                  {{- section.settings.empty_button_label -}}
+                </a>
+              </div>
+
+              {%- if empty_image != blank -%}
+                <div class="ie-account__welcome-media">
+                  {{ empty_image | image_url: width: 800 | image_tag: widths: '300, 500, 800', sizes: '(min-width: 750px) 320px, 70vw', alt: empty_image.alt, loading: 'lazy' }}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            <h2 class="ie-account__title">Orders</h2>
+
+            <ul class="ie-account__orders" role="list">
+              {%- for order in customer.orders -%}
+                <li class="ie-account__card ie-account__order">
+                  <div class="ie-account__order-head">
+                    <div>
+                      <p class="ie-account__order-name">Order {{ order.name }}</p>
+                      <p class="ie-account__muted">{{ order.created_at | date: '%b %-d, %Y' }}</p>
+                    </div>
+                    <p class="ie-account__order-status">
+                      {%- if order.cancelled -%}
+                        Cancelled
+                      {%- else -%}
+                        {{- order.fulfillment_status_label -}}
+                      {%- endif -%}
+                    </p>
+                  </div>
+
+                  <div class="ie-account__order-items">
+                    {%- for line_item in order.line_items limit: 4 -%}
+                      <span class="ie-account__order-thumb">
+                        {%- if line_item.image != blank -%}
+                          {{ line_item.image | image_url: width: 160 | image_tag: alt: line_item.title, loading: 'lazy' }}
+                        {%- endif -%}
+                      </span>
+                    {%- endfor -%}
+                    {%- if order.line_items.size > 4 -%}
+                      <span class="ie-account__order-thumb ie-account__order-more">+{{ order.line_items.size | minus: 4 }}</span>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="ie-account__order-foot">
+                    <p>
+                      <span class="ie-account__muted">{{ order.item_count }} {{ order.item_count | pluralize: 'item', 'items' }} ·</span>
+                      {{ order.total_price | money }}
+                    </p>
+                    <a class="ie-account__button" href="{{ order.customer_url }}">View order</a>
+                  </div>
+                </li>
+              {%- endfor -%}
+            </ul>
+
+            {%- if paginate.pages > 1 -%}
+              <nav class="ie-account__pagination" aria-label="Orders pages">
+                {%- if paginate.previous -%}
+                  <a href="{{ paginate.previous.url }}">&larr; Newer</a>
+                {%- endif -%}
+                <span class="ie-account__muted">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+                {%- if paginate.next -%}
+                  <a href="{{ paginate.next.url }}">Older &rarr;</a>
+                {%- endif -%}
+              </nav>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endpaginate -%}
+      </div>
+
+      {%- comment -%} Профиль {%- endcomment -%}
+      <div class="ie-account__panel" id="ie-account-profile" data-ie-account-panel="profile">
+        <div class="ie-account__group">
+          <div class="ie-account__group-head">
+            <h2 class="ie-account__title">Contact</h2>
+            <a class="ie-account__button ie-account__button--small" href="{{ profile_url }}">Edit</a>
+          </div>
+          <div class="ie-account__card ie-account__rows">
+            {%- if customer.name != blank and customer.name != customer.email -%}
+              <div class="ie-account__row">
+                <span class="ie-account__muted">Name</span>
+                <span>{{ customer.name }}</span>
+              </div>
+            {%- endif -%}
+            <div class="ie-account__row">
+              <span class="ie-account__muted">Email</span>
+              <span class="ie-account__value">{{ customer.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ie-account__group">
+          <div class="ie-account__group-head">
+            <h2 class="ie-account__title">Addresses</h2>
+            <a class="ie-account__button ie-account__button--small" href="{{ profile_url }}">Edit</a>
+          </div>
+          <div class="ie-account__card ie-account__line">
+            <span class="ie-account__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/>
+                <circle cx="12" cy="10" r="2.3"/>
+              </svg>
+            </span>
+            {%- if customer.default_address -%}
+              <div class="ie-account__address">
+                {{ customer.default_address | format_address }}
+                {%- if customer.addresses_count > 1 -%}
+                  <p class="ie-account__muted">
+                    +{{ customer.addresses_count | minus: 1 }} more {{ customer.addresses_count | minus: 1 | pluralize: 'address', 'addresses' }}
+                  </p>
+                {%- endif -%}
+              </div>
+            {%- else -%}
+              <span class="ie-account__muted">No addresses added</span>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="ie-account__group">
+          <div class="ie-account__group-head">
+            <h2 class="ie-account__title">Marketing preferences</h2>
+          </div>
+          <div class="ie-account__card ie-account__line">
+            <span class="ie-account__mail" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="1.5"/>
+                <path d="m4 7 8 6 8-6"/>
+              </svg>
+            </span>
+            <span class="ie-account__line-label" id="ie-account-marketing-label">Email</span>
+
+            {%- if customer.accepts_marketing -%}
+              {%- comment -%}
+                Отписка из витрины невозможна: форма `customer` умеет только
+                подписывать. Переключатель ведёт в кабинет Shopify, где это
+                делается.
+              {%- endcomment -%}
+              <a
+                class="ie-account__switch"
+                href="{{ profile_url }}"
+                role="switch"
+                aria-checked="true"
+                aria-labelledby="ie-account-marketing-label"
+                title="Manage email subscription"
+              ></a>
+            {%- else -%}
+              {%- form 'customer', class: 'ie-account__switch-form' -%}
+                <input type="hidden" name="contact[email]" value="{{ customer.email }}">
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <button
+                  class="ie-account__switch"
+                  type="submit"
+                  role="switch"
+                  aria-checked="false"
+                  aria-labelledby="ie-account-marketing-label"
+                  title="Subscribe to emails"
+                ></button>
+              {%- endform -%}
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="ie-account__signout">
+          <a class="ie-account__button" href="{{ routes.account_logout_url }}">Sign out</a>
+          <a class="ie-account__text-link" href="{{ profile_url }}">Sign out of all devices</a>
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="ie-account__main ie-account__main--guest">
+      <div class="ie-account__card ie-account__welcome">
+        <div class="ie-account__welcome-head">
+          <div>
+            <p class="ie-account__welcome-title">{{ section.settings.guest_title }}</p>
+            <p class="ie-account__welcome-sub">{{ section.settings.guest_subtitle }}</p>
+          </div>
+          <a class="ie-account__button" href="{{ routes.account_login_url }}">Sign in</a>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{%- if customer -%}
+  <script>
+    (() => {
+      const root = document.currentScript.previousElementSibling;
+      if (!root || !root.matches('[data-ie-account]')) return;
+
+      const tabs = root.querySelectorAll('[data-ie-account-tab]');
+      const panels = root.querySelectorAll('[data-ie-account-panel]');
+      const names = Array.from(tabs, (tab) => tab.dataset.ieAccountTab);
+
+      // После подписки форма `customer` возвращает на страницу с
+      // ?customer_posted=true, а хеш теряется — открываем профиль, откуда
+      // подписывались, а не заказы.
+      const fallback = /[?&]customer_posted=true/.test(location.search) ? 'profile' : names[0];
+
+      const show = () => {
+        const hash = location.hash.slice(1);
+        const current = names.includes(hash) ? hash : fallback;
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.ieAccountPanel !== current;
+        });
+        tabs.forEach((tab) => {
+          if (tab.dataset.ieAccountTab === current) tab.setAttribute('aria-current', 'page');
+          else tab.removeAttribute('aria-current');
+        });
+      };
+
+      show();
+      window.addEventListener('hashchange', show);
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  /*
+   * Раскладка по макету: меню у левого поля, колонка карточек смещена
+   * вправо от центра. Дорожки в долях, снятых с макета (3 : 5 : 1), —
+   * колонка карточек растёт вместе с экраном, как там, но не шире 48rem.
+   * Третья дорожка — пустое поле справа.
+   */
+  .ie-account {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-inline: var(--ie-gutter);
+    padding-block: var(--ie-account-top, 32px) var(--ie-account-bottom, 120px);
+    font-family: var(--ie-sans);
+    color: var(--ie-ink);
+  }
+
+  @media (min-width: 990px) {
+    .ie-account {
+      grid-template-columns: minmax(10rem, 3fr) minmax(0, 5fr) minmax(0, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  .ie-account p {
+    margin: 0;
+  }
+
+  .ie-account [hidden] {
+    display: none !important;
+  }
+
+  /* Меню: на телефоне строкой над карточками, на десктопе столбиком. */
+  .ie-account__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    align-self: start;
+  }
+
+  @media (min-width: 990px) {
+    .ie-account__nav {
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+  }
+
+  .ie-account__nav-link {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    color: var(--ie-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .ie-account__nav-link:hover,
+  .ie-account__nav-link[aria-current='page'] {
+    color: var(--ie-ink);
+  }
+
+  .ie-account__nav-link[aria-current='page'] {
+    font-weight: 600;
+  }
+
+  .ie-account__main {
+    min-width: 0;
+    max-width: 48rem;
+  }
+
+  @media (min-width: 990px) {
+    .ie-account__main--guest {
+      grid-column: 2;
+    }
+  }
+
+  .ie-account__card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px rgb(0 0 0 / 0.07);
+  }
+
+  .ie-account__muted {
+    color: var(--ie-muted);
+  }
+
+  /* Кнопка: плотный прямоугольник цвета из настроек, подпись капсом. */
+  .ie-account__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0.55rem 0.9rem;
+    background: var(--ie-account-accent, var(--ie-bordo));
+    color: #fff;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .ie-account__button:hover {
+    color: #fff;
+    opacity: 0.85;
+  }
+
+  .ie-account__button--small {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.625rem;
+  }
+
+  .ie-account__title {
+    margin: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ie-ink);
+  }
+
+  /* Приветствие при пустых заказах (и вход для гостя). */
+  .ie-account__welcome {
+    padding: 1.75rem 1.75rem 1.5rem;
+  }
+
+  .ie-account__welcome-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .ie-account__welcome-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .ie-account__welcome-sub {
+    font-size: 1.125rem;
+    color: #6f6f6f;
+  }
+
+  .ie-account__welcome-media {
+    display: flex;
+    justify-content: center;
+    margin-block-start: 1.5rem;
+  }
+
+  .ie-account__welcome-media img {
+    display: block;
+    width: min(20rem, 70%);
+    height: auto;
+  }
+
+  /* Заказы */
+  .ie-account__title + .ie-account__orders {
+    margin-block-start: 1rem;
+  }
+
+  .ie-account__orders {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ie-account__order {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .ie-account__order-head,
+  .ie-account__order-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .ie-account__order-head {
+    align-items: flex-start;
+  }
+
+  .ie-account__order-name {
+    font-weight: 600;
+  }
+
+  .ie-account__order-status {
+    font-size: 0.75rem;
+    color: #6f6f6f;
+  }
+
+  .ie-account__order-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ie-account__order-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    aspect-ratio: var(--ie-card-ratio, 2 / 3);
+    overflow: hidden;
+    border-radius: 6px;
+    background: #f4f4f4;
+  }
+
+  .ie-account__order-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ie-account__order-more {
+    font-size: 0.75rem;
+    color: #6f6f6f;
+  }
+
+  .ie-account__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-block-start: 1.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .ie-account__pagination a {
+    color: var(--ie-ink);
+  }
+
+  /* Профиль */
+  .ie-account__group + .ie-account__group {
+    margin-block-start: 1.75rem;
+  }
+
+  .ie-account__group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 1.75rem;
+    margin-block-end: 0.75rem;
+  }
+
+  .ie-account__rows {
+    padding-inline: 1rem;
+  }
+
+  .ie-account__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    font-size: 0.8125rem;
+  }
+
+  .ie-account__row + .ie-account__row {
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .ie-account__value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-align: end;
+  }
+
+  .ie-account__line {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.9rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .ie-account__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: #f4f4f4;
+    color: #555;
+  }
+
+  .ie-account__mail {
+    display: inline-flex;
+    color: #555;
+  }
+
+  .ie-account__address {
+    line-height: 1.5;
+  }
+
+  .ie-account__line-label {
+    flex: 1;
+  }
+
+  /* Переключатель рассылки: овал с кругляшом, включённый — справа. */
+  .ie-account__switch-form {
+    display: contents;
+  }
+
+  .ie-account__switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: 1px solid #c9c9c9;
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .ie-account__switch::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0.2rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: var(--ie-account-accent, var(--ie-bordo));
+    transform: translateY(-50%);
+    transition: inset-inline-start 0.2s ease;
+  }
+
+  .ie-account__switch[aria-checked='true'] {
+    border-color: var(--ie-account-accent, var(--ie-bordo));
+    background: var(--ie-account-accent, var(--ie-bordo));
+  }
+
+  .ie-account__switch[aria-checked='true']::after {
+    inset-inline-start: calc(100% - 1rem);
+    background: #fff;
+  }
+
+  .ie-account__signout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    margin-block-start: 2.25rem;
+  }
+
+  .ie-account__text-link {
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ie-ink);
+    text-decoration: none;
+  }
+
+  .ie-account__text-link:hover {
+    text-decoration: underline;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "IE — Личный кабинет",
+  "tag": "div",
+  "settings": [
+    { "type": "color", "id": "accent_color", "label": "Цвет кнопок и переключателя", "default": "#633f47" },
+    { "type": "header", "content": "Меню" },
+    { "type": "text", "id": "continue_label", "label": "Подпись ссылки «продолжить покупки»", "default": "Continue shopping" },
+    { "type": "url", "id": "continue_url", "label": "Куда ведёт", "info": "Пусто — на главную." },
+    { "type": "header", "content": "Заказов ещё нет" },
+    { "type": "text", "id": "empty_title", "label": "Заголовок", "default": "Welcome" },
+    { "type": "text", "id": "empty_subtitle", "label": "Подзаголовок", "default": "Ready to shop?" },
+    { "type": "text", "id": "empty_button_label", "label": "Подпись кнопки", "default": "Shop now" },
+    { "type": "url", "id": "empty_button_url", "label": "Куда ведёт кнопка", "info": "Пусто — все товары." },
+    { "type": "image_picker", "id": "empty_image", "label": "Картинка", "info": "Лучше PNG без фона. Не выбрана — берётся фото товара ниже." },
+    { "type": "product", "id": "empty_product", "label": "Товар для картинки" },
+    { "type": "header", "content": "Гость (не вошёл)" },
+    { "type": "text", "id": "guest_title", "label": "Заголовок", "default": "Welcome" },
+    { "type": "text", "id": "guest_subtitle", "label": "Подзаголовок", "default": "Sign in to see your orders and profile." },
+    { "type": "header", "content": "Отступы" },
+    { "type": "range", "id": "padding_top", "label": "Сверху", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "label": "Снизу", "min": 0, "max": 240, "step": 8, "unit": "px", "default": 120 }
+  ],
+  "presets": [{ "name": "IE — Личный кабинет" }]
+}
+{% endschema %}
