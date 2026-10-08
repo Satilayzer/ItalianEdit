@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filters harness</title>
+<style>
+  :root { --ie-bordo:#4e070d; --ie-ink:#111; --ie-muted:#9a9a9a; --ie-line:#e5e1da; --ie-sans: Arial, sans-serif; --font-body--family: Arial, sans-serif; }
+  body { margin:0; font-family: Arial, sans-serif; background:#fff; }
+  .hero { background:#4e070d; color:#fff; padding:40px 43px; font:44px Georgia, serif; }
+  .grid { display:grid; }
+  #log { position:fixed; bottom:0; left:0; right:0; background:#ffe; font:12px monospace; padding:6px; max-height:70px; overflow:auto; white-space:pre; }
+</style>
+<!--STYLES-->
+</head>
+<body>
+<div class="hero">CLOTHING</div>
+<div class="grid"><!--BODY--></div>
+<div style="height:600px;padding:40px;color:#999">product grid…</div>
+<div id="log"></div>
+<script>
+  const log = (m) => { const el = document.getElementById('log'); el.textContent = m + '\n' + el.textContent; };
+  class FFC extends HTMLElement {
+    createURLParameters(formData = new FormData(this.querySelector('form'))) {
+      const p = new URLSearchParams(formData);
+      if (p.get('filter.v.price.gte') === '') p.delete('filter.v.price.gte');
+      if (p.get('filter.v.price.lte') === '') p.delete('filter.v.price.lte');
+      p.delete('page');
+      return p;
+    }
+    updateFilters() { const p = this.createURLParameters(); window.__last = decodeURIComponent(p.toString()); log('updateFilters(' + this.getAttribute('form-style') + '): ' + window.__last); }
+    updateFiltersByURL(u) { window.__lastUrl = u; log('updateFiltersByURL: ' + u); }
+  }
+  customElements.define('facets-form-component', FFC);
+  window.fetch = async (url) => {
+    window.__countUrl = decodeURIComponent(String(url));
+    log('count fetch: ' + window.__countUrl);
+    const n = (String(url).match(/filter/g) || []).length;
+    return new Response('<div><span data-ie-sheet-count>' + (1071 - n * 137) + ' items</span></div>');
+  };
+</script>
+<script type="module" src="/assets/ie-filters.js"></script>
+</body>
+</html>

@@ -303,6 +303,45 @@ Gucci
 Только **добавляет** теги, ничего не удаляет; идемпотентно и **самовосстанавливается**
 (если приложение BG затрёт теги при ресинке — вернёт на следующем проходе).
 
+### Метаполя фильтров — `shopify-facets`
+
+Фильтры каталога строит **Shopify Search & Discovery**. Цену, наличие, размер
+(опция варианта) и дизайнера (vendor) он берёт из товара сам, а пол, подкатегорию,
+цвет и скидку — только из метаполей. Задача `shopify-facets`
+(`src/shopify/facetStoreProducts.ts`, раз в 20 минут, оба режима) выводит их
+и приводит метаполя к вычисленному: пишет новые/изменившиеся, удаляет лишние
+(сняли скидку — товар ушёл из Sale). Идемпотентна, ходит по всему каталогу.
+
+| Метаполе | Тип | Откуда |
+|---|---|---|
+| `italian_edit.gender` | список | теги `Women`/`Men` (унисекс — оба), `Kids` |
+| `italian_edit.subcategory` | список | второй уровень тега BG: `Platforms - Sandals - Shoes` → `Sandals`; бот — `category:*` |
+| `italian_edit.color` | список | семейство цвета, см. ниже |
+| `italian_edit.sale` | строка | лучшая скидка по вариантам: `Up to 30% off` / `30–50% off` / `50%+ off` |
+| `italian_edit.price_band` | строка | диапазон евро-цены (рынок International EUR, цена для IT): `0-500` … `5000+` |
+
+**Цена в евро.** Штатный фильтр цены Shopify отдаёт только в основной валюте
+магазина (USD); у покупателей рынка International EUR его нет вовсе. Поэтому
+задача кладёт товару диапазон его евро-цены (`contextualPricing` для IT, по самой
+низкой цене вариантов), а тема показывает этот фильтр как Price, когда штатного
+нет. Коды диапазонов (`PRICE_BANDS` в `facets.ts`) обязаны совпадать с настройкой
+«Диапазоны цены» блока filters — по ней тема строит порядок и подписи.
+
+**Цвет.** Оттенок сводится к семейству по словарю `SHADES` в `src/shopify/facets.ts`:
+Emerald, Lime, Olive, Khaki, «изумрудный», «салатовый» → **Green**; Bordeaux → Red;
+Ecru, Camel → Beige и т. д. (15 семейств, больше трёх у товара — Multicolor).
+Источники по доверию, берётся первый давший результат: опция варианта Color →
+теги (без служебных и без имени бренда) → цвет из описания BG → название без бренда
+(Off-White и Golden Goose — бренды, не цвета; двусмысленные «natural», «denim»
+из названия не берутся). Цвет не нашёлся — товар не попадёт в фильтр Color,
+в лог пишется пример: пополнить словарь.
+
+Определения метаполей созданы в магазине (Settings → Custom data → Products).
+Фильтры включены в приложении Search & Discovery → Filters (установлено 2026-10-08):
+Availability, Price, Gender, Subcategory, Size (опция), Designers (Vendor), Color,
+Sale, Price band (EUR). Метаполе появляется в списке источников приложения, только
+когда оно заполнено хотя бы у одного товара.
+
 ### Category и Product type — `shopify-categorizer`
 
 Ни приложение BG, ни бот не заполняют поля товара **Category** (стандартная
@@ -1196,7 +1235,7 @@ curl https://italian-edit-server.onrender.com/health
 | `npm run start` | Прод-запуск. |
 | `npm run lookup -- "<название> \| <вариация> \| <дизайнер> \| <цена>"` | Проверка поиска без Телеграма. |
 | `npm run typecheck` | `tsc --noEmit`. |
-| `npm test` | Vitest (219 тестов). |
+| `npm test` | Vitest (243 теста). |
 
 **Утилиты** (`server/scripts/`, запуск `npx tsx scripts/<файл>.ts`):
 
@@ -1214,6 +1253,17 @@ curl https://italian-edit-server.onrender.com/health
 - `check-image*.ts`, `check-media.ts`, `inspect-page.ts` — диагностика загрузки фото/парсинга.
 - `demoSync.ts` — демонстрация синка BG (режим api).
 - `delete-collection.ts` — удалить коллекцию.
+
+**Стенд фильтров без товаров** (`tools/filters-harness/`): рендерит панель
+фильтров темы (`snippets/ie-filters.liquid` + `assets/ie-filters.js`) через liquidjs
+на подставных данных — пол, размеры, дизайнеры, цвет, цена, Sale. Тема берётся
+из `_work/c3` (черновик «corrections 3»), другую можно указать `THEME_DIR`.
+
+```bash
+cd tools/filters-harness && npm install && node render.mjs   # → index.html, active.html
+```
+
+`index.html` — панель без выбранных фильтров, `active.html` — с выбранными.
 
 Разовый прогон дотегировщика вручную — см. runbook ниже.
 

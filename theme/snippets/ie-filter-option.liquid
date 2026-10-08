@@ -1,0 +1,88 @@
+{%- doc -%}
+  Одно значение фильтра — строка с чекбоксом, подписью и числом товаров.
+  Пустые значения (0 товаров при текущем выборе) видны, но неактивны.
+
+  Для цвета слева кружок: берём образец Shopify, если он задан, иначе
+  оттенок по названию семейства (значения метаполя italian_edit.color).
+
+  @param {object} value - значение фильтра
+  @param {string} id - префикс id
+  @param {number} index - номер значения в фильтре
+  @param {boolean} [is_color] - фильтр цвета
+  @param {boolean} [is_price_band] - фильтр диапазонов цены: подпись из кода
+{%- enddoc -%}
+
+{%- liquid
+  if is_price_band
+    capture label
+      render 'ie-price-band-label', code: value.label
+    endcapture
+    assign label = label | strip
+  else
+    assign label = value.label
+  endif
+
+  assign disabled = false
+  if value.count == 0 and value.active == false
+    assign disabled = true
+  endif
+
+  assign swatch = ''
+  if is_color
+    if value.swatch.color
+      assign swatch = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+    else
+      assign family = value.label | strip | downcase
+      case family
+        when 'black'
+          assign swatch = '#111111'
+        when 'white'
+          assign swatch = '#ffffff'
+        when 'grey', 'gray'
+          assign swatch = '#9a9a9a'
+        when 'beige'
+          assign swatch = '#e8dcc8'
+        when 'brown'
+          assign swatch = '#6b4a2f'
+        when 'red'
+          assign swatch = '#a52128'
+        when 'pink'
+          assign swatch = '#f0c2cf'
+        when 'orange'
+          assign swatch = '#e07b2f'
+        when 'yellow'
+          assign swatch = '#e8c53a'
+        when 'green'
+          assign swatch = '#3f6b45'
+        when 'blue'
+          assign swatch = '#2f4b8f'
+        when 'purple'
+          assign swatch = '#6b3f8f'
+        when 'gold'
+          assign swatch = 'linear-gradient(135deg, #f3dd8f, #b8902f)'
+        when 'silver'
+          assign swatch = 'linear-gradient(135deg, #f1f2f3, #a8acb0)'
+        when 'multicolor', 'multicolour', 'multi'
+          assign swatch = 'conic-gradient(#e35050, #e8c53a, #3f9b5a, #2f6bbf, #8a4fbf, #e35050)'
+      endcase
+    endif
+  endif
+-%}
+<li>
+  <label class="ie-opt{% if disabled %} ie-opt--disabled{% endif %}" data-ie-label="{{ label | downcase | escape }}">
+    <input
+      type="checkbox"
+      class="ie-check"
+      id="{{ id }}-{{ index }}"
+      name="{{ value.param_name }}"
+      value="{{ value.value | escape }}"
+      {% if value.active %}checked{% endif %}
+      {% if disabled %}disabled{% endif %}
+    >
+    {%- if swatch != blank -%}
+      <span class="ie-swatch" style="--ie-swatch: {{ swatch }};" aria-hidden="true"></span>
+    {%- endif -%}
+    <span class="ie-opt__label">{{ label }}</span>
+    <span class="ie-opt__n">{{ value.count }}</span>
+  </label>
+</li>

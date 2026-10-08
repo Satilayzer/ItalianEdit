@@ -1,0 +1,163 @@
+{%- doc -%}
+  Значения одного фильтра списком чекбоксов — для выпадашки на ПК и для
+  аккордеона в шторке. Разметка одна, чтобы два вида не разъезжались.
+
+  Цена — особый случай: Shopify фильтрует её одним интервалом
+  (filter.v.price.gte / lte), а покупателю удобнее отметить готовые диапазоны.
+  Чекбоксы диапазонов имён не имеют и в адрес не попадают; assets/ie-filters.js
+  по ним заполняет два скрытых поля интервала.
+
+  @param {object} filter - фильтр
+  @param {string} ctx - 'd' (ПК) или 'm' (шторка) — для уникальных id
+  @param {string} [order] - порядок значений: подписи через «|», остальные — следом
+  @param {string} [price_bands] - диапазоны цены: «0-500, 500-1000, 5000+»
+{%- enddoc -%}
+
+{%- liquid
+  assign key = filter.param_name | replace: '.', '-' | handleize
+  assign id_base = 'ie-' | append: ctx | append: '-' | append: key
+-%}
+
+{%- if filter.type == 'price_range' -%}
+  {%- liquid
+    assign active_min = filter.min_value.value | default: 0
+    assign active_max = filter.max_value.value
+    assign has_range = false
+    if filter.min_value.value != null or filter.max_value.value != null
+      assign has_range = true
+    endif
+    assign bands = price_bands | default: '0-500, 500-1000, 1000-2000, 2000-5000, 5000+' | split: ','
+  -%}
+  <div data-ie-price>
+    <input type="hidden" name="{{ filter.min_value.param_name }}" value="{% if filter.min_value.value != null %}{{ filter.min_value.value | divided_by: 100.0 }}{% endif %}" data-ie-price-min>
+    <input type="hidden" name="{{ filter.max_value.param_name }}" value="{% if filter.max_value.value != null %}{{ filter.max_value.value | divided_by: 100.0 }}{% endif %}" data-ie-price-max>
+    <ul class="ie-opts">
+      {%- for raw_band in bands -%}
+        {%- liquid
+          assign band = raw_band | strip
+          if band == blank
+            continue
+          endif
+          assign open_ended = false
+          if band contains '+'
+            assign open_ended = true
+            assign lo = band | remove: '+' | strip | plus: 0
+            assign hi = 0
+          else
+            assign parts = band | split: '-'
+            assign lo = parts[0] | strip | plus: 0
+            assign hi = parts[1] | strip | plus: 0
+          endif
+          assign lo_cents = lo | times: 100
+          assign hi_cents = hi | times: 100
+
+          comment
+            Диапазон, в котором товаров нет вовсе (выше самой дорогой цены), не показываем.
+          endcomment
+          if filter.range_max and lo_cents >= filter.range_max and lo > 0
+            continue
+          endif
+
+          comment
+            Отмечен, если целиком лежит внутри выбранного интервала.
+          endcomment
+          assign checked = false
+          if has_range and active_min <= lo_cents
+            if open_ended
+              if active_max == null
+                assign checked = true
+              endif
+            elsif active_max == null or active_max >= hi_cents
+              assign checked = true
+            endif
+          endif
+        -%}
+        <li>
+          <label class="ie-opt">
+            <input
+              type="checkbox"
+              class="ie-check"
+              data-ie-band
+              data-lo="{{ lo }}"
+              data-hi="{% unless open_ended %}{{ hi }}{% endunless %}"
+              {% if checked %}checked{% endif %}
+            >
+            <span class="ie-opt__label">
+              {%- if open_ended -%}
+                {{ lo_cents | money_without_trailing_zeros | strip_html }}+
+              {%- elsif lo == 0 -%}
+                Under {{ hi_cents | money_without_trailing_zeros | strip_html }}
+              {%- else -%}
+                {{ lo_cents | money_without_trailing_zeros | strip_html }} – {{ hi_cents | money_without_trailing_zeros | strip_html }}
+              {%- endif -%}
+            </span>
+          </label>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- else -%}
+  {%- liquid
+    assign order_list = order | split: '|'
+    assign is_color = false
+    assign param_lower = filter.param_name | downcase
+
+    comment
+      Диапазоны евро-цены (метаполе italian_edit.price_band) — по порядку
+      настройки «Диапазоны цены», с подписями в валюте покупателя.
+    endcomment
+    assign is_price_band = false
+    if param_lower contains 'price_band'
+      assign is_price_band = true
+      assign order_list = price_bands | default: '0-500, 500-1000, 1000-2000, 2000-5000, 5000+' | remove: ' ' | split: ','
+    endif
+    if param_lower contains 'color' or param_lower contains 'colour'
+      assign is_color = true
+    endif
+    assign use_cols = false
+    if filter.values.size > 8
+      for value in filter.values
+        if value.label.size > 14
+          break
+        endif
+        if forloop.last
+          assign use_cols = true
+        endif
+      endfor
+    endif
+  -%}
+
+  {%- if filter.values.size > 12 -%}
+    <input type="search" class="ie-search" data-ie-search placeholder="Search" aria-label="{{ filter.label }}" autocomplete="off">
+  {%- endif -%}
+
+  <ul class="ie-opts{% if use_cols and ctx == 'd' %} ie-opts--cols{% endif %}">
+    {%- comment -%} Сначала значения из настройки порядка, затем остальные как пришли {%- endcomment -%}
+    {%- for wanted in order_list -%}
+      {%- assign wanted_key = wanted | strip | downcase -%}
+      {%- if wanted_key == blank -%}{%- continue -%}{%- endif -%}
+      {%- for value in filter.values -%}
+        {%- assign label_key = value.label | strip | downcase -%}
+        {%- if label_key == wanted_key -%}
+          {%- render 'ie-filter-option', value: value, id: id_base, index: forloop.index, is_color: is_color, is_price_band: is_price_band -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+    {%- for value in filter.values -%}
+      {%- liquid
+        assign label_key = value.label | strip | downcase
+        assign listed = false
+        for wanted in order_list
+          assign wanted_key = wanted | strip | downcase
+          if wanted_key == label_key
+            assign listed = true
+            break
+          endif
+        endfor
+      -%}
+      {%- unless listed -%}
+        {%- render 'ie-filter-option', value: value, id: id_base, index: forloop.index, is_color: is_color, is_price_band: is_price_band -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

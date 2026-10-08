@@ -1339,3 +1339,20 @@ main[data-template='page.faq'] h2 {
 .ie-faq__a > :last-child {
   margin-block-end: 0;
 }
+
+/* ── Панель фильтров: слой сортировки ──
+   Сортировка темы (snippets/sorting.liquid) берёт слой из переменных обёртки
+   .facets, которой в нашей панели (snippets/ie-filters.liquid) нет, — и список
+   уходил под карточки товаров. Здесь, а не в {% stylesheet %} панели: общий
+   CSS из таких блоков Shopify пересобирает с задержкой, этот файл — сразу. */
+.ie-filters {
+  --facets-upper-z-index: var(--layer-raised);
+  --facets-open-z-index: var(--layer-heightened);
+  --facets-panel-min-width: 120px;
+  --facets-panel-height: 300px;
+}
+
+.ie-filters .sorting-filter {
+  position: relative;
+  z-index: 20;
+}

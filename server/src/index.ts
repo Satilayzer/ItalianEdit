@@ -11,6 +11,7 @@ import { forwardShopifyOrder, pollTracking } from "./bg/orders";
 import { pushPendingProducts } from "./shopify/products";
 import { tagStoreProducts } from "./shopify/tagStoreProducts";
 import { categorizeStoreProducts } from "./shopify/categorizeStoreProducts";
+import { facetStoreProducts } from "./shopify/facetStoreProducts";
 import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 
@@ -211,6 +212,35 @@ if (shopifyClient) {
       }
       if (stats.failed > 0) {
         throw new Error(`не проставилась категория у ${stats.failed} товаров`);
+      }
+    },
+  });
+}
+
+// Метаполя для фильтров каталога: пол, подкатегория, семейство цвета, скидка.
+// Search & Discovery строит по ним фильтры Gender / Subcategory / Color / Sale.
+// Нужна в обоих режимах: значения выводятся из тегов, опций и цен любого товара.
+if (shopifyClient) {
+  jobs.push({
+    name: "shopify-facets",
+    intervalMs: 20 * 60_000,
+    run: async () => {
+      const stats = await facetStoreProducts(shopifyClient);
+      if (stats.updated > 0 || stats.failed > 0) {
+        console.log(
+          `shopify-facets: просмотрено ${stats.scanned}, обновлено ${stats.updated}, ошибок ${stats.failed}`
+        );
+      }
+      if (stats.colorless.length > 0) {
+        // Не ошибка: цвет не нашёлся ни в опции, ни в тегах, ни в названии.
+        // Товар просто не попадёт в фильтр Color — словарь оттенков в facets.ts.
+        console.warn(
+          `shopify-facets: цвет не определён у ${stats.colorless.length} товаров, ` +
+            `например «${stats.colorless[0]}»`
+        );
+      }
+      if (stats.failed > 0) {
+        throw new Error(`не записались метаполя фильтров у ${stats.failed} товаров`);
       }
     },
   });

@@ -1,0 +1,32 @@
+{%- doc -%}
+  Подпись диапазона цены по его коду: «0-500» → «Under €500»,
+  «500-1000» → «€500 – €1,000», «5000+» → «€5,000+».
+
+  Коды — значения метаполя italian_edit.price_band (сервер, facets.ts) и той же
+  настройки «Диапазоны цены» блока filters. Суммы в них — в валюте рынка
+  покупателя (евро), поэтому money форматирует их без пересчёта и в нужной валюте.
+  Незнакомый код печатается как есть.
+
+  @param {string} code - код диапазона
+{%- enddoc -%}
+
+{%- liquid
+  assign code = code | strip
+  if code contains '+'
+    assign lo = code | remove: '+' | strip | plus: 0 | times: 100
+    echo lo | money_without_trailing_zeros | strip_html | append: '+'
+  elsif code contains '-'
+    assign parts = code | split: '-'
+    assign lo = parts[0] | strip | plus: 0 | times: 100
+    assign hi = parts[1] | strip | plus: 0 | times: 100
+    assign hi_label = hi | money_without_trailing_zeros | strip_html
+    if lo == 0
+      echo 'Under ' | append: hi_label
+    else
+      assign lo_label = lo | money_without_trailing_zeros | strip_html
+      echo lo_label | append: ' – ' | append: hi_label
+    endif
+  else
+    echo code
+  endif
+-%}

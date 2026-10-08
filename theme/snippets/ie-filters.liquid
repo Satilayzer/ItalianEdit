@@ -1,0 +1,900 @@
+{%- doc -%}
+  Панель фильтров каталога Italian Edit: полоска на ПК и шторка на телефоне.
+
+  Заменяет горизонтальную раскладку фильтров Horizon (блок filters, настройка
+  «Своя панель фильтров»). Сами фильтры и их значения приходят из Shopify
+  Search & Discovery — здесь только вид и поведение:
+
+  - ПК: полоска от левого края; In Stock — переключатель прямо в строке,
+    остальные фильтры — выпадашки с чекбоксами. Открыта всегда одна:
+    клик по другой закрывает прежнюю (assets/ie-filters.js). Выбор
+    применяется сразу, без перезагрузки — через facets-form-component темы.
+  - Телефон: кнопка Filters → шторка как в макете: In Stock переключателем,
+    фильтры аккордеоном, внизу CLEAR ALL / «N Items» / APPLY. Выбор копится
+    и применяется по APPLY, а счётчик товаров обновляется на лету.
+
+  Цена — чекбоксы диапазонов (настройка блока): несколько отмеченных
+  сливаются в один интервал от меньшего «от» до большего «до» — Shopify
+  фильтрует цену только одним интервалом.
+
+  @param {object} results - коллекция или поиск
+  @param {object} filters - фильтры результатов
+  @param {string} results_url - адрес результатов без фильтров
+  @param {string} sort_by - текущая сортировка
+  @param {number} products_count - товаров в выдаче
+  @param {number} total_active_values - выбрано значений всего
+  @param {string} section_id - id секции
+  @param {object} block_settings - настройки блока filters
+  @param {string} attributes - data-атрибуты для facets-form-component
+{%- enddoc -%}
+
+<script src="{{ 'ie-filters.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{%- liquid
+  assign desktop_form_id = 'FacetFiltersForm--' | append: section_id | append: '-desktop'
+  assign mobile_form_id = 'IeFiltersMobile--' | append: section_id
+  assign value_order = block_settings.ie_value_order | default: ''
+
+  comment
+    Штатный фильтр цены Shopify отдаёт только в основной валюте (USD). Есть он —
+    прячем свой фильтр диапазонов евро-цены (italian_edit.price_band), нет —
+    свой и работает как Price. Двух «Price» сразу не бывает.
+  endcomment
+  assign has_native_price = false
+  for filter in filters
+    if filter.type == 'price_range'
+      assign has_native_price = true
+    endif
+  endfor
+
+  assign in_stock = null
+  for filter in filters
+    if filter.param_name == 'filter.v.availability'
+      for value in filter.values
+        if value.value == '1'
+          assign in_stock = value
+        endif
+      endfor
+    endif
+  endfor
+
+  capture count_label
+    if products_count > 25000
+      echo 'content.item_count_cutoff' | t: count: 25000
+    else
+      echo 'content.item_count' | t: count: products_count
+    endif
+  endcapture
+
+  assign has_active = false
+  if total_active_values > 0
+    assign has_active = true
+  endif
+-%}
+
+<ie-filters
+  class="ie-filters"
+  data-section-id="{{ section_id }}"
+  data-results-count="{{ products_count }}"
+  style="--ie-filters-inset: {{ block_settings.ie_inset | default: 16 }}px;"
+>
+  {%- comment -%} ───────────── ПК ───────────── {%- endcomment -%}
+  <facets-form-component
+    class="ie-filters__desktop"
+    section-id="{{ section_id }}"
+    form-style="horizontal"
+    {{ attributes }}
+  >
+    <div class="ie-bar">
+    <form
+      action="{{ results_url }}"
+      id="{{ desktop_form_id }}"
+      class="ie-bar__form"
+      ref="facetsForm"
+      data-ie-form="desktop"
+    >
+      <div class="ie-bar__filters">
+        {%- if in_stock -%}
+          <label class="ie-bar__toggle">
+            <span>{{ block_settings.ie_in_stock_label | default: 'In Stock' }}</span>
+            <input
+              type="checkbox"
+              role="switch"
+              class="ie-switch"
+              name="{{ in_stock.param_name }}"
+              value="{{ in_stock.value }}"
+              {% if in_stock.active %}checked{% endif %}
+            >
+          </label>
+        {%- endif -%}
+
+        {%- for filter in filters -%}
+          {%- if filter.param_name == 'filter.v.availability' -%}{%- continue -%}{%- endif -%}
+          {%- if has_native_price and filter.param_name contains 'price_band' -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign active_count = filter.active_values | size
+            if filter.type == 'price_range'
+              assign active_count = 0
+              if filter.min_value.value != null or filter.max_value.value != null
+                assign active_count = 1
+              endif
+            endif
+            assign key = filter.param_name | replace: '.', '-' | handleize
+          -%}
+          <details class="ie-dd" data-ie-dd="{{ key }}">
+            <summary class="ie-dd__summary">
+              <span class="ie-dd__label">{{ filter.label }}</span>
+              {%- if active_count > 0 -%}
+                <span class="ie-dd__count">{{ active_count }}</span>
+              {%- endif -%}
+              <svg class="ie-chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.25 6 7.75l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="ie-dd__panel">
+              {%- render 'ie-filter-options',
+                filter: filter,
+                ctx: 'd',
+                order: value_order,
+                price_bands: block_settings.ie_price_bands
+              -%}
+              {%- if active_count > 0 -%}
+                <a class="ie-dd__clear" href="{{ filter.url_to_remove }}" data-ie-url>{{ 'actions.clear' | t }}</a>
+              {%- endif -%}
+            </div>
+          </details>
+        {%- endfor -%}
+      </div>
+
+      <div class="ie-bar__meta">
+        <span class="ie-bar__count" role="status">{{ count_label }}</span>
+        {%- if block_settings.enable_sorting -%}
+          {% render 'sorting',
+            results: results,
+            sort_by: sort_by,
+            filter_style: 'horizontal',
+            suffix: 'desktop',
+            sort_position: 'desktop',
+            should_use_select_on_mobile: false,
+            section_id: section_id
+          %}
+        {%- endif -%}
+      </div>
+    </form>
+    {%- comment -%} Вид сетки вне формы: иначе его радио попадали бы в адрес фильтров {%- endcomment -%}
+    {%- if block_settings.enable_grid_density -%}
+      {% render 'grid-density-controls', viewport: 'desktop' %}
+    {%- endif -%}
+    </div>
+  </facets-form-component>
+
+  {%- comment -%} Выбранные значения — чипами под полоской, с крестиком {%- endcomment -%}
+  {%- if has_active -%}
+    <div class="ie-chips">
+      {%- for filter in filters -%}
+        {%- if filter.type == 'price_range' -%}
+          {%- if filter.min_value.value != null or filter.max_value.value != null -%}
+            <a class="ie-chip" href="{{ filter.url_to_remove }}" data-ie-url>
+              {{ filter.min_value.value | default: 0 | money_without_trailing_zeros | strip_html -}}
+              {%- if filter.max_value.value != null %} – {{ filter.max_value.value | money_without_trailing_zeros | strip_html }}{% else %}+{% endif %}
+              <span class="ie-chip__x" aria-hidden="true">×</span>
+            </a>
+          {%- endif -%}
+        {%- else -%}
+          {%- for value in filter.active_values -%}
+            <a class="ie-chip" href="{{ value.url_to_remove }}" data-ie-url>
+              {%- if filter.param_name == 'filter.v.availability' -%}
+                {{ block_settings.ie_in_stock_label | default: 'In Stock' }}
+              {%- elsif filter.param_name contains 'price_band' -%}
+                {% render 'ie-price-band-label', code: value.label %}
+              {%- else -%}
+                {{ value.label }}
+              {%- endif %}
+              <span class="ie-chip__x" aria-hidden="true">×</span>
+            </a>
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+      <a class="ie-chips__clear" href="{{ results_url }}" data-ie-url>{{ 'actions.clear_all' | t }}</a>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ───────────── Телефон ───────────── {%- endcomment -%}
+  <div class="ie-filters__mobile-bar">
+    <button type="button" class="ie-mbar__open" data-ie-open>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M6 10h8M8.5 14h3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>{{ 'actions.show_filters' | t }}</span>
+      {%- if total_active_values > 0 -%}
+        <span class="ie-dd__count">{{ total_active_values }}</span>
+      {%- endif -%}
+    </button>
+    <span class="ie-bar__count">{{ count_label }}</span>
+    {%- if block_settings.enable_grid_density -%}
+      {% render 'grid-density-controls', viewport: 'mobile' %}
+    {%- endif -%}
+  </div>
+
+  <dialog class="ie-sheet" aria-labelledby="IeSheetTitle-{{ section_id }}">
+    <facets-form-component
+      class="ie-sheet__inner"
+      section-id="{{ section_id }}"
+      form-style="drawer"
+      {{ attributes }}
+    >
+      <form
+        action="{{ results_url }}"
+        id="{{ mobile_form_id }}"
+        class="ie-sheet__form"
+        ref="facetsForm"
+        data-ie-form="mobile"
+      >
+        <div class="ie-sheet__head">
+          <h2 class="ie-sheet__title" id="IeSheetTitle-{{ section_id }}">{{ 'blocks.filter' | t }}</h2>
+          <button type="button" class="ie-sheet__close" data-ie-close aria-label="{{ 'actions.close' | t }}">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="ie-sheet__body">
+          {%- if in_stock -%}
+            <label class="ie-row ie-row--toggle">
+              <span>{{ block_settings.ie_in_stock_label | default: 'In Stock' }}</span>
+              <input
+                type="checkbox"
+                role="switch"
+                class="ie-switch"
+                name="{{ in_stock.param_name }}"
+                value="{{ in_stock.value }}"
+                {% if in_stock.active %}checked{% endif %}
+              >
+            </label>
+          {%- endif -%}
+
+          {%- for filter in filters -%}
+            {%- if filter.param_name == 'filter.v.availability' -%}{%- continue -%}{%- endif -%}
+          {%- if has_native_price and filter.param_name contains 'price_band' -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign active_count = filter.active_values | size
+              if filter.type == 'price_range'
+                assign active_count = 0
+                if filter.min_value.value != null or filter.max_value.value != null
+                  assign active_count = 1
+                endif
+              endif
+            -%}
+            <details class="ie-acc" name="ie-acc-{{ section_id }}">
+              <summary class="ie-row">
+                <span>{{ filter.label }}</span>
+                <span class="ie-row__end">
+                  <span class="ie-dd__count" data-ie-acc-count {% if active_count == 0 %}hidden{% endif %}>{{ active_count }}</span>
+                  <svg class="ie-chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.25 6 7.75l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </summary>
+              <div class="ie-acc__panel">
+                {%- render 'ie-filter-options',
+                  filter: filter,
+                  ctx: 'm',
+                  order: value_order,
+                  price_bands: block_settings.ie_price_bands
+                -%}
+              </div>
+            </details>
+          {%- endfor -%}
+
+          {%- if block_settings.enable_sorting and results.sort_options.size > 0 -%}
+            <details class="ie-acc" name="ie-acc-{{ section_id }}">
+              <summary class="ie-row">
+                <span>{{ 'actions.sort' | t }}</span>
+                <span class="ie-row__end">
+                  <svg class="ie-chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.25 6 7.75l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </summary>
+              <div class="ie-acc__panel">
+                <ul class="ie-opts" role="radiogroup">
+                  {%- for option in results.sort_options -%}
+                    <li>
+                      <label class="ie-opt">
+                        <input type="radio" class="ie-radio" name="sort_by" value="{{ option.value }}" {% if option.value == sort_by %}checked{% endif %}>
+                        <span class="ie-opt__label">{{ option.name }}</span>
+                      </label>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </details>
+          {%- endif -%}
+        </div>
+      </form>
+    </facets-form-component>
+
+    <div class="ie-sheet__foot">
+      <button type="button" class="ie-sheet__clear" data-ie-clear>{{ 'actions.clear_all' | t }}</button>
+      <span class="ie-sheet__count" data-ie-sheet-count>{{ count_label }}</span>
+      <button type="button" class="ie-sheet__apply" data-ie-apply>{{ block_settings.ie_apply_label | default: 'Apply' }}</button>
+    </div>
+  </dialog>
+</ie-filters>
+
+{% stylesheet %}
+  .ie-filters {
+    --ie-f-ink: var(--ie-ink, #111);
+    --ie-f-muted: var(--ie-muted, #9a9a9a);
+    --ie-f-line: var(--ie-line, #e5e1da);
+    --ie-f-accent: var(--ie-bordo, #4e070d);
+
+    grid-column: 1 / -1;
+    padding-inline: var(--ie-filters-inset);
+    font-family: var(--ie-sans, var(--font-body--family));
+    color: var(--ie-f-ink);
+  }
+
+  /* ── ПК: полоска ── */
+  .ie-filters__desktop {
+    display: none;
+  }
+
+  .ie-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: 52px;
+  }
+
+  .ie-bar__form {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .ie-bar__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 28px;
+    row-gap: 4px;
+    min-width: 0;
+  }
+
+  .ie-bar__meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .ie-bar__count {
+    font-size: 0.875rem;
+    color: var(--ie-f-muted);
+  }
+
+  .ie-bar__toggle,
+  .ie-dd__summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ie-bar__toggle {
+    gap: 12px;
+  }
+
+  .ie-dd {
+    position: relative;
+  }
+
+  .ie-dd__summary {
+    list-style: none;
+  }
+
+  .ie-dd__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ie-dd__summary:hover .ie-dd__label,
+  .ie-dd[open] .ie-dd__label {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .ie-chevron {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .ie-dd[open] > .ie-dd__summary .ie-chevron,
+  .ie-acc[open] > .ie-row .ie-chevron {
+    transform: rotate(180deg);
+  }
+
+  .ie-dd__count {
+    display: inline-grid;
+    place-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding-inline: 5px;
+    border-radius: 9px;
+    background: var(--ie-f-accent);
+    color: #fff;
+    font-size: 0.6875rem;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .ie-dd__count[hidden] {
+    display: none;
+  }
+
+  .ie-dd__panel {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: -16px;
+    z-index: 20;
+    min-width: 240px;
+    max-width: 320px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid var(--ie-f-line);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.08);
+  }
+
+  .ie-dd__panel:has(.ie-opts--cols) {
+    min-width: 360px;
+    max-width: 420px;
+  }
+
+  /* Выпадашки у правого края полоски открываются влево, чтобы не вылезать за экран */
+  .ie-dd:nth-last-child(-n + 2) > .ie-dd__panel {
+    left: auto;
+    right: -16px;
+  }
+
+  .ie-dd__clear {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.8125rem;
+    color: var(--ie-f-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ── Значения: чекбоксы ── */
+  .ie-opts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+    max-height: 320px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ie-opts--cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  .ie-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 34px;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    cursor: pointer;
+  }
+
+  .ie-opt__label {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ie-opt__n {
+    color: var(--ie-f-muted);
+    font-size: 0.8125rem;
+  }
+
+  .ie-opt--disabled {
+    color: var(--ie-f-muted);
+    cursor: not-allowed;
+  }
+
+  .ie-opt[hidden] {
+    display: none;
+  }
+
+  .ie-check,
+  .ie-radio {
+    appearance: none;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid var(--ie-f-ink);
+    background: #fff;
+    display: grid;
+    place-content: center;
+    cursor: inherit;
+  }
+
+  .ie-radio {
+    border-radius: 50%;
+  }
+
+  .ie-check::after {
+    content: '';
+    width: 9px;
+    height: 5px;
+    margin-top: -2px;
+    border-left: 1.5px solid #fff;
+    border-bottom: 1.5px solid #fff;
+    transform: rotate(-45deg);
+    opacity: 0;
+  }
+
+  .ie-check:checked {
+    background: var(--ie-f-ink);
+  }
+
+  .ie-check:checked::after {
+    opacity: 1;
+  }
+
+  .ie-radio::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ie-f-ink);
+    opacity: 0;
+  }
+
+  .ie-radio:checked::after {
+    opacity: 1;
+  }
+
+  .ie-check:disabled {
+    border-color: var(--ie-f-line);
+  }
+
+  .ie-check:focus-visible,
+  .ie-radio:focus-visible,
+  .ie-switch:focus-visible {
+    outline: 2px solid var(--ie-f-ink);
+    outline-offset: 2px;
+  }
+
+  .ie-swatch {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ie-swatch, #ccc);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+  }
+
+  .ie-search {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--ie-f-line);
+    border-radius: 0;
+    font: inherit;
+    font-size: 0.875rem;
+    background: #fff;
+  }
+
+  .ie-search:focus {
+    outline: none;
+    border-color: var(--ie-f-ink);
+  }
+
+  /* ── Переключатель In Stock ── */
+  .ie-switch {
+    appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 40px;
+    height: 22px;
+    margin: 0;
+    border: 1.5px solid var(--ie-f-ink);
+    border-radius: 11px;
+    background: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .ie-switch::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--ie-f-ink);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .ie-switch:checked {
+    background: var(--ie-f-ink);
+  }
+
+  .ie-switch:checked::before {
+    background: #fff;
+    transform: translateX(18px);
+  }
+
+  /* ── Чипы выбранного ── */
+  .ie-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-block: 4px 12px;
+  }
+
+  .ie-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--ie-f-line);
+    font-size: 0.8125rem;
+    color: var(--ie-f-ink);
+    text-decoration: none;
+  }
+
+  .ie-chip:hover {
+    border-color: var(--ie-f-ink);
+  }
+
+  .ie-chip__x {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .ie-chips__clear {
+    margin-inline-start: 4px;
+    font-size: 0.8125rem;
+    color: var(--ie-f-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ── Телефон: строка с кнопкой ── */
+  .ie-filters__mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 52px;
+  }
+
+  .ie-mbar__open {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .ie-mbar__open svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ie-filters__mobile-bar .ie-bar__count {
+    margin-inline-start: auto;
+  }
+
+  /* ── Телефон: шторка ── */
+  .ie-sheet {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: var(--ie-f-ink);
+    font-family: var(--ie-sans, var(--font-body--family));
+  }
+
+  .ie-sheet[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ie-sheet::backdrop {
+    background: rgb(0 0 0 / 0.3);
+  }
+
+  .ie-sheet__inner {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ie-sheet__form {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ie-sheet__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px 4px 24px;
+  }
+
+  .ie-sheet__title {
+    margin: 0;
+    font-family: var(--ie-sans, var(--font-body--family));
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ie-f-muted);
+  }
+
+  .ie-sheet__close {
+    display: grid;
+    place-content: center;
+    width: 44px;
+    height: 44px;
+    margin-inline-end: -10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .ie-sheet__close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ie-sheet__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px 24px 24px;
+  }
+
+  .ie-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 46px;
+    padding-block: 2px;
+    font-size: 1.0625rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .ie-row::-webkit-details-marker {
+    display: none;
+  }
+
+  .ie-row__end {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ie-row .ie-chevron {
+    width: 16px;
+    height: 16px;
+  }
+
+  .ie-acc__panel {
+    padding-bottom: 12px;
+  }
+
+  .ie-acc__panel .ie-opts {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .ie-acc__panel .ie-opt {
+    min-height: 38px;
+    font-size: 0.9375rem;
+  }
+
+  .ie-sheet__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--ie-f-line);
+    background: #fff;
+  }
+
+  .ie-sheet__clear {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .ie-sheet__count {
+    color: var(--ie-f-muted);
+    font-size: 1.0625rem;
+    white-space: nowrap;
+  }
+
+  .ie-sheet__count.is-loading {
+    opacity: 0.5;
+  }
+
+  .ie-sheet__apply {
+    flex-shrink: 0;
+    min-width: 50%;
+    min-height: 48px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--ie-f-ink);
+    color: #fff;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* ПК — полоска, телефон и планшет — кнопка со шторкой */
+  @media screen and (min-width: 990px) {
+    .ie-filters__desktop {
+      display: block;
+    }
+
+    .ie-filters__mobile-bar {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .ie-chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .ie-chip {
+      flex-shrink: 0;
+    }
+  }
+{% endstylesheet %}
