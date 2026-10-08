@@ -167,6 +167,65 @@
       window.addEventListener('resize', align, { passive: true });
     })();
   </script>
+
+  {%- comment -%}
+    Кнопки Orders и Profile в выпадашке аккаунта ведут на нашу страницу
+    /pages/account (секция ie-account), а не в кабинет Shopify: там наши
+    шапка и подвал. Гостю та же страница предлагает войти.
+
+    Кнопки рисует <shopify-account> в теневом дереве, их разметку не
+    поменять. Но дерево открытое, и composedPath() клика доходит до самой
+    ссылки. Вошедшему компонент ставит ссылки /account/orders и
+    /account/addresses, гостю — пункты меню кабинета с адресами
+    shopify.com/<id>/account/orders и /profile; ловим по концу пути, так
+    что подходят все. Заказ по ссылке /account/orders/<token> не трогаем.
+
+    Ловим на погружении и глушим клик целиком, чтобы компонент не успел
+    уйти по своей ссылке. Если уже стоим на странице кабинета, меняется
+    только хеш — секция сама переключает вкладку, а панель закрываем.
+
+    Без страницы account в магазине скрипта нет, и кнопки ведут, куда вели.
+  {%- endcomment -%}
+  {%- if pages.account != blank -%}
+    <script>
+      (() => {
+        const PAGE = '{{ pages.account.url }}';
+        const TABS = { orders: 'orders', addresses: 'profile', profile: 'profile' };
+
+        document.addEventListener(
+          'click',
+          (event) => {
+            const path = event.composedPath();
+            const account = path.find((node) => node.localName === 'shopify-account');
+            const link = account && path.find((node) => node.localName === 'a' && node.href);
+            if (!link) return;
+
+            let pathname;
+            try {
+              pathname = new URL(link.href, window.location.origin).pathname;
+            } catch {
+              return;
+            }
+
+            const match = pathname.match(/\/account\/(orders|addresses|profile)\/?$/);
+            if (!match) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const tab = TABS[match[1]];
+            if (window.location.pathname === PAGE) {
+              window.location.hash = tab;
+              account.shadowRoot?.querySelector('#close-button')?.click();
+            } else {
+              window.location.href = `${PAGE}#${tab}`;
+            }
+          },
+          true
+        );
+      })();
+    </script>
+  {%- endif -%}
 {%- endif -%}
 
 {% stylesheet %}

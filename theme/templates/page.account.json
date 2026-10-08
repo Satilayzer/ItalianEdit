@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-account",
+      "settings": {
+        "empty_image": "shopify://shop_images/ie-account-sunglasses.png"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
