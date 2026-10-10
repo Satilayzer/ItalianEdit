@@ -14,6 +14,7 @@ import { categorizeStoreProducts } from "./shopify/categorizeStoreProducts";
 import { facetStoreProducts } from "./shopify/facetStoreProducts";
 import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
+import { syncTdf, TDF_API_VERSION } from "./tdf/sync";
 
 const config = loadConfig();
 const shopifyClient = config.shopify ? new ShopifyClient(config.shopify) : undefined;
@@ -263,6 +264,30 @@ if (shopifyClient) {
       if (stats.errors.length > 0) {
         throw new Error(
           `не снялась метка у ${stats.errors.length} товаров, например: ${stats.errors[0]}`
+        );
+      }
+    },
+  });
+}
+
+// Каталог TheDoubleF: новые модели — черновиками, у существующих — остатки,
+// закупка и служебные пометки. Поставщик обновляет фид 4 раза в день,
+// поэтому каждые 3 часа. Включается явно (TDF_SYNC_ENABLED=true): первый
+// проход создаёт тысячи черновиков, и это должно быть решением, а не побочным
+// эффектом деплоя.
+if (config.shopify && process.env.TDF_SYNC_ENABLED === "true") {
+  const tdfClient = new ShopifyClient({ ...config.shopify, apiVersion: TDF_API_VERSION });
+  jobs.push({
+    name: "tdf-sync",
+    intervalMs: 3 * 60 * 60_000,
+    run: async () => {
+      const stats = await syncTdf(tdfClient, {
+        inventoryCap: config.inventoryCap,
+        log: (msg) => console.log(msg),
+      });
+      if (stats.errors.length > 0) {
+        throw new Error(
+          `TheDoubleF: ошибок ${stats.errors.length}, например: ${stats.errors[0]}`
         );
       }
     },
