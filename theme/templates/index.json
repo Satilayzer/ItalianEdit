@@ -283,14 +283,6 @@
             "caption": "",
             "link": "shopify://pages/valentino"
           }
-        },
-        "slide_XyBEKD": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/10.png",
-            "caption": "",
-            "link": ""
-          }
         }
       },
       "block_order": [
@@ -309,8 +301,7 @@
         "victoria_beckham",
         "slide_LnUiK3",
         "slide_r6xrUd",
-        "b2",
-        "slide_XyBEKD"
+        "b2"
       ],
       "settings": {
         "heading": "Italian Edit Blog",

@@ -12,61 +12,131 @@
     "main": {
       "type": "ie-designers",
       "blocks": {
-        "chanel": {
+        "toteme": {
           "type": "designer",
           "settings": {
-            "name": "Chanel",
-            "image": "shopify://shop_images/IMG_8698.png",
+            "name": "TOTEME",
+            "image": "shopify://shop_images/label-toteme.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "hermes": {
+        "jimmy-choo": {
           "type": "designer",
           "settings": {
-            "name": "Hermes",
-            "image": "shopify://shop_images/6.png",
+            "name": "Jimmy Choo",
+            "image": "shopify://shop_images/label-jimmy-choo.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "louis-vuitton": {
+        "dolce-gabbana": {
           "type": "designer",
           "settings": {
-            "name": "Louis Vuitton",
-            "image": "shopify://shop_images/12.png",
+            "name": "Dolce & Gabbana",
+            "image": "shopify://shop_images/label-dolce-gabbana.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "dior": {
+        "versace": {
           "type": "designer",
           "settings": {
-            "name": "Dior",
-            "image": "shopify://shop_images/13.png",
+            "name": "Versace",
+            "image": "shopify://shop_images/label-versace.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "gucci": {
+        "maison-margiela": {
           "type": "designer",
           "settings": {
-            "name": "Gucci",
-            "image": "shopify://shop_images/11.png",
+            "name": "Maison Margiela",
+            "image": "shopify://shop_images/label-maison-margiela.png",
             "collection": "",
             "link": "",
             "number": ""
           }
         },
-        "prada": {
+        "moncler": {
           "type": "designer",
           "settings": {
-            "name": "Prada",
-            "image": "shopify://shop_images/4.png",
+            "name": "Moncler",
+            "image": "shopify://shop_images/label-moncler.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "stone-island": {
+          "type": "designer",
+          "settings": {
+            "name": "Stone Island",
+            "image": "shopify://shop_images/label-stone-island.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "ferragamo": {
+          "type": "designer",
+          "settings": {
+            "name": "Ferragamo",
+            "image": "shopify://shop_images/label-ferragamo.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "brunello-cucinelli": {
+          "type": "designer",
+          "settings": {
+            "name": "Brunello Cucinelli",
+            "image": "shopify://shop_images/label-brunello-cucinelli.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "christian-louboutin": {
+          "type": "designer",
+          "settings": {
+            "name": "Christian Louboutin",
+            "image": "shopify://shop_images/label-christian-louboutin.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "jacquemus": {
+          "type": "designer",
+          "settings": {
+            "name": "JACQUEMUS",
+            "image": "shopify://shop_images/label-jacquemus.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "burberry": {
+          "type": "designer",
+          "settings": {
+            "name": "Burberry",
+            "image": "shopify://shop_images/label-burberry.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "victoria-beckham": {
+          "type": "designer",
+          "settings": {
+            "name": "Victoria Beckham",
+            "image": "shopify://shop_images/label-victoria-beckham.png",
             "collection": "",
             "link": "",
             "number": ""
@@ -82,101 +152,11 @@
             "number": ""
           }
         },
-        "saint-laurent": {
-          "type": "designer",
-          "settings": {
-            "name": "Yves Saint Laurent",
-            "image": "shopify://shop_images/9.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "cartier": {
-          "type": "designer",
-          "settings": {
-            "name": "Cartier",
-            "image": "shopify://shop_images/15.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "bottega-veneta": {
-          "type": "designer",
-          "settings": {
-            "name": "Bottega Veneta",
-            "image": "shopify://shop_images/16.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "fendi": {
-          "type": "designer",
-          "settings": {
-            "name": "Fendi",
-            "image": "shopify://shop_images/17.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "loewe": {
-          "type": "designer",
-          "settings": {
-            "name": "Loewe",
-            "image": "shopify://shop_images/18.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "miu-miu": {
-          "type": "designer",
-          "settings": {
-            "name": "Miu Miu",
-            "image": "shopify://shop_images/8.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "loro-piana": {
-          "type": "designer",
-          "settings": {
-            "name": "Loro Piana",
-            "image": "shopify://shop_images/19.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
         "tom-ford": {
           "type": "designer",
           "settings": {
             "name": "Tom Ford",
             "image": "shopify://shop_images/20.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "rolex": {
-          "type": "designer",
-          "settings": {
-            "name": "Rolex",
-            "image": "shopify://shop_images/21.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
-        },
-        "celine": {
-          "type": "designer",
-          "settings": {
-            "name": "Celine",
-            "image": "shopify://shop_images/7.png",
             "collection": "",
             "link": "",
             "number": ""
@@ -191,38 +171,25 @@
             "link": "",
             "number": ""
           }
-        },
-        "italian-edit": {
-          "type": "designer",
-          "settings": {
-            "name": "Italian Edit",
-            "image": "shopify://shop_images/10.png",
-            "collection": "",
-            "link": "",
-            "number": ""
-          }
         }
       },
       "block_order": [
-        "chanel",
-        "hermes",
-        "louis-vuitton",
-        "dior",
-        "gucci",
-        "prada",
+        "toteme",
+        "jimmy-choo",
+        "dolce-gabbana",
+        "versace",
+        "maison-margiela",
+        "moncler",
+        "stone-island",
+        "ferragamo",
+        "brunello-cucinelli",
+        "christian-louboutin",
+        "jacquemus",
+        "burberry",
+        "victoria-beckham",
         "balenciaga",
-        "saint-laurent",
-        "cartier",
-        "bottega-veneta",
-        "fendi",
-        "loewe",
-        "miu-miu",
-        "loro-piana",
         "tom-ford",
-        "rolex",
-        "celine",
-        "valentino",
-        "italian-edit"
+        "valentino"
       ],
       "settings": {
         "heading": "",
@@ -244,9 +211,21 @@
         "padding_top": 0,
         "padding_bottom": 0
       }
+    },
+    "index": {
+      "type": "ie-designers-index",
+      "settings": {
+        "heading": "",
+        "placeholder": "Search Designer",
+        "empty_text": "No designers found",
+        "hidden": "",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "index"
   ]
 }
