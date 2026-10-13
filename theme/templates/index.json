@@ -46,7 +46,7 @@
         "ratio": "2 / 3",
         "show_vendor": true,
         "button_label": "Shop now",
-        "button_link": "/collections/new",
+        "button_link": "/collections/all",
         "heading_font": "source_serif_4_n4",
         "heading_size": 32,
         "heading_color": "#633f47"
@@ -156,52 +156,108 @@
     "brands": {
       "type": "ie-slider",
       "blocks": {
-        "chanel": {
+        "toteme": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/IMG_8698.png",
+            "image": "shopify://shop_images/label-toteme.png",
             "caption": "",
-            "link": "shopify://pages/chanel"
+            "link": "/collections/vendors?q=TOTEME"
           }
         },
-        "b3": {
+        "jimmy_choo": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/6.png",
+            "image": "shopify://shop_images/label-jimmy-choo.png",
             "caption": "",
-            "link": "shopify://pages/hermes"
+            "link": "/collections/vendors?q=Jimmy%20Choo"
           }
         },
-        "slide_4K3h8d": {
+        "dolce_gabbana": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/12.png",
+            "image": "shopify://shop_images/label-dolce-gabbana.png",
             "caption": "",
-            "link": "shopify://pages/louis-vuitton"
+            "link": "/collections/vendors?q=Dolce%20%26%20Gabbana"
           }
         },
-        "slide_nn4rPy": {
+        "versace": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/13.png",
+            "image": "shopify://shop_images/label-versace.png",
             "caption": "",
-            "link": "shopify://pages/dior"
+            "link": "/collections/vendors?q=Versace"
           }
         },
-        "slide_UkPPiG": {
+        "maison_margiela": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/11.png",
+            "image": "shopify://shop_images/label-maison-margiela.png",
             "caption": "",
-            "link": "shopify://pages/gucci"
+            "link": "/collections/vendors?q=Maison%20Margiela"
           }
         },
-        "b1": {
+        "moncler": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/4.png",
+            "image": "shopify://shop_images/label-moncler.png",
             "caption": "",
-            "link": "shopify://pages/prada"
+            "link": "/collections/vendors?q=Moncler"
+          }
+        },
+        "stone_island": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-stone-island.png",
+            "caption": "",
+            "link": "/collections/vendors?q=Stone%20Island"
+          }
+        },
+        "ferragamo": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-ferragamo.png",
+            "caption": "",
+            "link": "/collections/vendors?q=Ferragamo"
+          }
+        },
+        "brunello_cucinelli": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-brunello-cucinelli.png",
+            "caption": "",
+            "link": "/collections/vendors?q=Brunello%20Cucinelli"
+          }
+        },
+        "christian_louboutin": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-christian-louboutin.png",
+            "caption": "",
+            "link": "/collections/vendors?q=Christian%20Louboutin"
+          }
+        },
+        "jacquemus": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-jacquemus.png",
+            "caption": "",
+            "link": "/collections/vendors?q=JACQUEMUS"
+          }
+        },
+        "burberry": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-burberry.png",
+            "caption": "",
+            "link": "/collections/vendors?q=Burberry"
+          }
+        },
+        "victoria_beckham": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/label-victoria-beckham.png",
+            "caption": "",
+            "link": "/collections/vendors?q=Victoria%20Beckham"
           }
         },
         "slide_LnUiK3": {
@@ -212,84 +268,12 @@
             "link": "shopify://pages/balenciaga"
           }
         },
-        "slide_3ekiDj": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/9.png",
-            "caption": "",
-            "link": "shopify://pages/saint-laurent"
-          }
-        },
-        "slide_EDrVUA": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/15.png",
-            "caption": "",
-            "link": "shopify://pages/cartier"
-          }
-        },
-        "slide_bNdHtT": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/16.png",
-            "caption": "",
-            "link": "shopify://pages/bottega-veneta"
-          }
-        },
-        "slide_DaqzPB": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/17.png",
-            "caption": "",
-            "link": "shopify://pages/fendi"
-          }
-        },
-        "slide_EEhkHp": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/18.png",
-            "caption": "",
-            "link": "shopify://pages/loewe"
-          }
-        },
-        "b5": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/8.png",
-            "caption": "",
-            "link": "shopify://pages/miu-miu"
-          }
-        },
-        "slide_wRT8zJ": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/19.png",
-            "caption": "",
-            "link": "shopify://pages/loro-piana"
-          }
-        },
         "slide_r6xrUd": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/20.png",
             "caption": "",
             "link": "shopify://pages/tom-ford"
-          }
-        },
-        "slide_RfE6qh": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/21.png",
-            "caption": "",
-            "link": "shopify://pages/rolex"
-          }
-        },
-        "b4": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/7.png",
-            "caption": "",
-            "link": "shopify://pages/celine"
           }
         },
         "b2": {
@@ -310,23 +294,21 @@
         }
       },
       "block_order": [
-        "chanel",
-        "b3",
-        "slide_4K3h8d",
-        "slide_nn4rPy",
-        "slide_UkPPiG",
-        "b1",
+        "toteme",
+        "jimmy_choo",
+        "dolce_gabbana",
+        "versace",
+        "maison_margiela",
+        "moncler",
+        "stone_island",
+        "ferragamo",
+        "brunello_cucinelli",
+        "christian_louboutin",
+        "jacquemus",
+        "burberry",
+        "victoria_beckham",
         "slide_LnUiK3",
-        "slide_3ekiDj",
-        "slide_EDrVUA",
-        "slide_bNdHtT",
-        "slide_DaqzPB",
-        "slide_EEhkHp",
-        "b5",
-        "slide_wRT8zJ",
         "slide_r6xrUd",
-        "slide_RfE6qh",
-        "b4",
         "b2",
         "slide_XyBEKD"
       ],
@@ -404,40 +386,48 @@
           "type": "feedback",
           "settings": {
             "number": "",
-            "text": "Заменить на настоящий отзыв покупателя.",
-            "author": "Имя / роль"
+            "text": "Yulia, the coat arrived and it's just gorgeous.\n\nThank you so much, including for your help choosing it — it's exactly as I wanted.",
+            "author": ""
           }
         },
         "f2": {
           "type": "feedback",
           "settings": {
             "number": "",
-            "text": "Заменить на настоящий отзыв покупателя.",
-            "author": "Имя / роль"
+            "text": "Yulia, hello!\nThe package arrived, even faster than expected.\n\nThank you so much for the quality service!",
+            "author": ""
           }
         },
         "f3": {
           "type": "feedback",
           "settings": {
             "number": "",
-            "text": "Заменить на настоящий отзыв покупателя.",
-            "author": "Имя / роль"
+            "text": "Good afternoon!\nGot my sparkly shoes. Thank you!\nI have a new request for you now — black flats with a 6cm heel, or even better, a 3cm heel.\nAnd actually, all the black flats in size 40 with a good price offer — please send them to me!",
+            "author": ""
           }
         },
         "f4": {
           "type": "feedback",
           "settings": {
             "number": "",
-            "text": "Заменить на настоящий отзыв покупателя.",
-            "author": "Имя / роль"
+            "text": "The sneakers are amazing. Everything's great.\n\nThank you so much.",
+            "author": ""
           }
         },
         "f5": {
           "type": "feedback",
           "settings": {
             "number": "",
-            "text": "Заменить на настоящий отзыв покупателя.",
-            "author": "Имя / роль"
+            "text": "Good evening, thank you for the gorgeous men's baseball cap.\n\nNot sure how it'll look on my husband (waiting for some occasion to give it).\nLooks stylish on me though.",
+            "author": ""
+          }
+        },
+        "f6": {
+          "type": "feedback",
+          "settings": {
+            "number": "",
+            "text": "Yulia, thank you so much!\nGot the shoes, they're beautiful.",
+            "author": ""
           }
         }
       },
@@ -446,11 +436,17 @@
         "f2",
         "f3",
         "f4",
-        "f5"
+        "f5",
+        "f6"
       ],
       "settings": {
         "heading": "Feedbacks",
-        "image": "shopify://shop_images/MAD_ART_2_25.png",
+        "card_image_a": "shopify://shop_images/ie-feedback-card-a.png",
+        "card_image_b": "shopify://shop_images/ie-feedback-card-b.png",
+        "card_height": 520,
+        "overlap": 14,
+        "text_color": "#5a2f1f",
+        "image": "",
         "image_alt": "",
         "link": "",
         "ratio": "auto",
