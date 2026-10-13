@@ -113,7 +113,7 @@ function fromTitle(t: string): CategoryResult | null {
     return accessories("Ties");
   }
   if (has(/\bcharms?\b/, t)) return accessories("Bag Charms");
-  if (has(/\b(jackets?|coats?|blazers?|parkas?|trench|bombers?|gilets?|vests?|down jacket|puffers?|capes?|blousons?|windbreakers?|caban|ponchos?|peacoats?)\b/, t)) {
+  if (has(/\b(jackets?|coats?|blazers?|parkas?|trench|bombers?|gilets?|vests?|down jacket|puffers?|capes?|blousons?|windbreakers?|anoraks?|caban|ponchos?|peacoats?)\b/, t)) {
     return clothing("Jackets");
   }
   if (has(/\bskirts?\b|\bkilts?\b|\bgonna\b/, t)) return clothing("Skirts");
@@ -129,11 +129,84 @@ function fromTitle(t: string): CategoryResult | null {
   return null;
 }
 
+/** Слова обуви и сумок, которые в названии одежды — фасон, а не товар: «Boot Cut jeans». */
+const NON_CLOTHING_WORDS =
+  /\b(sneakers?|trainers?|boot ?cut|boots?|sandals?|loafers?|moccasins?|pumps?|mules?|clogs?|derby|oxfords?|bags?|totes?|clutch|backpacks?|pouch)\b/g;
+
+/** Подкатегория одежды по названию; обувные и сумочные слова не сбивают. */
+function clothingFromTitle(t: string): CategoryResult | null {
+  const hint = fromTitle(t.replace(NON_CLOTHING_WORDS, " "));
+  return hint?.section === "Clothing" ? hint : null;
+}
+
+/** Одежда, у которой название ничего не подсказало, — по товарной позиции. */
+function clothingByHeading(h4: string, t: string): CategoryResult {
+  if (["6101", "6102", "6201", "6202"].includes(h4)) return clothing("Jackets");
+  if (["6105", "6106", "6109", "6205", "6206"].includes(h4)) return clothing("Shirts");
+  if (h4 === "6110") return topType(t);
+  return clothing();
+}
+
+/**
+ * Раздел по таможенному коду поставщика (ТН ВЭД ЕС, 8 знаков). Код точнее
+ * Google-категории и названия: «Loafer bag» — сумка (4202), «Boot Cut jeans» —
+ * брюки (6204). Главу 43 (мех) не используем: под ней у поставщика и шубы,
+ * и меховые ботинки. null — код не помогает, решает фид.
+ */
+export function fromHsCode(hsCode: string, title: string): CategoryResult | null {
+  const d = hsCode.replace(/\D/g, "");
+  if (d.length < 4) return null;
+  const t = title.toLowerCase();
+  const h4 = d.slice(0, 4);
+  const h6 = d.slice(0, 6);
+  const wallet = has(/\bwallets?\b|card ?holders?|card ?cases?|coin purses?/, t);
+  const bagWords = has(/\b(bags?|totes?|clutch|pouch|backpacks?|handbags?|pochette|tasche)\b/, t);
+  // Обувной код у картхолдера — ошибка поставщика, а не обувь.
+  if (d.startsWith("64")) return wallet || bagWords ? null : shoeType(t);
+  if (h4 === "4202") {
+    // «Bag charm» — брелок; «Charm bag», «Charms Basket Bag» — модели сумок.
+    if (has(/\bbag charms?\b|\bcharms?\b(?!.*\bbags?\b)/, t)) return accessories("Bag Charms");
+    if (wallet) return accessories("Wallets");
+    // 4202 31–39 — вещи, которые носят в кармане или сумке. Но «clutch bag»
+    // или «pouch» с таким кодом — всё же сумка.
+    if (/^42023/.test(h6) && !bagWords) return accessories("Wallets");
+    return bagType(t);
+  }
+  // 6217 — «прочие принадлежности одежды»: ремни, воротники. Решает название.
+  if (h4 === "6217") {
+    const hint = fromTitle(t);
+    return hint?.section === "Accessories" ? hint : null;
+  }
+  if (h6 === "420330") return accessories("Belts");
+  if (/^42032/.test(h6) || h4 === "6116" || h4 === "6216") return accessories("Gloves");
+  if (h4 === "6214" || h4 === "6117") {
+    const hint = fromTitle(t);
+    return hint?.section === "Accessories" ? hint : accessories("Scarves");
+  }
+  if (h4 === "6215") return accessories("Ties");
+  if (["6504", "6505", "6506"].includes(h4)) return accessories("Hats");
+  if (["7113", "7116", "7117"].includes(h4)) return accessories("Jewellery");
+  if (h4 === "9004") return accessories("Sunglasses");
+  if (/^6[12]/.test(d) || h6 === "420310") return clothingFromTitle(t) ?? clothingByHeading(h4, t);
+  return null;
+}
+
 /**
  * Категория модели. null — не опознали: товар импортируется черновиком
  * с пометкой `review:category` (правило R15), категорию ставит менеджер.
+ *
+ * Если раздел по HS-коду другой, чем по категории поставщика и названию,
+ * прав код: поставщик путает Google-категории («Derby jacket» в Shoes).
  */
-export function classify(productType: string, title: string): CategoryResult | null {
+export function classify(productType: string, title: string, hsCode = ""): CategoryResult | null {
+  const base = classifyByFeed(productType, title);
+  const byHs = hsCode ? fromHsCode(hsCode, title) : null;
+  if (byHs && byHs.section !== base?.section) return byHs;
+  return base;
+}
+
+/** Категория только по данным фида: Google-категория поставщика и название. */
+export function classifyByFeed(productType: string, title: string): CategoryResult | null {
   const t = title.toLowerCase();
   const type = productType.replace(/^Apparel & Accessories\s*>?\s*/i, "");
 

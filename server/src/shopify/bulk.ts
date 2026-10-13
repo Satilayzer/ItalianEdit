@@ -108,8 +108,19 @@ export async function waitForBulk(
   const started = Date.now();
   const interval = opts.intervalMs ?? 5_000;
   const timeout = opts.timeoutMs ?? 6 * 60 * 60_000;
+  let failures = 0;
   for (;;) {
-    const data = await client.graphql<{ node: BulkOperation | null }>(POLL, { id });
+    let data: { node: BulkOperation | null };
+    try {
+      data = await client.graphql<{ node: BulkOperation | null }>(POLL, { id });
+      failures = 0;
+    } catch (err) {
+      // Операция идёт на стороне Shopify независимо от нас: один зависший
+      // опрос статуса (сеть, таймаут) не повод бросать её результат.
+      if (++failures > 5) throw err;
+      await new Promise((r) => setTimeout(r, interval));
+      continue;
+    }
     const op = data.node;
     if (!op) throw new Error(`Bulk-операция ${id} не найдена`);
     opts.onProgress?.(op);

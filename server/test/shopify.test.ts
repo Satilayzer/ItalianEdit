@@ -132,3 +132,32 @@ describe("createDraftProduct", () => {
     expect(headers["X-Shopify-Access-Token"]).toBe("shpat_x");
   });
 });
+
+describe("лимит запросов Shopify (Throttled)", () => {
+  function rawShopify(payloads: unknown[]) {
+    const fetchFn = vi.fn();
+    for (const p of payloads) fetchFn.mockResolvedValueOnce(new Response(JSON.stringify(p), { status: 200 }));
+    const client = new ShopifyClient({ shop: "test.myshopify.com", adminToken: "shpat_x" }, fetchFn as unknown as typeof fetch);
+    return { client, fetchFn };
+  }
+
+  it("ждёт восстановления ведра и повторяет запрос", async () => {
+    vi.useFakeTimers();
+    const throttled = {
+      errors: [{ message: "Throttled", extensions: { code: "THROTTLED" } }],
+      extensions: { cost: { requestedQueryCost: 102, throttleStatus: { currentlyAvailable: 2, restoreRate: 100 } } },
+    };
+    const { client, fetchFn } = rawShopify([throttled, { data: { shop: { name: "IE" } } }]);
+    const pending = client.graphql<{ shop: { name: string } }>("{ shop { name } }");
+    await vi.advanceTimersByTimeAsync(1_500); // (102 − 2) / 100 с + 0,5 с запаса
+    await expect(pending).resolves.toEqual({ shop: { name: "IE" } });
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  });
+
+  it("обычная ошибка GraphQL не повторяется", async () => {
+    const { client, fetchFn } = rawShopify([{ errors: [{ message: "Access denied for locations field." }] }]);
+    await expect(client.graphql("{ locations(first: 1) { nodes { id } } }")).rejects.toThrow("Access denied");
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
+});

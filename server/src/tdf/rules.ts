@@ -79,7 +79,7 @@ export const IMPORT_STATUSES = new Set(["HERO", "SHOW"]);
 
 export function evaluate(p: FeedProduct, registry: BrandRegistry): Evaluation {
   const brand = brandEntry(registry, p.brand);
-  const category = classify(p.productType, p.title);
+  const category = classify(p.productType, p.title, p.hsCode);
   const skip: string[] = [];
   const review: string[] = [];
 

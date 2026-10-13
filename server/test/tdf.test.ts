@@ -12,7 +12,7 @@ import { evaluate, seasonAge, REVIEW } from "../src/tdf/rules";
 import { autoPrice, decidePrice, economics, floorPriceCents, offerUsdCents, toCents } from "../src/tdf/pricing";
 import { estimateCosts, purchaseEurCents, countryCode } from "../src/tdf/economics";
 import { normalizeSize, sortVariants, productSetInput, productTags, priceProduct, PRICE_AUTO_TAG, PRICE_PENDING_TAG } from "../src/tdf/productInput";
-import { planSync, EXCLUDED_TAG, COST_CHANGED_TAG, BELOW_GRID_TAG, type IndexedProduct } from "../src/tdf/sync";
+import { planSync, sameHsCode, EXCLUDED_TAG, COST_CHANGED_TAG, BELOW_GRID_TAG, type IndexedProduct } from "../src/tdf/sync";
 import { resolveCategory } from "../src/shopify/category";
 import { subcategoryValues, genderValues, colorFamilies } from "../src/shopify/facets";
 
@@ -360,6 +360,7 @@ describe("план синхронизации — трогаем только п
         ["SPSFERITOCO/XM_SPORM-001_102-40", {
           id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", quantity: 1,
           inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 40_500,
+          hsCode: null, countryCode: "RO",
         }],
       ]),
       ...over,
@@ -372,6 +373,36 @@ describe("план синхронизации — трогаем только п
     p.variants.set(v.sku, { ...v, priceCents });
     return p;
   }
+
+  it("R24: HS-код из фида дописывается существующим вариантам, пометка снимается", () => {
+    const withHs = evaluate({
+      ...trousers,
+      hsCode: "62046239",
+      variants: trousers.variants.map((v) => ({ ...v, hsCode: "62046239" })),
+    }, REGISTRY);
+    const plan = planSync([withHs], new Map([[trousers.key, shopProduct()]]));
+    expect(plan.customs).toEqual([{ inventoryItemId: "ii40", harmonizedSystemCode: "62046239" }]);
+    expect(plan.tags[0].remove).toContain("review:customs");
+  });
+
+  it("код уже записан (в т. ч. Shopify хранит 6 знаков) — повторно не пишем; пустой в фиде не стирает", () => {
+    const withHs = evaluate({
+      ...trousers,
+      hsCode: "62046239",
+      variants: trousers.variants.map((v) => ({ ...v, hsCode: "62046239" })),
+    }, REGISTRY);
+    const stored = (hs: string) => {
+      const p = shopProduct();
+      const v = p.variants.get("SPSFERITOCO/XM_SPORM-001_102-40")!;
+      p.variants.set(v.sku, { ...v, hsCode: hs });
+      return new Map([[trousers.key, p]]);
+    };
+    expect(planSync([withHs], stored("62046239")).customs).toEqual([]);
+    expect(planSync([withHs], stored("620462")).customs).toEqual([]);
+    expect(planSync([e], stored("620462")).customs).toEqual([]);
+    expect(sameHsCode("62046239", "6204.62")).toBe(true);
+    expect(sameHsCode("62046239", "6203")).toBe(false);
+  });
 
   it("новая модель — в создание; существующая — нет", () => {
     expect(planSync([e], new Map()).create).toHaveLength(1);
@@ -470,5 +501,56 @@ describe("описание — диакритика в имени бренда",
     const p = groupProducts(parseFeed(XML))[0];
     const html = descriptionHtml({ ...p, brand: "Chloé", description: "Knee length skirt by Chlo in silk   Color  Green" }, "Chloé");
     expect(html).toContain("<p>Knee length skirt by Chloé in silk.</p>");
+  });
+});
+
+describe("категория по HS-коду — случаи из фида 13.10.2026", () => {
+  it.each([
+    ["Apparel & Accessories > Shoes", "Black Loafer bifold wallet", "42023100", "Wallets - Accessories"],
+    ["Apparel & Accessories > Shoes", "Elongated Loafer cabas bag in black leather", "42022100", "Handbags - Bags"],
+    ["Apparel & Accessories > Shoes", "Black washed-effect Boot Cut jeans", "62046231", "Jeans Denim - Clothing"],
+    ["Apparel & Accessories > Shoes", "Black Derby jacket in cotton moleskin", "62033290", "Jackets - Clothing"],
+    ["Apparel & Accessories", "Mini Rockstud Spike top-handle bag in black leather", "42022100", "Handbags - Bags"],
+    ["Apparel & Accessories > Handbags", "Camel bucket hat in virgin wool", "65059010", "Hats - Accessories"],
+    ["Apparel & Accessories", "Jeannette wedge clogs in suede calfskin", "64035999", "Clogs - Shoes"],
+    ["Apparel & Accessories", "Short dress with floral waist belt", "62044200", "Dresses - Clothing"],
+    ["Apparel & Accessories > Handbags", "Horseshoe Bag Charm in Sand Check", "42023290", "Bag Charms - Accessories"],
+    ["Apparel & Accessories > Handbags", "Black Charm bag in croc-effect patent leather", "42022100", "Handbags - Bags"],
+    ["Apparel & Accessories > Handbags", "Black clutch bag with chain strap", "42023100", "Clutch Bags - Bags"],
+    // Ошибка поставщика: обувной код у картхолдера — решает название.
+    ["Apparel & Accessories", "White leather Rockstud zip card holder", "64039998", "Wallets - Accessories"],
+    // Мех (глава 43) не используем: у поставщика под ним и ботинки.
+    ["Apparel & Accessories > Shoes", "Dark brown ponyskin ankle boots", "43039000", "Boots - Shoes"],
+  ])("%s | %s (%s) → %s", (type, title, hs, tag) => {
+    expect(classify(type, title, hs)?.tags.at(-1)).toBe(tag);
+  });
+
+  it("без кода — как раньше, по фиду", () => {
+    expect(classify("Apparel & Accessories > Shoes", "Black Derby jacket in cotton moleskin")?.section).toBe("Shoes");
+  });
+});
+
+describe("перенос в категорию по HS-коду в синке", () => {
+  const [base] = groupProducts(parseFeed(XML));
+  const jeans = { ...base, productType: "Apparel & Accessories > Shoes", title: "Black washed-effect Boot Cut jeans" };
+  const legacyTags = ["tdf", "EU", "Women", "Shoes", "Boots - Shoes", "price:auto"];
+  const shop = (tags: string[]): IndexedProduct => ({
+    id: "gid://shopify/Product/9", handle: jeans.key, status: "ACTIVE", tags, key: jeans.key,
+    autoPriceCents: null, variants: new Map(),
+  });
+
+  it("товар с исходными тегами переносится: теги, Product type, Category", () => {
+    const e = evaluate({ ...jeans, hsCode: "62046231" }, REGISTRY);
+    const plan = planSync([e], new Map([[jeans.key, shop(legacyTags)]]));
+    expect(plan.categories).toHaveLength(1);
+    expect(plan.categories[0].add).toEqual(["Clothing", "Jeans Denim - Clothing"]);
+    expect(plan.categories[0].remove).toEqual(["Shoes", "Boots - Shoes"]);
+    expect(plan.categories[0].productType).toBeTruthy();
+  });
+
+  it("категорию правил менеджер — не трогаем", () => {
+    const e = evaluate({ ...jeans, hsCode: "62046231" }, REGISTRY);
+    const manual = ["tdf", "EU", "Women", "Clothing", "Pants - Clothing", "price:auto"];
+    expect(planSync([e], new Map([[jeans.key, shop(manual)]])).categories).toEqual([]);
   });
 });

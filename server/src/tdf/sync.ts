@@ -36,6 +36,8 @@ import {
 } from "./productInput";
 import { countryCode, DEFAULT_COSTS, type CostSettings } from "./economics";
 import { economics, type AutoPrice } from "./pricing";
+import { classifyByFeed } from "./category";
+import { resolveCategory } from "../shopify/category";
 
 /** API, под который написаны мутации модуля (changeFromQuantity, productSet.files). */
 export const TDF_API_VERSION = "2026-07";
@@ -86,7 +88,7 @@ const INDEX_QUERY = /* GraphQL */ `
                 sku
                 price
                 inventoryQuantity
-                inventoryItem { id unitCost { amount } }
+                inventoryItem { id unitCost { amount } harmonizedSystemCode countryCodeOfOrigin }
               }
             }
           }
@@ -103,6 +105,8 @@ export interface IndexedVariant {
   inventoryItemId: string;
   costCents: number | null;
   priceCents: number;
+  hsCode: string | null;
+  countryCode: string | null;
 }
 
 export interface IndexedProduct {
@@ -156,6 +160,8 @@ export async function fetchIndex(client: ShopifyClient): Promise<Map<string, Ind
       inventoryItemId: r.inventoryItem?.id,
       costCents: amount != null ? Math.round(Number(amount) * 100) : null,
       priceCents: Math.round(Number(r.price ?? 0) * 100),
+      hsCode: r.inventoryItem?.harmonizedSystemCode ?? null,
+      countryCode: r.inventoryItem?.countryCodeOfOrigin ?? null,
     });
   }
   return new Map([...byId.values()].map((p) => [p.key, p]));
@@ -189,6 +195,8 @@ export interface SyncPlan {
   create: Evaluation[];
   quantities: { inventoryItemId: string; quantity: number; from: number }[];
   costs: { inventoryItemId: string; costCents: number }[];
+  /** Таможенные данные варианта (R24): HS-код и страна происхождения из фида. */
+  customs: { inventoryItemId: string; harmonizedSystemCode?: string; countryCodeOfOrigin?: string }[];
   prices: PriceChange[];
   newVariants: {
     productId: string;
@@ -198,6 +206,16 @@ export interface SyncPlan {
     priceCents: number | null;
   }[];
   tags: TagChange[];
+  /** Перенос в другую категорию (HS-код уточнил раздел): теги, Product type, Category. */
+  categories: CategoryChange[];
+}
+
+export interface CategoryChange {
+  productId: string;
+  add: string[];
+  remove: string[];
+  productType?: string;
+  taxonomyId?: string;
 }
 
 /**
@@ -212,6 +230,18 @@ export function isAutoPriced(shop: IndexedProduct): boolean {
   return shop.autoPriceCents !== null && prices.every((c) => c === shop.autoPriceCents);
 }
 
+/**
+ * Один и тот же код? Сравниваем цифры; если Shopify хранит код короче
+ * (международные 6 знаков от 8-значного кода ЕС), это не расхождение —
+ * иначе синк переписывал бы его каждый проход.
+ */
+export function sameHsCode(feed: string, stored: string | null): boolean {
+  if (!stored) return false;
+  const a = feed.replace(/\D/g, "");
+  const b = stored.replace(/\D/g, "");
+  return a === b || (b.length >= 6 && a.startsWith(b));
+}
+
 export function planSync(
   evaluations: Evaluation[],
   index: Map<string, IndexedProduct>,
@@ -220,7 +250,7 @@ export function planSync(
   const cap = opts.inventoryCap ?? Infinity;
   const settings = opts.costs ?? DEFAULT_COSTS;
   const byKey = new Map(evaluations.map((e) => [e.product.key, e]));
-  const plan: SyncPlan = { create: [], quantities: [], costs: [], prices: [], newVariants: [], tags: [] };
+  const plan: SyncPlan = { create: [], quantities: [], costs: [], customs: [], prices: [], newVariants: [], tags: [], categories: [] };
 
   for (const e of evaluations) {
     if (e.include && !index.has(e.product.key)) plan.create.push(e);
@@ -236,6 +266,21 @@ export function planSync(
       const want = fv ? Math.max(0, Math.min(fv.quantity, cap)) : 0;
       if (want !== sv.quantity && sv.inventoryItemId) {
         plan.quantities.push({ inventoryItemId: sv.inventoryItemId, quantity: want, from: sv.quantity });
+      }
+    }
+
+    // Таможня: код и страну из фида дописываем и исправляем. Пустое в фиде
+    // не стирает уже записанное — пропуск у поставщика не повод терять данные.
+    if (e) {
+      const country = countryCode(e.product.madeIn);
+      for (const [sku, sv] of shop.variants) {
+        const hs = feedVariants.get(sku)?.hsCode || e.product.hsCode;
+        const change: SyncPlan["customs"][number] = { inventoryItemId: sv.inventoryItemId };
+        if (hs && !sameHsCode(hs, sv.hsCode)) change.harmonizedSystemCode = hs;
+        if (country && country !== sv.countryCode) change.countryCodeOfOrigin = country;
+        if (sv.inventoryItemId && (change.harmonizedSystemCode || change.countryCodeOfOrigin)) {
+          plan.customs.push(change);
+        }
       }
     }
 
@@ -283,6 +328,26 @@ export function planSync(
     }
 
     // Служебные теги: пересчитываем только свои.
+    // Категория: если товар до сих пор несёт теги, которые мы поставили по
+    // данным фида, а с HS-кодом выходит другая категория — переносим. Теги,
+    // исправленные менеджером, не совпадут с исходными — такой товар не трогаем.
+    if (e?.category) {
+      const legacy = classifyByFeed(e.product.productType, e.product.title)?.tags ?? [];
+      const target = e.category.tags;
+      const have = new Set(shop.tags);
+      const untouched = legacy.every((t) => have.has(t));
+      const add = target.filter((t) => !have.has(t));
+      if (untouched && add.length > 0) {
+        const assignment = resolveCategory(target);
+        plan.categories.push({
+          productId: shop.id,
+          add,
+          remove: legacy.filter((t) => !target.includes(t)),
+          ...(assignment ? { productType: assignment.productType, taxonomyId: assignment.taxonomyId } : {}),
+        });
+      }
+    }
+
     const want = new Set<string>(e ? e.reviewTags : []);
     if (e?.heroCandidate) want.add(HERO_CANDIDATE_TAG);
     if (!e || !e.include) want.add(EXCLUDED_TAG);
@@ -323,6 +388,16 @@ const TAGS_REMOVE = /* GraphQL */ `
     tagsRemove(id: $id, tags: $tags) { userErrors { field message } }
   }
 `;
+const UPDATE_PRODUCT_CATEGORY = /* GraphQL */ `
+  mutation TdfCategory($product: ProductUpdateInput!) {
+    productUpdate(product: $product) { userErrors { field message } }
+  }
+`;
+const UPDATE_CUSTOMS = /* GraphQL */ `
+  mutation TdfCustoms($id: ID!, $input: InventoryItemInput!) {
+    inventoryItemUpdate(id: $id, input: $input) { userErrors { field message } }
+  }
+`;
 const UPDATE_PRICES = /* GraphQL */ `
   mutation TdfPrices($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
     productVariantsBulkUpdate(productId: $productId, variants: $variants) {
@@ -358,6 +433,8 @@ export interface SyncStats {
   createFailed: number;
   quantitiesSet: number;
   costsUpdated: number;
+  customsUpdated: number;
+  categoriesChanged: number;
   pricesUpdated: number;
   variantsAdded: number;
   tagsChanged: number;
@@ -393,6 +470,8 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     createFailed: 0,
     quantitiesSet: 0,
     costsUpdated: 0,
+    customsUpdated: 0,
+    categoriesChanged: 0,
     pricesUpdated: 0,
     variantsAdded: 0,
     tagsChanged: 0,
@@ -400,7 +479,7 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
   };
   log(
     `TDF: фид ${products.length} моделей, к импорту ${stats.eligible}, в магазине ${index.size}; ` +
-      `создать ${create.length}, остатков ${plan.quantities.length}, закупок ${plan.costs.length}, цен ${plan.prices.length}, ` +
+      `создать ${create.length}, остатков ${plan.quantities.length}, закупок ${plan.costs.length}, кодов ${plan.customs.length}, категорий ${plan.categories.length}, цен ${plan.prices.length}, ` +
       `новых размеров ${plan.newVariants.length}, тегов ${plan.tags.length}`
   );
   if (opts.dryRun) return stats;
@@ -461,6 +540,26 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     stats.costsUpdated++;
   }
 
+  // Таможенные данные — массово: при первом появлении кодов это ~10 тыс. вариантов.
+  if (plan.customs.length > 0) {
+    try {
+      const { results } = await runBulkMutation<any>(
+        client,
+        UPDATE_CUSTOMS,
+        plan.customs.map(({ inventoryItemId, ...input }) => ({ id: inventoryItemId, input })),
+        { onProgress: (op) => log(`TDF: таможенные коды — ${op.status}, ${op.objectCount}`) }
+      );
+      for (const r of results) {
+        const errs = r.data?.inventoryItemUpdate?.userErrors ?? [];
+        if (errs.length > 0 || r.errors) {
+          stats.errors.push(`таможня: ${errs.map((x: any) => x.message).join("; ") || JSON.stringify(r.errors)}`);
+        } else stats.customsUpdated++;
+      }
+    } catch (err) {
+      stats.errors.push(`bulk таможня: ${String(err)}`);
+    }
+  }
+
   const settings = opts.costs ?? DEFAULT_COSTS;
   for (const pc of plan.prices) {
     if (pc.variantIds.length > 0) {
@@ -503,6 +602,20 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     const data = await client.graphql<Errors>(VARIANTS_CREATE, { productId: nv.productId, variants });
     collect(stats.errors, "размеры", data);
     stats.variantsAdded += variants.length;
+  }
+
+  for (const c of plan.categories) {
+    if (c.add.length) collect(stats.errors, "категория", await client.graphql<Errors>(TAGS_ADD, { id: c.productId, tags: c.add }));
+    if (c.remove.length) {
+      collect(stats.errors, "категория", await client.graphql<Errors>(TAGS_REMOVE, { id: c.productId, tags: c.remove }));
+    }
+    if (c.taxonomyId) {
+      const data = await client.graphql<Errors>(UPDATE_PRODUCT_CATEGORY, {
+        product: { id: c.productId, productType: c.productType, category: c.taxonomyId },
+      });
+      collect(stats.errors, "категория", data);
+    }
+    stats.categoriesChanged++;
   }
 
   for (const t of plan.tags) {

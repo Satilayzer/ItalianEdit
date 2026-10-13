@@ -18,6 +18,28 @@ interface TokenCache {
   expiresAt: number;
 }
 
+/** Повторов на «Throttled», прежде чем сдаться (каждый ждёт восстановления ведра). */
+const MAX_THROTTLE_RETRIES = 8;
+
+interface ThrottleCost {
+  requestedQueryCost?: number;
+  throttleStatus?: { currentlyAvailable: number; restoreRate: number };
+}
+
+export class ThrottledError extends Error {
+  constructor(readonly waitMs: number) {
+    super("Shopify GraphQL: Throttled");
+  }
+}
+
+/** Сколько ждать, чтобы в ведре хватило баллов на этот запрос (+ запас 0,5 с). */
+export function throttleWaitMs(cost: ThrottleCost | undefined): number {
+  const status = cost?.throttleStatus;
+  if (!status || !status.restoreRate) return 2_000;
+  const deficit = Math.max(0, (cost?.requestedQueryCost ?? 0) - status.currentlyAvailable);
+  return Math.ceil((deficit / status.restoreRate) * 1000) + 500;
+}
+
 /**
  * Клиент Shopify Admin GraphQL API.
  * Поддерживает оба способа авторизации:
@@ -86,6 +108,19 @@ export class ShopifyClient {
   }
 
   async graphql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+    // Лимит запросов (leaky bucket): ждём, пока ведро восстановится, и повторяем.
+    // Без этого длинные задачи (фильтры по 4 тыс. товаров) падали на «Throttled».
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.graphqlOnce<T>(query, variables);
+      } catch (err) {
+        if (!(err instanceof ThrottledError) || attempt >= MAX_THROTTLE_RETRIES) throw err;
+        await new Promise((r) => setTimeout(r, err.waitMs));
+      }
+    }
+  }
+
+  private async graphqlOnce<T>(query: string, variables: Record<string, unknown>): Promise<T> {
     let res = await this.doRequest(query, variables, await this.getToken());
 
     // 401 при client credentials → токен отозван/протух, перевыпускаем один раз
@@ -98,7 +133,14 @@ export class ShopifyClient {
       const text = await res.text().catch(() => "");
       throw new Error(`Shopify: HTTP ${res.status} ${text}`);
     }
-    const payload = (await res.json()) as { data?: T; errors?: { message: string }[] };
+    const payload = (await res.json()) as {
+      data?: T;
+      errors?: { message: string; extensions?: { code?: string } }[];
+      extensions?: { cost?: ThrottleCost };
+    };
+    if (payload.errors?.some((e) => e.extensions?.code === "THROTTLED" || e.message === "Throttled")) {
+      throw new ThrottledError(throttleWaitMs(payload.extensions?.cost));
+    }
     if (payload.errors?.length) {
       throw new Error(
         `Shopify GraphQL: ${payload.errors.map((e) => e.message).join("; ")}`
