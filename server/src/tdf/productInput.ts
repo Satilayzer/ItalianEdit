@@ -14,7 +14,15 @@
 import type { FeedProduct, FeedVariant } from "./feed";
 import type { Evaluation } from "./rules";
 import { HERO_CANDIDATE_TAG } from "./rules";
-import { countryCode, estimateCosts, DEFAULT_COSTS, type CostEstimate, type CostSettings } from "./economics";
+import {
+  compareAtCents,
+  countryCode,
+  estimateCosts,
+  retailItalyUsdCents,
+  DEFAULT_COSTS,
+  type CostEstimate,
+  type CostSettings,
+} from "./economics";
 import { autoPrice, POLICY_VERSION, type AutoPrice } from "./pricing";
 import { buildDescriptionHtml, type SpecItem } from "../shopify/description";
 import { resolveCategory } from "../shopify/category";
@@ -233,7 +241,9 @@ export function variantInput(
   purchaseUsdCents: number | null,
   country: string | null,
   opts: BuildOptions,
-  priceCents: number | null = null
+  priceCents: number | null = null,
+  /** Зачёркнутая цена (розница в Италии), null — без неё. */
+  compareAt: number | null = null
 ) {
   const cap = opts.inventoryCap ?? Infinity;
   return {
@@ -241,6 +251,7 @@ export function variantInput(
     sku: v.id,
     ...(/^\d{8,14}$/.test(v.barcode) ? { barcode: v.barcode } : {}),
     price: money(priceCents ?? 0),
+    ...(compareAt !== null ? { compareAtPrice: money(compareAt) } : {}),
     inventoryPolicy: "DENY",
     inventoryItem: {
       sku: v.id,
@@ -337,7 +348,14 @@ export function productSetInput(e: Evaluation, opts: BuildOptions) {
       ...facetMetafields(tags, p.title, e.brand.displayName),
     ],
     variants: variants.map((v) =>
-      variantInput(v, costs?.purchaseUsdCents ?? null, country, opts, price?.priceCents ?? null)
+      variantInput(
+        v,
+        costs?.purchaseUsdCents ?? null,
+        country,
+        opts,
+        price?.priceCents ?? null,
+        compareAtCents(retailItalyUsdCents(p.price, settings), price?.priceCents ?? null)
+      )
     ),
   };
 }

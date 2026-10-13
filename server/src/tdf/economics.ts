@@ -17,6 +17,8 @@ export interface CostSettings {
   brokerCents: number;
   otherCents: number;
   fee: PaymentFee;
+  /** НДС Италии, базисные пункты: розничная цена поставщика = price × (1 + НДС). */
+  retailVatBp: number;
   /** Оценка пошлины, базисные пункты. */
   duty: {
     euAccessories: number;
@@ -34,6 +36,7 @@ export const DEFAULT_COSTS: CostSettings = {
   brokerCents: 2_500,
   otherCents: 0,
   fee: DEFAULT_PAYMENT_FEE,
+  retailVatBp: 2200,
   duty: { euAccessories: 1500, euClothing: 2200, euShoes: 2500, nonEu: 3000 },
 };
 
@@ -104,6 +107,28 @@ export interface CostEstimate {
   breakEvenCents: number;
   /** Минимальная цена, проходящая сетку v1.0, при этих оценках. Справка, не цена продажи. */
   floorCents: number;
+}
+
+/**
+ * Розничная цена модели в Италии, USD: price поставщика (без НДС) + НДС 22%,
+ * по рабочему курсу, до целого доллара. Это зачёркнутая цена на витрине
+ * (решение 13.10.2026, вариант B): реальная цена, по которой товар продаётся
+ * в рознице, а не закупочная скидка поставщика. null — цены поставщика нет.
+ */
+export function retailItalyUsdCents(priceEur: number | null, s: CostSettings = DEFAULT_COSTS): number | null {
+  if (priceEur === null || !(priceEur > 0)) return null;
+  const withVat = divHalfUp(Math.round(priceEur * 100) * (10_000 + s.retailVatBp), 10_000);
+  return divHalfUp(eurToUsdCents(withVat, s.eurUsd), 100) * 100;
+}
+
+/**
+ * Зачёркнутая цена для нашей цены: розничная цена в Италии, только если она
+ * выше нашей хотя бы на 1% (меньшая разница — округление, а не скидка;
+ * тема такие проценты и не показывает). Иначе null — compare-at снимаем.
+ */
+export function compareAtCents(retailCents: number | null, priceCents: number | null): number | null {
+  if (retailCents === null || !priceCents) return null;
+  return retailCents * 100 > priceCents * 101 ? retailCents : null;
 }
 
 export function estimateCosts(

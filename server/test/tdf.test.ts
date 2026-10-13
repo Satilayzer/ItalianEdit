@@ -10,7 +10,7 @@ import { parseBrandRegistry, brandEntry, loadBrandSnapshot } from "../src/tdf/br
 import { classify } from "../src/tdf/category";
 import { evaluate, seasonAge, REVIEW } from "../src/tdf/rules";
 import { autoPrice, decidePrice, economics, floorPriceCents, offerUsdCents, toCents } from "../src/tdf/pricing";
-import { estimateCosts, purchaseEurCents, countryCode } from "../src/tdf/economics";
+import { estimateCosts, purchaseEurCents, countryCode, retailItalyUsdCents, compareAtCents } from "../src/tdf/economics";
 import { normalizeSize, sortVariants, productSetInput, productTags, priceProduct, PRICE_AUTO_TAG, PRICE_PENDING_TAG } from "../src/tdf/productInput";
 import { planSync, sameHsCode, EXCLUDED_TAG, COST_CHANGED_TAG, BELOW_GRID_TAG, type IndexedProduct } from "../src/tdf/sync";
 import { resolveCategory } from "../src/shopify/category";
@@ -315,6 +315,8 @@ describe("товар для Shopify", () => {
     expect(input.vendor).toBe("Sportmax");
     expect(input.variants.map((v) => v.optionValues[0].name)).toEqual(["38 IT", "40 IT"]);
     expect(input.variants.every((v) => v.price === "405.00")).toBe(true);
+    // Розница в Италии: €456,15 + НДС 22% = €556,50 × 1,1298 = $628,73 → $629.
+    expect(input.variants.every((v) => v.compareAtPrice === "629.00")).toBe(true);
     expect(input.tags).toContain(PRICE_AUTO_TAG);
     expect(input.tags).not.toContain(PRICE_PENDING_TAG);
     const pricing = JSON.parse(input.metafields.find((m) => m.key === "pricing")!.value);
@@ -360,7 +362,7 @@ describe("план синхронизации — трогаем только п
         ["SPSFERITOCO/XM_SPORM-001_102-40", {
           id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", quantity: 1,
           inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 40_500,
-          hsCode: null, countryCode: "RO",
+          compareAtCents: 62_900, hsCode: null, countryCode: "RO",
         }],
       ]),
       ...over,
@@ -552,5 +554,40 @@ describe("перенос в категорию по HS-коду в синке", 
     const e = evaluate({ ...jeans, hsCode: "62046231" }, REGISTRY);
     const manual = ["tdf", "EU", "Women", "Clothing", "Pants - Clothing", "price:auto"];
     expect(planSync([e], new Map([[jeans.key, shop(manual)]])).categories).toEqual([]);
+  });
+});
+
+describe("зачёркнутая цена — розница в Италии с НДС (вариант B)", () => {
+  it("price поставщика + 22% НДС по курсу, до целого доллара", () => {
+    expect(retailItalyUsdCents(456.15)).toBe(62_900);
+    expect(retailItalyUsdCents(null)).toBeNull();
+  });
+
+  it("показываем, только если розница выше нашей цены больше чем на 1%", () => {
+    expect(compareAtCents(62_900, 40_500)).toBe(62_900);
+    expect(compareAtCents(62_900, 62_500)).toBeNull(); // 0,6% — округление, не скидка
+    expect(compareAtCents(62_900, 70_000)).toBeNull(); // мы дороже — без зачёркнутой
+    expect(compareAtCents(null, 40_500)).toBeNull();
+  });
+
+  it("синк ставит недостающую и снимает лишнюю зачёркнутую цену", () => {
+    const [p] = groupProducts(parseFeed(XML));
+    const e = evaluate(p, REGISTRY);
+    const variant = (compareAt: number | null) => new Map([["SPSFERITOCO/XM_SPORM-001_102-40", {
+      id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", quantity: 1, inventoryItemId: "ii40",
+      costCents: Math.round(18_246 * 1.1298), priceCents: 40_500, compareAtCents: compareAt, hsCode: null, countryCode: "RO",
+    }]]);
+    const shop = (compareAt: number | null, priceCents = 40_500): IndexedProduct => {
+      const variants = variant(compareAt);
+      variants.get("SPSFERITOCO/XM_SPORM-001_102-40")!.priceCents = priceCents;
+      return { id: "gid://shopify/Product/1", handle: p.key, status: "ACTIVE", tags: ["tdf", "price:auto"], key: p.key,
+        autoPriceCents: priceCents === 40_500 ? 40_500 : 12_345, variants };
+    };
+    expect(planSync([e], new Map([[p.key, shop(null)]])).compareAts)
+      .toEqual([{ productId: "gid://shopify/Product/1", variants: [{ id: "v40", compareAtCents: 62_900 }] }]);
+    expect(planSync([e], new Map([[p.key, shop(62_900)]])).compareAts).toEqual([]);
+    // Ручная цена выше розницы — зачёркнутую снимаем.
+    expect(planSync([e], new Map([[p.key, shop(62_900, 70_000)]])).compareAts)
+      .toEqual([{ productId: "gid://shopify/Product/1", variants: [{ id: "v40", compareAtCents: null }] }]);
   });
 });

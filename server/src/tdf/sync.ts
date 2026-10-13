@@ -34,7 +34,7 @@ import {
   PRICE_AUTO_TAG,
   PRICE_PENDING_TAG,
 } from "./productInput";
-import { countryCode, DEFAULT_COSTS, type CostSettings } from "./economics";
+import { compareAtCents, countryCode, retailItalyUsdCents, DEFAULT_COSTS, type CostSettings } from "./economics";
 import { economics, type AutoPrice } from "./pricing";
 import { classifyByFeed } from "./category";
 import { resolveCategory } from "../shopify/category";
@@ -87,6 +87,7 @@ const INDEX_QUERY = /* GraphQL */ `
                 id
                 sku
                 price
+                compareAtPrice
                 inventoryQuantity
                 inventoryItem { id unitCost { amount } harmonizedSystemCode countryCodeOfOrigin }
               }
@@ -105,6 +106,8 @@ export interface IndexedVariant {
   inventoryItemId: string;
   costCents: number | null;
   priceCents: number;
+  /** Зачёркнутая цена, центы. null — не стоит. */
+  compareAtCents: number | null;
   hsCode: string | null;
   countryCode: string | null;
 }
@@ -160,6 +163,7 @@ export async function fetchIndex(client: ShopifyClient): Promise<Map<string, Ind
       inventoryItemId: r.inventoryItem?.id,
       costCents: amount != null ? Math.round(Number(amount) * 100) : null,
       priceCents: Math.round(Number(r.price ?? 0) * 100),
+      compareAtCents: r.compareAtPrice != null ? Math.round(Number(r.compareAtPrice) * 100) : null,
       hsCode: r.inventoryItem?.harmonizedSystemCode ?? null,
       countryCode: r.inventoryItem?.countryCodeOfOrigin ?? null,
     });
@@ -198,6 +202,8 @@ export interface SyncPlan {
   /** Таможенные данные варианта (R24): HS-код и страна происхождения из фида. */
   customs: { inventoryItemId: string; harmonizedSystemCode?: string; countryCodeOfOrigin?: string }[];
   prices: PriceChange[];
+  /** Зачёркнутая цена (розница в Италии с НДС, вариант B от 13.10.2026). null — снять. */
+  compareAts: { productId: string; variants: { id: string; compareAtCents: number | null }[] }[];
   newVariants: {
     productId: string;
     evaluation: Evaluation;
@@ -250,7 +256,7 @@ export function planSync(
   const cap = opts.inventoryCap ?? Infinity;
   const settings = opts.costs ?? DEFAULT_COSTS;
   const byKey = new Map(evaluations.map((e) => [e.product.key, e]));
-  const plan: SyncPlan = { create: [], quantities: [], costs: [], customs: [], prices: [], newVariants: [], tags: [], categories: [] };
+  const plan: SyncPlan = { create: [], quantities: [], costs: [], customs: [], prices: [], compareAts: [], newVariants: [], tags: [], categories: [] };
 
   for (const e of evaluations) {
     if (e.include && !index.has(e.product.key)) plan.create.push(e);
@@ -313,6 +319,16 @@ export function planSync(
       } else if (!auto && est && modelPriceCents) {
         belowGrid = !economics(modelPriceCents, est.directCostsCents, settings.fee).passes;
       }
+      // Зачёркнутая цена: розница в Италии, если она выше цены размера.
+      // Ведём её и у ручных цен — это факт о рынке, а не наша цена.
+      const retail = retailItalyUsdCents(e.product.price, settings);
+      const compareFixes: SyncPlan["compareAts"][number]["variants"] = [];
+      for (const sv of shop.variants.values()) {
+        const finalPrice = auto && price ? price.priceCents : sv.priceCents;
+        const want = compareAtCents(retail, finalPrice);
+        if (want !== sv.compareAtCents) compareFixes.push({ id: sv.id, compareAtCents: want });
+      }
+      if (compareFixes.length > 0) plan.compareAts.push({ productId: shop.id, variants: compareFixes });
       // Новые размеры, которых в магазине ещё нет.
       const missing = e.product.variants.filter((v) => !shop.variants.has(v.id) && v.quantity > 0);
       const existingSizes = new Set(
@@ -436,6 +452,7 @@ export interface SyncStats {
   customsUpdated: number;
   categoriesChanged: number;
   pricesUpdated: number;
+  compareAtsUpdated: number;
   variantsAdded: number;
   tagsChanged: number;
   errors: string[];
@@ -473,13 +490,14 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     customsUpdated: 0,
     categoriesChanged: 0,
     pricesUpdated: 0,
+    compareAtsUpdated: 0,
     variantsAdded: 0,
     tagsChanged: 0,
     errors: [],
   };
   log(
     `TDF: фид ${products.length} моделей, к импорту ${stats.eligible}, в магазине ${index.size}; ` +
-      `создать ${create.length}, остатков ${plan.quantities.length}, закупок ${plan.costs.length}, кодов ${plan.customs.length}, категорий ${plan.categories.length}, цен ${plan.prices.length}, ` +
+      `создать ${create.length}, остатков ${plan.quantities.length}, закупок ${plan.costs.length}, кодов ${plan.customs.length}, категорий ${plan.categories.length}, цен ${plan.prices.length}, зачёркнутых ${plan.compareAts.length}, ` +
       `новых размеров ${plan.newVariants.length}, тегов ${plan.tags.length}`
   );
   if (opts.dryRun) return stats;
@@ -577,6 +595,32 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     stats.pricesUpdated++;
   }
 
+  // Зачёркнутые цены — массово: при первом проходе это весь каталог.
+  if (plan.compareAts.length > 0) {
+    try {
+      const { results } = await runBulkMutation<any>(
+        client,
+        UPDATE_PRICES,
+        plan.compareAts.map((c) => ({
+          productId: c.productId,
+          variants: c.variants.map((v) => ({
+            id: v.id,
+            compareAtPrice: v.compareAtCents === null ? null : (v.compareAtCents / 100).toFixed(2),
+          })),
+        })),
+        { onProgress: (op) => log(`TDF: зачёркнутые цены — ${op.status}, ${op.objectCount}`) }
+      );
+      for (const r of results) {
+        const errs = r.data?.productVariantsBulkUpdate?.userErrors ?? [];
+        if (errs.length > 0 || r.errors) {
+          stats.errors.push(`зачёркнутая цена: ${errs.map((x: any) => x.message).join("; ") || JSON.stringify(r.errors)}`);
+        } else stats.compareAtsUpdated++;
+      }
+    } catch (err) {
+      stats.errors.push(`bulk зачёркнутые цены: ${String(err)}`);
+    }
+  }
+
   for (const nv of plan.newVariants) {
     const e = nv.evaluation;
     const { costs: est } = priceProduct(e.product, e.category, settings);
@@ -587,7 +631,8 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
         est?.purchaseUsdCents ?? null,
         countryCode(e.product.madeIn),
         buildOpts,
-        nv.priceCents
+        nv.priceCents,
+        compareAtCents(retailItalyUsdCents(e.product.price, settings), nv.priceCents)
       );
       // У productVariantsBulkCreate остаток задаётся полем inventoryQuantities
       // с availableQuantity, а не quantity/name, как у productSet.
