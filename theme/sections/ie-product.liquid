@@ -48,6 +48,53 @@
   assign size_words = section.settings.size_words | downcase | split: ','
 
   comment
+    Таблица размеров. Поставщик (TheDoubleF) таблиц не отдаёт, поэтому
+    таблицы лежат в настройках секции — по одной на вид товара и пол — и
+    правятся в редакторе темы. Вид и пол берём из тегов, которые ставит
+    импорт: «Shoes», «Jeans Denim - Clothing», «Clothing», «Women» / «Men».
+    Унисекс (оба тега) и товары без пола получают женскую таблицу.
+
+    Ссылку не показываем у сумок и аксессуаров (нет подходящей таблицы) и
+    у товаров, где единственный размер — «One Size»: сравнивать нечего.
+  endcomment
+  assign guide_lines = blank
+  if section.settings.guide_enable and product.has_only_default_variant == false
+    assign guide_kind = blank
+    if product.tags contains 'Shoes'
+      assign guide_kind = 'shoes'
+    elsif product.tags contains 'Jeans Denim - Clothing'
+      assign guide_kind = 'jeans'
+    elsif product.tags contains 'Clothing'
+      assign guide_kind = 'clothing'
+    endif
+
+    assign guide_gender = 'women'
+    unless product.tags contains 'Women'
+      if product.tags contains 'Men'
+        assign guide_gender = 'men'
+      endif
+    endunless
+
+    assign guide_sized = false
+    for option in product.options_with_values
+      for value in option.values
+        if value.name != 'One Size'
+          assign guide_sized = true
+          break
+        endif
+      endfor
+    endfor
+
+    if guide_kind != blank and guide_sized
+      assign guide_key = 'guide_' | append: guide_kind | append: '_' | append: guide_gender
+      assign guide_text = section.settings[guide_key] | strip
+      if guide_text != blank
+        assign guide_lines = guide_text | newline_to_br | split: '<br />'
+      endif
+    endif
+  endif
+
+  comment
     Цвет у нас не опция варианта, а тег товара: каталог приезжает из
     BrandsGateway, где цвет один на карточку («Pink», «Black»). Поэтому
     рисуем его отдельным неинтерактивным кружком — переключать нечего.
@@ -247,23 +294,29 @@
         </a>
       {%- endif -%}
 
+      {%- comment -%}
+        Скидку меньше порога (snippets/ie-discount-percent) не показываем:
+        тогда нет ни процента, ни зачёркнутой цены.
+      {%- endcomment -%}
+      {%- capture discount_percent -%}
+        {%- render 'ie-discount-percent', compare_at: variant.compare_at_price, price: variant.price -%}
+      {%- endcapture -%}
+      {%- assign discount_percent = discount_percent | strip -%}
       <p class="ie-pdp__price">
         <span data-ie-price>{{ variant.price | money }}</span>
         <s
           class="ie-pdp__price-compare"
           data-ie-compare
-          {% unless variant.compare_at_price > variant.price %}hidden{% endunless %}
+          {% if discount_percent == blank %}hidden{% endif %}
         >
-          {%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}
+          {%- if discount_percent != blank -%}{{ variant.compare_at_price | money }}{%- endif -%}
         </s>
         <span
           class="ie-pdp__discount"
           data-ie-discount
-          {% unless variant.compare_at_price > variant.price %}hidden{% endunless %}
+          {% if discount_percent == blank %}hidden{% endif %}
         >
-          {%- if variant.compare_at_price > variant.price -%}
-            −{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}%
-          {%- endif -%}
+          {%- if discount_percent != blank -%}−{{ discount_percent }}%{%- endif -%}
         </span>
       </p>
 
@@ -304,7 +357,7 @@
               endfor
             -%}
 
-            <fieldset class="ie-pdp__option" data-ie-option-group>
+            <fieldset class="ie-pdp__option" data-ie-option-group{% if is_size %} data-ie-size-group{% endif %}>
               <legend class="ie-pdp__option-label">
                 {{ option.name }}: <span data-ie-option-value>{{ option.selected_value }}</span>
               </legend>
@@ -354,6 +407,17 @@
           {%- endfor -%}
         </div>
       {%- endunless -%}
+
+      {%- if guide_lines != blank -%}
+        <button
+          type="button"
+          class="ie-pdp__guide-link"
+          data-ie-guide-open
+          aria-haspopup="dialog"
+        >
+          {{- section.settings.guide_label -}}
+        </button>
+      {%- endif -%}
 
       {%- comment -%}
         Форма темы целиком: без выбора количества и без мгновенной покупки —
@@ -587,6 +651,60 @@
   {%- endif -%}
 
   {%- comment -%}
+    Таблица размеров — шторка справа, как у поставщика. Тоже родной
+    <dialog>: затемнение, Esc, ловушка фокуса и замок прокрутки — от браузера.
+
+    Таблица в настройках — строки, ячейки через «|», первая строка —
+    заголовок. Строку выбранного размера подсвечивает ie-product.js: он ищет
+    колонку по системе размера («42 IT» → IT, «M» → INT, «30» → W).
+  {%- endcomment -%}
+  {%- if guide_lines != blank -%}
+    <dialog class="ie-pdp__guide" data-ie-guide aria-labelledby="IeGuideTitle-{{ section.id }}">
+      <div class="ie-pdp__guide-inner">
+        <div class="ie-pdp__guide-head">
+          <h2 class="ie-pdp__guide-title" id="IeGuideTitle-{{ section.id }}">{{ section.settings.guide_title }}</h2>
+          <button type="button" class="ie-pdp__guide-close" data-ie-guide-close>
+            {{ section.settings.guide_close_label }}
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        {%- if section.settings.guide_intro != blank -%}
+          <div class="ie-pdp__guide-intro">{{ section.settings.guide_intro }}</div>
+        {%- endif -%}
+
+        <p class="ie-pdp__guide-brand">{{ product.vendor }}</p>
+
+        <table class="ie-pdp__guide-table" data-ie-guide-table>
+          {%- assign guide_header = guide_lines.first | strip | split: '|' -%}
+          <thead>
+            <tr>
+              {%- for cell in guide_header -%}
+                <th scope="col">{{ cell | strip }}</th>
+              {%- endfor -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- for line in guide_lines offset: 1 -%}
+              {%- assign row = line | strip -%}
+              {%- if row != blank -%}
+                <tr>
+                  {%- assign cells = row | split: '|' -%}
+                  {%- for cell in cells -%}
+                    <td>{{ cell | strip }}</td>
+                  {%- endfor -%}
+                </tr>
+              {%- endif -%}
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+    </dialog>
+  {%- endif -%}
+
+  {%- comment -%}
     Цены отдаём уже отформатированными: правила форматирования валюты живут
     в Liquid, и цена после смены размера выглядит так же, как при загрузке.
   {%- endcomment -%}
@@ -600,9 +718,13 @@
           "available": {{ v.available }},
           "price": {{ v.price | money | strip_html | json }},
           "sku": {{ v.sku | json }},
-          {%- if v.compare_at_price > v.price -%}
+          {%- capture v_discount -%}
+            {%- render 'ie-discount-percent', compare_at: v.compare_at_price, price: v.price -%}
+          {%- endcapture -%}
+          {%- assign v_discount = v_discount | strip -%}
+          {%- if v_discount != blank -%}
             "compare_at": {{ v.compare_at_price | money | strip_html | json }},
-            "discount": {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round | prepend: '−' | append: '%' | json }},
+            "discount": {{ v_discount | prepend: '−' | append: '%' | json }},
           {%- else -%}
             "compare_at": null,
             "discount": null,
@@ -754,6 +876,10 @@
    * на телефоне это читалось как мигающий серый экран. Теперь скрипт ждёт
    * загрузки и только потом подменяет src, так что подложка не нужна, а
    * заодно её нечему и показывать.
+   *
+   * contain, а не cover: снимки поставщика (TheDoubleF) квадратные, и в
+   * рамке 2:3 cover срезал у них бока — у кроссовок пропадали нос и пятка.
+   * Теперь фото вписывается в рамку целиком, лишнее место остаётся белым.
    */
   .ie-pdp__main {
     display: block;
@@ -761,7 +887,7 @@
     max-width: var(--ie-pdp-image, 460px);
     height: auto;
     aspect-ratio: var(--ie-pdp-media-ratio, 2 / 3);
-    object-fit: cover;
+    object-fit: contain;
     cursor: zoom-in;
     touch-action: pan-y;
     -webkit-user-drag: none;
@@ -1122,17 +1248,18 @@
     width: 100%;
     padding: 0;
     border: 0;
-    background: #f4f4f4;
+    background: transparent;
     cursor: pointer;
     -webkit-user-drag: none;
   }
 
+  /* Как и большая картинка — целиком, без обрезки (см. .ie-pdp__main). */
   .ie-pdp__thumb-img {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: var(--ie-pdp-media-ratio, 2 / 3);
-    object-fit: cover;
+    object-fit: contain;
     -webkit-user-drag: none;
   }
 
@@ -1362,6 +1489,168 @@
     letter-spacing: 0.08em;
     color: var(--ie-muted);
   }
+
+  /* ------------------------------------------------------------------ */
+  /* Таблица размеров                                                    */
+  /* ------------------------------------------------------------------ */
+
+  /* Ссылка под размерами — подписью в тон к «Size: 36 IT», а не кнопкой. */
+  .ie-pdp__guide-link {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--ie-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .ie-pdp__guide-link:hover {
+    color: var(--ie-muted);
+  }
+
+  /*
+   * Шторка во всю высоту у правого края. Поля и размеры у <dialog> свои —
+   * снимаем, как и у просмотра фотографий; закрытый диалог прячем совсем.
+   */
+  .ie-pdp__guide {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(32rem, 100%);
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: var(--ie-ink);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ie-pdp__guide:not([open]) {
+    display: none;
+  }
+
+  .ie-pdp__guide[open] {
+    animation: ie-guide-in 0.3s ease;
+  }
+
+  .ie-pdp__guide::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  @keyframes ie-guide-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ie-pdp__guide[open] {
+      animation: none;
+    }
+  }
+
+  /*
+   * Содержимое во всю высоту шторки: клик по пустому месту под таблицей
+   * должен попадать в него, а не в сам диалог — клик по диалогу скрипт
+   * считает кликом по затемнению и закрывает шторку.
+   */
+  .ie-pdp__guide-inner {
+    min-height: 100%;
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .ie-pdp__guide-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .ie-pdp__guide-title {
+    margin: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ie-ink);
+  }
+
+  /* 44px по высоте — минимальная цель нажатия, как у остальных кнопок. */
+  .ie-pdp__guide-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--ie-sans);
+    font-size: 0.875rem;
+    color: var(--ie-ink);
+    cursor: pointer;
+  }
+
+  .ie-pdp__guide-close svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .ie-pdp__guide-intro {
+    margin-bottom: 2rem;
+    font-family: var(--ie-sans);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  .ie-pdp__guide-intro p {
+    margin: 0 0 0.75em;
+  }
+
+  .ie-pdp__guide-brand {
+    margin: 0 0 0.875rem;
+    font-family: var(--ie-sans);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ie-muted);
+  }
+
+  .ie-pdp__guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--ie-sans);
+    font-size: 0.875rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ie-pdp__guide-table th,
+  .ie-pdp__guide-table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--ie-line);
+  }
+
+  .ie-pdp__guide-table th {
+    font-weight: 600;
+    background: #f2f2f2;
+  }
+
+  /* Строка размера, выбранного на странице. */
+  .ie-pdp__guide-table tr[data-current] td {
+    background: var(--ie-cream);
+    font-weight: 600;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -1395,6 +1684,19 @@
     { "type": "text", "id": "button_label", "label": "Надпись на кнопке", "info": "Пусто — берётся из переводов темы." },
     { "type": "checkbox", "id": "show_sku", "label": "Показывать артикул", "default": true },
     { "type": "text", "id": "sku_label", "label": "Подпись артикула", "default": "Ref." },
+    { "type": "header", "content": "Таблица размеров" },
+    { "type": "checkbox", "id": "guide_enable", "label": "Показывать таблицу размеров", "default": true },
+    { "type": "text", "id": "guide_label", "label": "Ссылка под размерами", "default": "Size guide" },
+    { "type": "text", "id": "guide_title", "label": "Заголовок шторки", "default": "Size guide" },
+    { "type": "text", "id": "guide_close_label", "label": "Надпись «закрыть»", "default": "Close" },
+    { "type": "richtext", "id": "guide_intro", "label": "Текст над таблицей", "default": "<p>Our size chart is based on standard international conversion tables and will help you find the right size. It is a general guideline: the actual fit may vary by brand and style. If you need help choosing a size, please contact our customer service.</p>" },
+    { "type": "paragraph", "content": "Таблицы ниже: строка на размер, ячейки через «|», первая строка — заголовок. Какую показать, решают теги товара (Shoes / Jeans Denim - Clothing / Clothing и Women / Men). Пустая таблица — ссылка не показывается." },
+    { "type": "textarea", "id": "guide_shoes_women", "label": "Обувь — женская", "default": "IT/EU | US | UK | JP\n35 | 5 | 2 | 22\n35.5 | 5.5 | 2.5 | 22.5\n36 | 6 | 3 | 23\n36.5 | 6.5 | 3.5 | 23.5\n37 | 7 | 4 | 24\n37.5 | 7.5 | 4.5 | 24.5\n38 | 8 | 5 | 25\n38.5 | 8.5 | 5.5 | 25.5\n39 | 9 | 6 | 26\n39.5 | 9.5 | 6.5 | 26.5\n40 | 10 | 7 | 27\n40.5 | 10.5 | 7.5 | 27.5\n41 | 11 | 8 | 28\n42 | 12 | 9 | 29" },
+    { "type": "textarea", "id": "guide_shoes_men", "label": "Обувь — мужская", "default": "IT/EU | US | UK | JP\n38 | 5 | 4 | 25\n39 | 6 | 5 | 26\n40 | 7 | 6 | 26.5\n41 | 8 | 7 | 27\n42 | 9 | 8 | 27.5\n43 | 10 | 9 | 28.5\n44 | 11 | 10 | 29\n45 | 12 | 11 | 29.5\n46 | 13 | 12 | 30.5\n47 | 14 | 13 | 31" },
+    { "type": "textarea", "id": "guide_clothing_women", "label": "Одежда — женская", "default": "INT | IT | FR | UK | US | DE\nXXS | 36 | 32 | 4 | 0 | 30\nXS | 38 | 34 | 6 | 2 | 32\nS | 40 | 36 | 8 | 4 | 34\nM | 42 | 38 | 10 | 6 | 36\nL | 44 | 40 | 12 | 8 | 38\nXL | 46 | 42 | 14 | 10 | 40\nXXL | 48 | 44 | 16 | 12 | 42\n3XL | 50 | 46 | 18 | 14 | 44" },
+    { "type": "textarea", "id": "guide_clothing_men", "label": "Одежда — мужская", "default": "INT | IT/EU | US/UK\nXXS | 42 | 32\nXS | 44 | 34\nS | 46 | 36\nM | 48 | 38\nL | 50 | 40\nXL | 52 | 42\nXXL | 54 | 44\n3XL | 56 | 46\n4XL | 58 | 48" },
+    { "type": "textarea", "id": "guide_jeans_women", "label": "Джинсы — женские", "default": "W | Waist cm | INT | IT\n23 | 58 | XXS | 36\n24 | 61 | XS | 38\n25 | 64 | XS | 38\n26 | 66 | S | 40\n27 | 69 | S | 40\n28 | 71 | M | 42\n29 | 74 | M | 42\n30 | 76 | L | 44\n31 | 79 | L | 44\n32 | 81 | XL | 46" },
+    { "type": "textarea", "id": "guide_jeans_men", "label": "Джинсы — мужские", "default": "W | Waist cm | INT | IT\n28 | 71 | XS | 44\n29 | 74 | S | 45\n30 | 76 | S | 46\n31 | 79 | M | 47\n32 | 81 | M | 48\n33 | 84 | L | 49\n34 | 86 | L | 50\n36 | 91 | XL | 52\n38 | 97 | XXL | 54" },
     { "type": "header", "content": "Название" },
     { "type": "font_picker", "id": "title_font", "label": "Шрифт", "default": "source_sans_pro_n4" },
     { "type": "range", "id": "title_size", "label": "Кегль", "min": 11, "max": 48, "step": 1, "unit": "px", "default": 13 },

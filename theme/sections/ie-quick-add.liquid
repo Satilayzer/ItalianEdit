@@ -192,27 +192,33 @@
       </div>
     </div>
 
+    {%- comment -%}
+      Скидку меньше порога (snippets/ie-discount-percent) не показываем:
+      тогда нет ни процента, ни зачёркнутой цены.
+    {%- endcomment -%}
+    {%- capture discount_percent -%}
+      {%- render 'ie-discount-percent', compare_at: variant.compare_at_price, price: variant.price -%}
+    {%- endcapture -%}
+    {%- assign discount_percent = discount_percent | strip -%}
     <p class="ie-qa__price">
       <span data-ie-qa-price>{{ variant.price | money }}</span>
       <s
         class="ie-qa__price-compare"
         data-ie-qa-compare
-        {% unless variant.compare_at_price > variant.price %}
+        {% if discount_percent == blank %}
           hidden
-        {% endunless %}
+        {% endif %}
       >
-        {%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}
+        {%- if discount_percent != blank -%}{{ variant.compare_at_price | money }}{%- endif -%}
       </s>
       <span
         class="ie-qa__discount"
         data-ie-qa-discount
-        {% unless variant.compare_at_price > variant.price %}
+        {% if discount_percent == blank %}
           hidden
-        {% endunless %}
+        {% endif %}
       >
-        {%- if variant.compare_at_price > variant.price -%}
-          −{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}%
-        {%- endif -%}
+        {%- if discount_percent != blank -%}−{{ discount_percent }}%{%- endif -%}
       </span>
     </p>
 
@@ -373,9 +379,13 @@
           "available": {{ v.available }},
           "price": {{ v.price | money | strip_html | json }},
           "sku": {{ v.sku | json }},
-          {%- if v.compare_at_price > v.price -%}
+          {%- capture v_discount -%}
+            {%- render 'ie-discount-percent', compare_at: v.compare_at_price, price: v.price -%}
+          {%- endcapture -%}
+          {%- assign v_discount = v_discount | strip -%}
+          {%- if v_discount != blank -%}
             "compare_at": {{ v.compare_at_price | money | strip_html | json }},
-            "discount": {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round | prepend: '−' | append: '%' | json }},
+            "discount": {{ v_discount | prepend: '−' | append: '%' | json }},
           {%- else -%}
             "compare_at": null,
             "discount": null,

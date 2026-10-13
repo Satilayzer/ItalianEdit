@@ -1,0 +1,26 @@
+{%- doc -%}
+  Размер скидки в процентах — или пусто, если скидку показывать не надо.
+
+  Скидку меньше 5% не показываем вовсе: ни процент, ни зачёркнутую цену.
+  Порог один на весь сайт — карточки (snippets/price.liquid), страница
+  товара, быстрый просмотр и корзина берут его отсюда.
+
+  Цены — числа в центах, до money-фильтров. Сравниваем уже округлённый
+  процент, тот, что видит покупатель: 4,6% выйдет как «−5%» и покажется.
+
+  Вызов: {% capture pct %}{% render 'ie-discount-percent', compare_at: …, price: … %}{% endcapture %}
+  и дальше {% if pct != blank %}.
+
+  @param {number} compare_at - Цена до скидки, в центах
+  @param {number} price - Цена со скидкой, в центах
+{%- enddoc -%}
+
+{%- liquid
+  assign min_percent = 5
+  if compare_at > price
+    assign percent = compare_at | minus: price | times: 100.0 | divided_by: compare_at | round
+    if percent >= min_percent
+      echo percent
+    endif
+  endif
+-%}

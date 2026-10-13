@@ -249,21 +249,25 @@
                       endif
                     endif
 
-                    assign line_discount = 0
-                    if line_compare > line_price
-                      assign line_discount = line_compare | minus: line_price | times: 100.0 | divided_by: line_compare | round
-                    endif
                   -%}
+                  {%- comment -%}
+                    Скидку меньше порога (snippets/ie-discount-percent) не
+                    показываем: тогда нет ни процента, ни зачёркнутой цены.
+                  {%- endcomment -%}
+                  {%- capture line_discount -%}
+                    {%- render 'ie-discount-percent', compare_at: line_compare, price: line_price -%}
+                  {%- endcapture -%}
+                  {%- assign line_discount = line_discount | strip -%}
                   <p class="cart-items__price-row">
                     <span class="visually-hidden">
-                      {%- if line_compare > line_price -%}
+                      {%- if line_discount != blank -%}
                         {{ 'content.price_sale' | t }}
                       {%- else -%}
                         {{ 'content.price' | t }}
                       {%- endif -%}
                     </span>
                     <span class="cart-items__price-current">{{ line_price | money }}</span>
-                    {%- if line_compare > line_price -%}
+                    {%- if line_discount != blank -%}
                       <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
                       <s class="cart-items__price-compare">{{ line_compare | money }}</s>
                       <span class="cart-items__discount">&#8722;{{ line_discount }}%</span>
