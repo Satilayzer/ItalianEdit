@@ -15,6 +15,7 @@ import { facetStoreProducts } from "./shopify/facetStoreProducts";
 import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 import { syncTdf, TDF_API_VERSION } from "./tdf/sync";
+import { forwardTdfOrders } from "./tdf/orders";
 
 const config = loadConfig();
 const shopifyClient = config.shopify ? new ShopifyClient(config.shopify) : undefined;
@@ -288,6 +289,29 @@ if (config.shopify && process.env.TDF_SYNC_ENABLED === "true") {
       if (stats.errors.length > 0) {
         throw new Error(
           `TheDoubleF: ошибок ${stats.errors.length}, например: ${stats.errors[0]}`
+        );
+      }
+    },
+  });
+}
+
+// Заказы TheDoubleF: оплаченный заказ с их товарами → B2B-заказ у поставщика
+// через его Admin API. Опрос вместо вебхука: состояние в самом заказе Shopify,
+// простой сервера ничего не теряет. Включается реквизитами TDF_ORDERS_* .
+if (config.shopify && config.tdfOrders) {
+  const { shop, token, ...settings } = config.tdfOrders;
+  const ours = new ShopifyClient({ ...config.shopify, apiVersion: TDF_API_VERSION });
+  const tdf = new ShopifyClient({ shop, adminToken: token, apiVersion: TDF_API_VERSION });
+  console.log(`Заказы TheDoubleF: режим ${settings.mode}, заказы с ${settings.since}`);
+  jobs.push({
+    name: "tdf-orders",
+    intervalMs: 5 * 60_000,
+    run: async () => {
+      const stats = await forwardTdfOrders({ ours, tdf, settings, alert });
+      if (stats.sent > 0 || stats.dryRun > 0 || stats.failed > 0) {
+        console.log(
+          `tdf-orders: просмотрено ${stats.scanned}, оформлено ${stats.sent}, ` +
+            `пробных ${stats.dryRun}, ошибок ${stats.failed}`
         );
       }
     },

@@ -1,4 +1,5 @@
 import "dotenv/config";
+import type { TdfOrderSettings } from "./tdf/orders";
 
 export interface BgConfig {
   baseUrl: string;
@@ -21,6 +22,12 @@ export interface ShopifyEnvConfig {
  *  - "api" — тариф REST API/CSV: импорт/синк/заказы делает наш сервер через API BG.
  */
 export type ImportMode = "app" | "api";
+
+/** Заказы TheDoubleF по API: доступ к магазину поставщика + реквизиты нашей B2B-компании. */
+export interface TdfOrdersConfig extends TdfOrderSettings {
+  shop: string;
+  token: string;
+}
 
 export interface Config {
   botToken: string;
@@ -45,6 +52,8 @@ export interface Config {
    * Токен обязателен в любом случае — он часть контракта конфига.
    */
   botEnabled: boolean;
+  /** Не задан — заказы TheDoubleF оформляются вручную. */
+  tdfOrders?: TdfOrdersConfig;
 }
 
 export function loadConfig(): Config {
@@ -82,6 +91,7 @@ export function loadConfig(): Config {
       : undefined;
 
   return {
+    tdfOrders: loadTdfOrders(),
     botToken,
     serperApiKey: process.env.SERPER_API_KEY || undefined,
     defaultCurrency: process.env.DEFAULT_CURRENCY || "EUR",
@@ -95,5 +105,35 @@ export function loadConfig(): Config {
     pushBatch: Number(process.env.SHOPIFY_PUSH_BATCH ?? 25),
     importMode: process.env.IMPORT_MODE === "api" ? "api" : "app",
     botEnabled: process.env.BOT_ENABLED !== "false",
+  };
+}
+
+/**
+ * Включается, когда поставщик выдал токен и ID компании/локации/контакта.
+ * Режим по умолчанию — dry-run: только расчёт доставки, у поставщика ничего
+ * не создаётся. Боевой режим (TDF_ORDERS_MODE=live) — осознанное решение.
+ */
+function loadTdfOrders(): TdfOrdersConfig | undefined {
+  const token = process.env.TDF_ORDERS_TOKEN;
+  const companyId = process.env.TDF_COMPANY_ID;
+  const companyLocationId = process.env.TDF_COMPANY_LOCATION_ID;
+  const companyContactId = process.env.TDF_COMPANY_CONTACT_ID;
+  if (!token || !companyId || !companyLocationId || !companyContactId) return undefined;
+  const since = process.env.TDF_ORDERS_SINCE;
+  if (!since || Number.isNaN(Date.parse(since))) {
+    // Без границы первый проход подхватил бы заказы, уже оформленные вручную.
+    throw new Error("TDF_ORDERS_SINCE не задан или не дата (напр. 2026-10-15T00:00:00Z)");
+  }
+  const gid = (kind: string, v: string) => (v.startsWith("gid://") ? v : `gid://shopify/${kind}/${v}`);
+  return {
+    shop: process.env.TDF_ORDERS_SHOP || "vip-tdf.myshopify.com",
+    token,
+    mode: process.env.TDF_ORDERS_MODE === "live" ? "live" : "dry-run",
+    companyId: gid("Company", companyId),
+    companyLocationId: gid("CompanyLocation", companyLocationId),
+    companyContactId: gid("CompanyContact", companyContactId),
+    paymentMethod: process.env.TDF_PAYMENT_METHOD === "Bank Deposit" ? "Bank Deposit" : "Bank Transfer",
+    since,
+    fallbackPhone: process.env.TDF_FALLBACK_PHONE || undefined,
   };
 }
