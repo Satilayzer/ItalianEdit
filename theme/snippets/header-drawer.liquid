@@ -479,7 +479,7 @@
                                       >
                                         <a
                                           id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                                          href="{{ grandchildlink.url }}"
+                                          href="{% render 'ie-menu-link-url', link: grandchildlink, group: childlink, root: link %}"
                                           class="menu-drawer__menu-item menu-drawer__menu-item--child focus-inset{% if grandchildlink.current %} menu-drawer__menu-item--active{% endif %}"
                                           {% if grandchildlink.current %}
                                             aria-current="page"
