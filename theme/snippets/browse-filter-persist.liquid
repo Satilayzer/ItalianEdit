@@ -1,0 +1,63 @@
+{% doc %}
+  Перенос выбранного фильтра (пол) между страницами.
+
+  Фильтрует сервер через /collections/<handle>/<tag>, но ссылки меню ведут
+  на чистые коллекции без тегов. Чтобы выбор не слетал при переходе,
+  докладываем активный тег в href при клике.
+
+  Страница бренда (/collections/vendors?q=…) тег в пути не принимает (404),
+  туда переносим выбор query-параметром фильтра из data-param.
+
+  Активный тег берём из data-current-tag самого фильтра — так persist не знает
+  про формат тега (raw Women или warehouse:eu), просто переносит готовую строку.
+{% enddoc %}
+
+<script>
+  (function () {
+    // /collections/<handle> — ровно два сегмента: уже отфильтрованные
+    // и параметризованные ссылки не трогаем.
+    var PLAIN = /^\/collections\/[^/?#]+$/;
+    // Бренд без других параметров: ссылки с уже выставленным полом не трогаем.
+    var VENDOR = /^\/collections\/vendors\?q=[^&#]*$/;
+
+    function activeTags() {
+      var tags = [];
+      document.querySelectorAll('browse-filter').forEach(function (bf) {
+        var tag = bf.getAttribute('data-current-tag');
+        if (tag) tags.push(tag);
+      });
+      return tags;
+    }
+
+    function activeParams() {
+      var params = [];
+      document.querySelectorAll('browse-filter').forEach(function (bf) {
+        var param = bf.getAttribute('data-param');
+        var value = bf.getAttribute('data-current');
+        if (param && value) params.push(param + '=' + encodeURIComponent(value));
+      });
+      return params;
+    }
+
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest) return;
+      if (event.target.closest('browse-filter')) return;
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+      var link = event.target.closest('a[href^="/collections/"]');
+      if (!link) return;
+      var href = link.getAttribute('href');
+
+      if (VENDOR.test(href)) {
+        var params = activeParams();
+        if (params.length) link.setAttribute('href', href + '&' + params.join('&'));
+        return;
+      }
+      if (!PLAIN.test(href)) return;
+
+      var tags = activeTags();
+      if (tags.length) link.setAttribute('href', href + '/' + tags.join('+'));
+    });
+  })();
+</script>

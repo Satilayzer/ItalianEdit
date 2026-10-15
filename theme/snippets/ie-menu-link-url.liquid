@@ -1,0 +1,26 @@
+{% doc %}
+  Адрес пункта меню третьего уровня.
+
+  В меню Designers бренды разложены по столбцам Women и Men, но ссылка
+  у бренда одна и та же — /collections/vendors?q=<бренд>. Для бренда из
+  такого столбца сразу ставим боковой фильтр GENDER (метаполе
+  italian_edit.gender): покупатель видит его отмеченным и может переключить
+  на другой пол или снять — это обычный фильтр, а не тег в пути.
+
+  Тег в пути (/collections/vendors/Women) на странице бренда даёт 404,
+  поэтому здесь только query-параметр.
+
+  @param {object} link - сам пункт (бренд)
+  @param {object} group - столбец над ним (Women / Men / ...)
+  @param {object} root - пункт первого уровня (Designers)
+{% enddoc %}
+
+{%- liquid
+  assign url = link.url
+  if root.handle == 'designers' and url contains '/collections/vendors?'
+    if group.title == 'Women' or group.title == 'Men'
+      assign url = url | append: '&filter.p.m.italian_edit.gender=' | append: group.title
+    endif
+  endif
+  echo url
+-%}

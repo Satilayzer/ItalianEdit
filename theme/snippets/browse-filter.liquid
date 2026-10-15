@@ -1,0 +1,122 @@
+{% doc %}
+  Один фильтр-переключатель в шапке.
+
+  @param {string} name - имя фильтра (для data-атрибута и persist)
+  @param {string} label - подпись слева
+  @param {string} options - варианты 'value:Title,...' (value = сам тег, если raw)
+  @param {string} current - выбранное значение ('' — все)
+  @param {string} base - адрес коллекции без тегов
+  @param {boolean} raw - если true, тег = value без префикса name:.
+                         Нужно для тегов приложения BrandsGateway (Women/Men).
+  @param {string} [param] - query-параметр фильтра для адресов с «?»
+                            (например filter.p.m.italian_edit.gender).
+
+  Ссылка = {base}/{tag}. У страницы бренда base уже с query
+  (/collections/vendors?q=Versace), и тег в пути там даёт 404 — тогда
+  ссылка = {base}&{param}={value}, обычный фильтр витрины. data-current-tag отдаёт активный тег наружу — его читает
+  browse-filter-persist, чтобы дотащить выбор при переходе по меню.
+{% enddoc %}
+
+{%- liquid
+  assign option_list = options | split: ','
+
+  assign current_tag = ''
+  if current != blank
+    if raw
+      assign current_tag = current
+    else
+      assign current_tag = name | append: ':' | append: current
+    endif
+  endif
+-%}
+
+<browse-filter
+  class='browse-filter'
+  data-browse-filter='{{ name }}'
+  data-current='{{ current }}'
+  data-current-tag='{{ current_tag }}'
+  data-param='{{ param }}'
+>
+  <span class='browse-filter__label'>{{ label }}</span>
+  <a
+    href='{{ base }}'
+    class='browse-filter__option{% if current == blank %} is-active{% endif %}'
+    data-filter-value=''
+  >All</a>
+  {%- for option in option_list -%}
+    {%- liquid
+      assign parts = option | split: ':'
+      assign value = parts[0]
+      assign title = parts[1]
+      if raw
+        assign tag = value
+      else
+        assign tag = name | append: ':' | append: value
+      endif
+
+      if base contains '?'
+        if param != blank
+          assign href = base | append: '&' | append: param | append: '=' | append: value
+        else
+          assign href = base | append: '&constraint=' | append: tag
+        endif
+      else
+        assign href = base | append: '/' | append: tag
+      endif
+    -%}
+    <a
+      href='{{ href }}'
+      class='browse-filter__option{% if current == value %} is-active{% endif %}'
+      data-filter-value='{{ value }}'
+    >{{ title }}</a>
+  {%- endfor -%}
+</browse-filter>
+
+{% stylesheet %}
+  .browse-filter {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .browse-filter__label {
+    opacity: 0.55;
+    margin-inline-end: var(--gap-2xs, 4px);
+  }
+
+  .browse-filter__option {
+    padding: 2px 6px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+  }
+
+  .browse-filter__option:hover {
+    border-color: currentColor;
+  }
+
+  .browse-filter__option.is-active {
+    border-color: currentColor;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .browse-filter__label {
+      display: none;
+    }
+
+    .browse-filter {
+      font-size: 0.6875rem;
+      gap: 2px;
+    }
+
+    .browse-filter__option {
+      padding: 2px 4px;
+    }
+  }
+{% endstylesheet %}

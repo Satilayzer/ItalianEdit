@@ -1,0 +1,81 @@
+{% doc %}
+  Средний ряд шапки: переключатель каталога.
+    • Shop — пол: Women / Men
+
+  Фильтрует по «сырым» тегам приложения BrandsGateway (Women / Men — без
+  префикса), маршрут Shopify /collections/<handle>/<tag>.
+
+  На странице бренда (/collections/vendors?q=…) тег в путь не встаёт,
+  там пол — боковой фильтр по метаполю italian_edit.gender. Его же читаем
+  как текущий выбор, если отмечено ровно одно значение.
+
+  Переключателя «Ships from» (склад EU / US) здесь больше нет. Сами теги
+  EU/US на товарах остаются — на них держатся коллекции «Ships from
+  Europe/USA», и их по-прежнему проставляет фоновая задача tagStoreProducts.
+{% enddoc %}
+
+{%- liquid
+  assign gender = ''
+  for tag in current_tags
+    if tag == 'Women'
+      assign gender = 'Women'
+    elsif tag == 'Men'
+      assign gender = 'Men'
+    endif
+  endfor
+
+  if gender == blank and collection
+    for filter in collection.filters
+      if filter.param_name == 'filter.p.m.italian_edit.gender' and filter.active_values.size == 1
+        assign value = filter.active_values.first.value
+        if value == 'Women' or value == 'Men'
+          assign gender = value
+        endif
+      endif
+    endfor
+  endif
+
+  assign base = collection.url
+  if base == blank
+    assign base = routes.all_products_collection_url
+  endif
+-%}
+
+<div class='header-switchers'>
+  <div class='header-switchers__side header-switchers__side--start'>
+    {% render 'browse-filter',
+      name: 'gender',
+      label: 'Shop',
+      options: 'Women:Women,Men:Men',
+      current: gender,
+      base: base,
+      raw: true,
+      param: 'filter.p.m.italian_edit.gender'
+    %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .header-switchers {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--gap-md, 16px);
+    min-height: 32px;
+    padding-block: var(--padding-2xs, 4px);
+  }
+
+  .header-switchers__side {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm, 12px);
+    min-width: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .header-switchers {
+      gap: var(--gap-sm, 12px);
+    }
+  }
+{% endstylesheet %}
