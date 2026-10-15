@@ -135,5 +135,6 @@ function loadTdfOrders(): TdfOrdersConfig | undefined {
     paymentMethod: process.env.TDF_PAYMENT_METHOD === "Bank Deposit" ? "Bank Deposit" : "Bank Transfer",
     since,
     fallbackPhone: process.env.TDF_FALLBACK_PHONE || undefined,
+    email: process.env.TDF_ORDER_EMAIL || undefined,
   };
 }

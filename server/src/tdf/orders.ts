@@ -40,6 +40,11 @@ export interface TdfOrderSettings {
   since: string;
   /** Телефон на случай, если покупатель его не оставил (поставщик требует). */
   fallbackPhone?: string;
+  /**
+   * Email заказа у поставщика — наш, не покупателя: письма поставщика (счёт,
+   * подтверждение с закупочной ценой) покупателю видеть незачем.
+   */
+  email?: string;
 }
 
 export const TAG_SENT = "tdf-order-sent";
@@ -159,7 +164,7 @@ const TAGS_REMOVE = /* GraphQL */ `
 
 // ── Магазин поставщика (запросы — как в его документации) ─────────────────
 
-const DRAFT_CALCULATE = /* GraphQL */ `
+export const DRAFT_CALCULATE = /* GraphQL */ `
   mutation CalculateDraftOrder($input: DraftOrderInput!) {
     draftOrderCalculate(input: $input) {
       calculatedDraftOrder {
@@ -170,7 +175,7 @@ const DRAFT_CALCULATE = /* GraphQL */ `
   }
 `;
 
-const DRAFT_CREATE = /* GraphQL */ `
+export const DRAFT_CREATE = /* GraphQL */ `
   mutation draftOrderCreate($input: DraftOrderInput!) {
     draftOrderCreate(input: $input) {
       draftOrder { id name totalPrice }
@@ -179,7 +184,7 @@ const DRAFT_CREATE = /* GraphQL */ `
   }
 `;
 
-const DRAFT_COMPLETE = /* GraphQL */ `
+export const DRAFT_COMPLETE = /* GraphQL */ `
   mutation draftOrderComplete($id: ID!) {
     draftOrderComplete(id: $id) {
       draftOrder { id status }
@@ -195,12 +200,12 @@ const DRAFT_ORDER_LOOKUP = /* GraphQL */ `
   }
 `;
 
-interface UserError {
+export interface UserError {
   field?: string[] | null;
   message: string;
 }
 
-interface ShippingRate {
+export interface ShippingRate {
   handle: string;
   title: string;
   price: { amount: string; currencyCode: string };
@@ -311,6 +316,7 @@ export function buildDraftInput(
       },
       shippingAddress: address,
       billingAddress: address,
+      ...(settings.email ? { email: settings.email } : {}),
       customAttributes: [{ key: "payment_method", value: settings.paymentMethod }],
       tags: ["GRAPHQL"],
     },
@@ -358,7 +364,7 @@ export interface TdfOrderDeps {
   supplierIds?: () => Promise<SupplierIds>;
 }
 
-function userErrorText(errors: UserError[]): string {
+export function userErrorText(errors: UserError[]): string {
   return errors.map((e) => (e.field?.length ? `${e.field.join(".")}: ${e.message}` : e.message)).join("; ");
 }
 

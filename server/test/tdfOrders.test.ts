@@ -86,6 +86,12 @@ describe("buildDraftInput", () => {
     expect(input.billingAddress).toEqual(input.shippingAddress);
   });
 
+  it("email заказа — наш из настроек, не покупателя", () => {
+    expect((buildDraftInput(makeOrder(), settings).input as any).email).toBeUndefined();
+    const b = buildDraftInput(makeOrder(), { ...settings, email: "hello@italian-edit.com" });
+    expect((b.input as any).email).toBe("hello@italian-edit.com");
+  });
+
   it("заказ без TheDoubleF — пусто, без проблемы", () => {
     const order = makeOrder();
     order.lineItems.nodes = order.lineItems.nodes.slice(1);
