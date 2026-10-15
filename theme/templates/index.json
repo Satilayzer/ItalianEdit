@@ -86,52 +86,118 @@
     "designer_carousel": {
       "type": "designer-carousel",
       "blocks": {
-        "slide_V4VnLP": {
+        "slide_brunello": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/gch.png",
+            "image": "shopify://shop_images/ie-rec-brunello-cucinelli.png",
             "collection": "",
             "tag": "",
-            "name": "",
-            "link": ""
+            "name": "Brunello Cucinelli",
+            "link": "/collections/vendors?q=Brunello%20Cucinelli"
           }
         },
-        "slide_JQQdkT": {
+        "slide_dg": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/mm.png",
+            "image": "shopify://shop_images/ie-rec-dolce-gabbana.png",
             "collection": "",
             "tag": "",
-            "name": "",
-            "link": ""
+            "name": "Dolce & Gabbana",
+            "link": "/collections/vendors?q=Dolce%20%26%20Gabbana"
           }
         },
-        "slide_L8Gjmf": {
+        "slide_louboutin": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/m.png",
-            "collection": "miu-miu",
-            "tag": "",
-            "name": "",
-            "link": ""
-          }
-        },
-        "slide_cm8fjC": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/image_111.png",
+            "image": "shopify://shop_images/ie-rec-christian-louboutin.png",
             "collection": "",
             "tag": "",
-            "name": "",
-            "link": ""
+            "name": "Christian Louboutin",
+            "link": "/collections/vendors?q=Christian%20Louboutin"
+          }
+        },
+        "slide_givenchy": {
+          "type": "slide",
+          "settings": {
+            "image": "",
+            "collection": "",
+            "tag": "",
+            "name": "Givenchy",
+            "link": "/collections/vendors?q=Givenchy"
+          }
+        },
+        "slide_jimmychoo": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ie-rec-jimmy-choo.png",
+            "collection": "",
+            "tag": "",
+            "name": "Jimmy Choo",
+            "link": "/collections/vendors?q=Jimmy%20Choo"
+          }
+        },
+        "slide_tomford": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ie-rec-tom-ford.png",
+            "collection": "",
+            "tag": "",
+            "name": "Tom Ford",
+            "link": "/collections/vendors?q=Tom%20Ford"
+          }
+        },
+        "slide_valentino": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ie-rec-valentino.png",
+            "collection": "",
+            "tag": "",
+            "name": "Valentino",
+            "link": "/collections/vendors?q=Valentino"
+          }
+        },
+        "slide_vgaravani": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ie-rec-valentino.png",
+            "collection": "",
+            "tag": "",
+            "name": "Valentino Garavani",
+            "link": "/collections/vendors?q=Valentino%20Garavani"
+          }
+        },
+        "slide_versace": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ie-rec-versace.png",
+            "collection": "",
+            "tag": "",
+            "name": "Versace",
+            "link": "/collections/vendors?q=Versace"
+          }
+        },
+        "slide_vbeckham": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ie-rec-victoria-beckham.png",
+            "collection": "",
+            "tag": "",
+            "name": "Victoria Beckham",
+            "link": "/collections/vendors?q=Victoria%20Beckham"
           }
         }
       },
       "block_order": [
-        "slide_V4VnLP",
-        "slide_JQQdkT",
-        "slide_L8Gjmf",
-        "slide_cm8fjC"
+        "slide_brunello",
+        "slide_dg",
+        "slide_louboutin",
+        "slide_givenchy",
+        "slide_jimmychoo",
+        "slide_tomford",
+        "slide_valentino",
+        "slide_vgaravani",
+        "slide_versace",
+        "slide_vbeckham"
       ],
       "settings": {
         "heading": "Recommended Designers",
