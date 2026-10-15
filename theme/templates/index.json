@@ -153,17 +153,7 @@
             "collection": "",
             "tag": "",
             "name": "Valentino",
-            "link": "/collections/vendors?q=Valentino"
-          }
-        },
-        "slide_vgaravani": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/ie-rec-valentino.png",
-            "collection": "",
-            "tag": "",
-            "name": "Valentino Garavani",
-            "link": "/collections/vendors?q=Valentino%20Garavani"
+            "link": "/collections/all?filter.p.vendor=Valentino&filter.p.vendor=Valentino%20Garavani"
           }
         },
         "slide_versace": {
@@ -195,7 +185,6 @@
         "slide_jimmychoo",
         "slide_tomford",
         "slide_valentino",
-        "slide_vgaravani",
         "slide_versace",
         "slide_vbeckham"
       ],
