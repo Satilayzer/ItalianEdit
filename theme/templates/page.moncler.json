@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Down jackets for workers, then for mountaineers",
+            "text": "<p>In 1954, the company made its first down jackets for its own workers. The same year, the gear found its way onto one of the most famous expeditions of the era: the Italian expedition to K2, whose members Achille Compagnoni and Lino Lacedelli reached the summit. Moncler's own history adds that the climber Lionel Terray praised the coats' performance, which led to a specialist line named \"Moncler pour Lionel Terray.\" In 1955, a French expedition to Makalu, at 8,470 meters, used Moncler jackets as well.</p><p>By 1964, Moncler was the official outfitter for Terray's expeditions to Alaska, and it had developed a lighter, more streamlined double-duvet jacket that the brand describes as the precursor of the modern iconic jacket.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-moncler-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-moncler-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-moncler-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The Olympics and the rooster",
+            "text": "<p>The next break came in 1968, at the Grenoble Winter Olympics, where Moncler became the official supplier of the French national downhill ski team. According to the brand, its logo changed in the same period: the old mountain emblem was replaced for good by the rooster, the symbol on every Moncler jacket since.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "From the slopes to the city",
+            "text": "<p>In the 1980s, the puffer jacket left the mountains. It became a city staple and a cult item among the Paninari, the Italian youth subculture that made certain brands a marker of belonging. In 1992 the company was acquired by the Italian group Pepper Industries, which made Moncler an Italian brand. It later passed to Finpart.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-moncler-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Remo Ruffini and the luxury reset",
+            "text": "<p>That changed in 2003, when Remo Ruffini bought the company, moved it to Milan, and set out to reposition it as a luxury label while keeping the technical heritage intact. He built a portfolio of lines that treated the down jacket as a design object. Moncler Gamme Rouge launched in 2006 as a women's collection, designed first by Alessandra Facchinetti and later by Giambattista Valli. Moncler Gamme Bleu, a men's line with Thom Browne, launched in 2009. The first Moncler boutique in Paris opened in 2007, followed by Milan in 2008 and New York in 2010, and Moncler Grenoble, a modern take on the original technical clothing, debuted in 2010.</p><p>Private equity came and went along the way. The Carlyle Group acquired a 48 percent stake in 2008, while Ruffini kept 38 percent. On 16 December 2013, Moncler listed on the Milan stock exchange at 10.20 euros per share and closed its first day up 47 percent, the most successful European IPO that year.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Genius, Stone Island, and a 70th birthday",
+            "text": "<p>In February 2018, Moncler launched Moncler Genius, a project in which outside designers create collections released month by month, and which has since grown into a platform of collaborations across art, design, music, and sport. In December 2020, the group agreed to buy Stone Island for 1.15 billion euros. The brand marked its 70th anniversary in 2022 with an event in Milan's Piazza Duomo in front of 18,000 people.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "Moncler today",
+            "text": "<p>Moncler Group's 2025 revenue was about 3.1 billion euros, up 3 percent at constant exchange rates. Moncler brand sales were 2.7 billion euros, and Stone Island contributed 411.2 million. Net profit came to 626.7 million euros.</p><p>In January 2026, the group announced that Bartolomeo Rongone, formerly CEO of Bottega Veneta, would become group CEO on 1 April, with Ruffini staying on as executive chairman. It is a notable handover for a brand that has had the same driving force behind it for more than twenty years, and one that began as a sleeping bag maker in a village in the Alps.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-moncler.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Moncler piece?",
+            "text": "<p>From classic down jackets to Genius collaborations, sourcing genuine Moncler from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Moncler Brand History: How a Mountain-Village Workshop Became the World's Most Famous Puffer Jacket",
+        "heading_visible": false,
+        "number": "006",
+        "image": "shopify://shop_images/story-moncler-hero.png",
+        "image_alt": "Moncler",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-moncler.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Moncler spent its first fifty years making gear for people who worked and climbed at altitude. It took a Milan entrepreneur to turn that practical heritage into a luxury brand worth billions.”</p>",
+        "lede": "<p>The name is a contraction. In 1952, René Ramillon and André Vincent founded a company in Monestier-de-Clermont, a mountain village near Grenoble in the French Alps, and shortened the village's name to Moncler. They started with quilted sleeping bags, tents, and a lined hooded cape for people who worked in high, cold places. Fashion was not the point.</p>",
+        "aside_image": "shopify://shop_images/story-moncler-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

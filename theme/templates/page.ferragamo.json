@@ -1,0 +1,138 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "From Boston to Hollywood Boulevard",
+            "text": "<p>Ferragamo spent a short time in a Boston shoe factory before joining his brothers in Santa Barbara, California. He studied anatomy at the University of Southern California, a detail that explains much of what came later: he wanted to understand how a foot carries weight, and he built shoes around that knowledge rather than around the look alone.</p><p>In 1923 he bought the Hollywood Boot Shop on Hollywood Boulevard. The film industry was nearby and needed footwear for period costumes and off-screen glamour alike. His customers included Mary Pickford, Lillian Gish, Rudolph Valentino, Gloria Swanson, Joan Crawford, and Clara Bow. The nickname that followed him for the rest of his life, \"Shoemaker to the Stars,\" dates from these years.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-ferragamo-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-ferragamo-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-ferragamo-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Back to Florence, a bankruptcy, and a palazzo",
+            "text": "<p>Ferragamo returned to Italy in August 1927. After being turned away in Naples, Rome, and several northern cities, he settled in Florence and opened a workshop on Via Mannelli. His idea was to combine Florentine handcraft with the production methods he had seen in America, and he incorporated his label that year.</p><p>It didn't go smoothly. The company went bankrupt in 1933, attributed to poor management and the economic pressure of the Great Depression. But Ferragamo recovered quickly. In 1938 he bought Palazzo Spini Feroni, a medieval building in the center of Florence. It remains the company's headquarters and flagship store, and since 1995 it has housed the Ferragamo museum.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "When steel ran short, cork became the structure",
+            "text": "<p>Ferragamo's best-known inventions came from scarcity. In the late 1930s, steel for shoe shanks was hard to find. He used cork instead, building the wedge heel that became the foundation of the platform shoe. The Rainbow, a colorful cork platform made for Judy Garland, dates to 1938. During World War II he went on experimenting with cork, raffia, and nylon, and in 1947 he made the Invisible sandal, with a nylon upper so thin that the straps seemed to vanish.</p><p>Later clients included Marilyn Monroe and Audrey Hepburn. In 1959, a year before his death, he made red shoes for Monroe with crystal detailing, a design that Maximilian Davis's debut collection at the house referenced six decades later.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-ferragamo-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "The family business",
+            "text": "<p>Salvatore Ferragamo died in Florence on 7 August 1960, aged 62. His wife Wanda, whom he had married in 1940, took over the company and led it until her death in 2018. They had six children, and the family has controlled the company ever since. The house expanded beyond shoes into leather goods, silk, and ready-to-wear, and it introduced two signatures that outlived their era: the Vara, a low pump with a grosgrain bow, launched in 1978 and still the house's most enduring commercial shoe, and the Gancini, a hook-shaped hardware motif found on belts, bags, and buckles.</p><p>The company listed on the Milan stock exchange in 2011, with the family keeping a majority stake of roughly 65 percent. Leonardo Ferragamo, the fifth son of Salvatore and Wanda, is chairman.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "A rebrand, a loss, and a slow turnaround",
+            "text": "<p>In 2022 the company shortened its name to Ferragamo and unveiled a new logo ahead of its Milan Fashion Week show. Maximilian Davis, a young British designer who had founded his own label two years earlier, became creative director that March. His debut collection, shown in September 2022, drew on Salvatore's early years as a Hollywood shoemaker.</p><p>Business was harder. Ferragamo posted a net loss of 68 million euros in 2024, against a profit of 26 million the year before, mainly because of weaker sales in Asia. CEO Marco Gobbetti stepped down in March 2025, and Leonardo Ferragamo took on interim executive responsibilities. By the first half of 2026, there were signs of recovery: revenue of about 259 million euros, up 2.4 percent, and a net profit of 1.5 million euros, compared with an adjusted loss of 16 million a year earlier. The company said it had been without a permanent chief executive for more than a year at that point.</p><p>It is an unusual position for a house nearly a century old. It is not the first time Ferragamo has had to rebuild: the founder went bankrupt in 1933 and had bought a palazzo and invented the cork wedge within the decade.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-ferragamo.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Salvatore Ferragamo piece?",
+            "text": "<p>From the Vara pump to current-season leather goods, sourcing genuine Ferragamo from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Salvatore Ferragamo Brand History: The Shoemaker to the Stars Who Studied Anatomy to Fit a Foot",
+        "heading_visible": false,
+        "number": "008",
+        "image": "shopify://shop_images/story-ferragamo-hero.png",
+        "image_alt": "Salvatore Ferragamo",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-ferragamo.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Salvatore Ferragamo made shoes for Hollywood's silent-film stars, went bankrupt in Florence, and then turned a shortage of steel into one of fashion's most copied ideas.”</p>",
+        "lede": "<p>Plenty of luxury houses were founded by designers. Ferragamo was founded by a shoemaker who treated the foot as an engineering problem. Salvatore Ferragamo was born on 5 June 1898 in Bonito, a small town in the Campania region, the eleventh of fourteen children. He studied shoemaking in Naples for a year and, at 14, opened a small shop at his parents' home. In 1914 he left Italy for the United States.</p>",
+        "aside_image": "shopify://shop_images/story-ferragamo-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

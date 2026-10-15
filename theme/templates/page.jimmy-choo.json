@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A cobbler's son from Penang",
+            "text": "<p>Jimmy Choo was born on 15 November 1948 in Penang, Malaysia. His father was a cobbler who ran his own shop, so shoemaking was part of his life from childhood. He later moved to London and, in the late 1980s, set up a workshop in the converted Metropolitan Free Hospital in the city's East End, selling shoes to private clients and from a local market stall. In 1989, Sandra Choi, his wife's niece, joined him and soon took charge of design.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-jimmy-choo-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-jimmy-choo-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-jimmy-choo-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Princess Diana and a Vogue connection",
+            "text": "<p>In 1991, Princess Diana summoned Choo to Kensington Palace. She became a client and a friend. In September 1992, his first ready-to-wear shoes went on sale at the Gina store on Sloane Street.</p><p>Among his customers was Tamara Mellon, who worked at Vogue and often asked him to customize shoes. In 1995 she proposed something larger: a luxury ready-to-wear line built on his craftsmanship.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "1996: the company and the first store",
+            "text": "<p>Jimmy Choo Limited was founded in May 1996. Tom and Ann Yeardye invested 150,000 pounds for half of the company and the right to use the name, and Mellon became president. The first Jimmy Choo store opened that fall on Motcomb Street in London. Its first saleswoman, an 18-year-old named Hannah Colman, would later become the brand's chief executive.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-jimmy-choo-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "From a Sex and the City line to the Oscars",
+            "text": "<p>Two moments in the late 1990s moved the brand from fashion-insider favorite to household name. A Sex and the City episode that aired on 5 July 1998 mentioned Jimmy Choo, and the brand opened its first two US stores, in New York and Los Angeles, that November. In March 1999, ahead of the Academy Awards, Mellon, Sandra Choi, and a PR firm dyed loaned shoes to match the dresses worn by actresses on the red carpet. The show returned to the brand in 1999, when its lead character, Carrie Bradshaw, lost a Jimmy Choo shoe in another episode.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Choo leaves, and the owners keep changing",
+            "text": "<p>In 2001, Jimmy Choo sold his 50 percent stake for 8.8 million pounds and left the company. In late 2006 he started a separate business, Jimmy Choo Couture Limited, which makes a couture line under licence, available by appointment at his Connaught Street workshop in London. He holds an OBE.</p><p>The company he left changed hands repeatedly. Lion Capital took a majority stake in 2004, valuing the company at 101 million pounds. TowerBrook Capital Partners and Gala Capital bought it for 185 million pounds in 2007, and Labelux acquired it in 2011 for 525.5 million pounds. Tamara Mellon left that year. In October 2014, the company listed on the London Stock Exchange, valued at about 546 million pounds. In July 2017 Michael Kors Holdings, now Capri Holdings, agreed to buy it for 896 million pounds, with the deal completing on 1 November 2017.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "Under Capri, and a creative director honored",
+            "text": "<p>Today, Jimmy Choo designs in London and makes its products largely in Florence, and it sells shoes, bags, accessories, jewelry, eyewear, and fragrance through more than 200 boutiques. Hannah Colman, the brand's first saleswoman, has been CEO since late 2020. Sandra Choi, who has overseen the collections for decades, was made an Officer of the Order of the British Empire in the King's Birthday Honours in June 2026 for services to British fashion.</p><p>The numbers are mixed. In the fiscal year ending March 2026, Jimmy Choo's revenue was about 600 million dollars, down 0.8 percent as reported and 4.3 percent at constant currency, with an operating loss of 22 million dollars. Capri, which completed the sale of Versace to Prada in December 2025, now describes itself as built around two houses, Michael Kors and Jimmy Choo. It has set a long-term goal of 800 million dollars in Jimmy Choo revenue and guided to about 625 million dollars for fiscal 2027.</p><p>The man himself left the company in 2001. But the brand still carries his name, and its shoes are still designed in London by someone who joined his workshop in 1989.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-jimmy-choo.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Jimmy Choo piece?",
+            "text": "<p>From signature heels to current-season bags and accessories, sourcing genuine Jimmy Choo from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Jimmy Choo Brand History: The East London Shoemaker Whose Name Outlived His Stake",
+        "heading_visible": false,
+        "number": "002",
+        "image": "shopify://shop_images/story-jimmy-choo-hero.png",
+        "image_alt": "Jimmy Choo",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-jimmy-choo.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Jimmy Choo made shoes by hand for Princess Diana. Then, five years after founding the company that carries his name, he sold his half and walked away. The brand kept growing without him.”</p>",
+        "lede": "<p>Most fashion brands are named after a designer who stayed. Jimmy Choo is an exception. The name on the soles belongs to a man who built a reputation as a London bespoke shoemaker, lent it to a business partner's idea, and left the business in 2001. The story of how that happened is also the story of how a small workshop turned into one of the world's best-known shoe brands.</p>",
+        "aside_image": "shopify://shop_images/story-jimmy-choo-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

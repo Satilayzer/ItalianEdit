@@ -1,0 +1,138 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Colored cashmere in a black-and-gray market",
+            "text": "<p>In 1978, at 25, Cucinelli decided to go into knitwear. He had trained as a building surveyor and dropped out of engineering college, so fashion was not an obvious path. What he had was an eye for a gap. Benetton's bright sweaters were selling well, but cashmere, the most expensive fiber in the knitwear world, was still mostly sold in black and gray. He started with a family loan and a small dyeing operation, making women's cashmere jumpers in bright, modern colors.</p><p>It worked. By his own account, production reached 200,000 jumpers within eight years, helped by strong demand in Germany. The business outgrew its premises near Perugia, and Cucinelli started looking for a place to put it.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-brunello-cucinelli-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-brunello-cucinelli-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-brunello-cucinelli-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The castle in Solomeo",
+            "text": "<p>The place he chose was Solomeo, a medieval village about 15 kilometers from Perugia, home to his wife Federica. In 1985 he bought its 14th-century castle and converted the small stone rooms into a workplace. After two years of restoration, the company moved its headquarters there in 1987.</p><p>That could have been the end of the story. Instead, as profits grew, Cucinelli kept spending them on the village. He hired traditional craftsmen to restore its churches and repave its streets stone by stone. Over roughly thirty years, Solomeo gained workshops, a theater, a school of arts and crafts, and vineyards. In 2014 he announced the Project for Beauty, which turned 100 hectares of land below the village into three parks, completed around his 65th birthday in 2019.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Humanistic capitalism",
+            "text": "<p>The philosophy behind all this has a name: humanistic capitalism. Cucinelli traces it to his childhood. His father, a farm laborer turned textile worker, used to come home from the factory humiliated by how he was treated. Cucinelli has said he wanted to build a company where work felt dignified.</p><p>In practice, that means above-average salaries, which he links to the quality of his materials and to his high prices, and production kept largely in Italy. It also means an unusual planning horizon. He talks about thinking in three months, three years, and three centuries at once. He presented these ideas at a 2019 symposium called \"Soul and Economy\" in Solomeo and again in a speech at the 2021 G20 in Rome.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-brunello-cucinelli-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Going public without a roadshow",
+            "text": "<p>Cucinelli took the company to the Milan stock exchange in 2012, listing at 7.75 euros per share, a valuation of about 527 million euros. Even the IPO followed his own logic. Rather than flying to London and New York to pitch investors, he invited them to Solomeo.</p><p>The founder's family still holds control. In 2014 he moved his holding company into a trust that benefits his daughters, Camilla and Carolina, and his philanthropic work. Together with a multiple-voting-rights structure, that keeps the company's long-term direction in his hands.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "A billion-euro house that still works like a workshop",
+            "text": "<p>The numbers have grown considerably since 1978. Sales topped 1.14 billion euros in 2023, the year the company joined Italy's FTSE MIB index. In 2025 revenue reached about 1.41 billion euros, up 10.1 percent at current exchange rates and 11.5 percent at constant rates, with Asia the fastest-growing region. The Americas account for roughly 37 percent of sales, and the company has set a target of 1.8 billion euros by 2028.</p><p>The business has also reached backward into its supply chain. In 2022 it bought 43 percent of Lanificio Cariaggi, its cashmere supplier, and Chanel later took a share of that stake as well. Today the brand is often used as shorthand for what the industry calls quiet luxury: soft tailoring, subdued palettes, no visible logos. It is a long way from the bright cashmere jumpers of 1978, but the idea underneath is the same one he started with, that material and making matter more than noise.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-brunello-cucinelli.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Brunello Cucinelli piece?",
+            "text": "<p>From cashmere knitwear to soft tailoring, sourcing genuine Brunello Cucinelli from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Brunello Cucinelli Brand History: The Cashmere King Who Rebuilt a Medieval Village",
+        "heading_visible": false,
+        "number": "009",
+        "image": "shopify://shop_images/story-brunello-cucinelli-hero.png",
+        "image_alt": "Brunello Cucinelli",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-brunello-cucinelli.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Brunello Cucinelli started with a simple observation: cashmere came in black and gray. Forty-odd years later, he runs a billion-euro company from a restored hilltop village in Umbria.”</p>",
+        "lede": "<p>Most luxury houses grow out of Paris or Milan. Brunello Cucinelli grew out of a small dyeing workshop on the outskirts of Perugia, and it never really left Umbria. The founder, born in 1953 in the village of Castel Rigone, has spent his career arguing that a company can earn serious profits and still treat the people who make its products with dignity. Plenty of executives say that. Cucinelli bought a castle to prove it.</p>",
+        "aside_image": "shopify://shop_images/story-brunello-cucinelli-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

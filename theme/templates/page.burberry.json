@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "1856: a shop in Basingstoke",
+            "text": "<p>Thomas Burberry was 21, a draper's apprentice, when he opened his own shop in Basingstoke, Hampshire, in 1856. By his own company's account, he introduced gabardine in 1879, a lightweight, breathable, weatherproof cloth, and patented it in 1888. The business moved into London in 1891, opening a shop on the Haymarket in the West End under the name Thomas Burberry and Sons. In 1913 it moved to larger premises on the same street, designed by the architect Walter Cave.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-burberry-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-burberry-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-burberry-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Polar expeditions and Everest",
+            "text": "<p>Burberry gabardine proved itself in places where failure was dangerous. In 1911, Roald Amundsen's team reached the South Pole in Burberry tents and clothing. Ernest Shackleton wore it on three expeditions between 1914 and 1917, including the Endurance expedition. A gabardine jacket was also worn on George Mallory's Everest attempt in 1924. These expedition stories come from the brand's own account of its history.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "The trench coat",
+            "text": "<p>The coat that made Burberry famous has several origin dates. The company says Thomas Burberry patented a coat called the Tielocken in 1912, which it describes as the predecessor of the trench coat. Another account dates the Tielocken to 1895, when it was adopted by British officers in the Boer War. What is clear is the next step. In 1914, commissioned by the War Office, Burberry adapted its officers' coat for the trenches of the First World War, adding epaulettes and D-rings, and the trench coat was born.</p><p>The brand's other trademarks arrived in the same period. The Equestrian Knight, with the Latin word \"Prorsum,\" meaning \"forwards,\" was chosen in about 1901 and registered as a trademark in 1909. The Burberry check appeared in the 1920s as a lining for rainwear. In 1919, King George V granted the company its first Royal Warrant, as a tailor.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-burberry-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "The check, overexposed",
+            "text": "<p>In 1997, Rose Marie Bravo became chief executive of a company valued at roughly $360 to $460 million, according to one account. Under her, sales roughly doubled and the company listed on the London Stock Exchange in July 2002. She hired Christopher Bailey as creative director in 2001.</p><p>The check, however, became a problem. By the early 2000s it had become overexposed, appearing on so many products that it lost its exclusivity. Angela Ahrendts, who became CEO on 1 July 2006, worked with Bailey to remove the check from all but about 10 percent of products, took fragrance and beauty licences back in-house, and bought out the Spanish franchise, which accounted for around 20 percent of group revenue. The company's value rose from about 2 billion pounds to more than 7 billion during her tenure, and Burberry was an early luxury adopter of digital media. Its 2010 spring/summer show was the first by a luxury brand streamed live online, and in 2013 it set up an Instagram account, which the company describes as a first for a luxury brand.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "A revolving door at the top",
+            "text": "<p>Bailey became chief executive as well as chief creative officer in 2014, and Marco Gobbetti replaced him as CEO in July 2017. Riccardo Tisci was named chief creative officer in March 2018, and the equestrian knight was retired under his rebranding. Jonathan Akeroyd became CEO in April 2022, and in September of that year Daniel Lee, previously at Bottega Veneta, replaced Tisci as chief creative officer. Lee brought back the knight, now incorporating the word \"Prorsum,\" in February 2023, and showed his first collection at London Fashion Week on 20 February 2023.</p><p>In July 2024, Akeroyd left and Joshua Schulman became CEO. In November 2024, Schulman announced a restructuring plan called Burberry Forward, with an initial annual cost-cutting programme of 40 million pounds, and the company reportedly announced up to 1,700 job cuts in May 2025.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "Where Burberry stands now",
+            "text": "<p>The numbers have started to improve. For the 52 weeks ended 28 March 2026, revenue was 2.42 billion pounds, flat at constant exchange rates and down 2 percent as reported. Comparable store sales rose 2 percent after a 12 percent fall the year before. Adjusted operating profit was 160 million pounds, up from 26 million, and the company reported an operating profit of 115 million pounds, against a loss of 3 million the year before. Profit for the year was 21 million pounds, compared with a 75 million-pound loss.</p><p>The strategy, in Schulman's words, is \"disciplined execution of Burberry Forward,\" and it leans on what Burberry has always sold best. Outerwear outperformed in every region, and scarves grew at double-digit rates in the second half. Greater China and the Americas were both up 4 percent for the year. Schulman called the year \"a meaningful inflection point for Burberry.\"</p><p>After 170 years, the strategy still rests on the coat and the check that the company built its name on.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-burberry.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Burberry piece?",
+            "text": "<p>From trench coats and cashmere scarves to current-season bags and accessories, sourcing genuine Burberry from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Burberry Brand History: A Draper's Apprentice, a Waterproof Cloth, and the Trench Coat That Went to War",
+        "heading_visible": false,
+        "number": "012",
+        "image": "shopify://shop_images/story-burberry-hero.png",
+        "image_alt": "Burberry",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-burberry.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Thomas Burberry opened a shop in Basingstoke in 1856 and invented a fabric that went to the South Pole. A century and a half later, his company is still trying to get the most out of its two best-known products: a coat and a check.”</p>",
+        "lede": "<p>Burberry is a British brand with an engineer's origin story. It did not start with a designer's vision. It started with a problem: how to make clothing that kept out rain without trapping sweat. The answer, a tightly woven cotton called gabardine, shaped the brand's identity for more than a century.</p>",
+        "aside_image": "shopify://shop_images/story-burberry-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

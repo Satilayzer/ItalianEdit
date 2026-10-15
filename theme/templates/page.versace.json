@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "From a tailor's shop to a Milan studio",
+            "text": "<p>In Milan, Versace took freelance work, first designing for a label called Florentine Flowers. Later that same year he designed first collections for Callaghan, Genny, and Complice. His brother Santo joined him in the city in 1976, and the two began to build their own company.</p><p>The first Versace collection was shown at La Permanente in Milan in March 1978. The company launched that year as \"Gianni Versace Donna\" and opened its first boutique on Via della Spiga, still one of Milan's best-known fashion streets.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-versace-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-versace-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-versace-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The Medusa",
+            "text": "<p>The brand's emblem arrived in the same year. Gianni chose the head of Medusa, the figure from Greek mythology, as the logo. It was a fitting choice for a designer from the south of Italy, a region once part of Magna Graecia, the Greek-settled coast of the ancient world, and it suited a house built on bold images. A face that is at once beautiful and dangerous became shorthand for what Versace stood for: power, glamour, and a willingness to overwhelm. The logo has barely changed since 1978.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Dresses that became headlines",
+            "text": "<p>Versace's reputation was built as much on red carpets as on runways. In 1994, Elizabeth Hurley wore a black dress held together with oversized safety pins to the premiere of Four Weddings and a Funeral. It brought the brand international coverage. In 2000, Jennifer Lopez wore a green Versace dress to the Grammy Awards, and it drew extensive media attention of its own.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-versace-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "1997: Donatella steps in",
+            "text": "<p>Gianni Versace was murdered outside his Miami Beach mansion in 1997. Donatella, his sister, who had been the company's vice president, became creative director, despite having no formal training in design or business. Santo became CEO. Gianni's niece, Allegra, Donatella's daughter, inherited a 50 percent stake in the company and took control on her eighteenth birthday.</p><p>She led the creative side for nearly thirty years.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "A house that kept changing hands",
+            "text": "<p>For most of its history, Versace was family-owned. That changed in 2014, when the private equity firm Blackstone bought a 20 percent stake for 210 million euros. In 2018, Michael Kors, which renamed itself Capri Holdings, bought the company for roughly 2 billion dollars, completing the deal in December of that year.</p><p>The next sale came in 2025. In April, Prada announced it would buy Versace from Capri for 1.25 billion euros, and the deal closed on 2 December 2025 for 1.375 billion dollars. When the deal was announced, Versace accounted for about 20 percent of Capri's revenue. Prada projected that it would make up about 13 percent of its own pro-forma revenue, and described the brand as having significant untapped growth potential. Lorenzo Bertelli, Prada's marketing director and heir, became Versace's executive chairman.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "A new chapter, still being written",
+            "text": "<p>The changes at the top have been rapid. In March 2025, Donatella Versace stepped down as creative director, effective 1 April, and became Chief Brand Ambassador. Dario Vitale, previously at Miu Miu, took over as chief creative officer, but left in December 2025, only a few months into the role.</p><p>In February 2026, Prada and Versace announced that Pieter Mulier would take the job. Mulier, a Belgian-trained architect who worked with Raf Simons at Jil Sander, Dior, and Calvin Klein, had led Alaïa since 2021. He became Versace's chief creative officer on 1 July 2026. Emmanuel Gintzburger, who had been CEO since September 2022, resigned effective 23 June 2026, and Prada said at the time that a successor would be named in due course.</p><p>That is a lot of change in a short time. But Versace has already been through its founder's death, a minority sale, and two takeovers since 2014. The Medusa on the door is still the one Gianni chose in 1978.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-versace.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Versace piece?",
+            "text": "<p>From Medusa-print accessories to current-season ready-to-wear, sourcing genuine Versace from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Versace Brand History: The Medusa, the Safety Pin Dress, and a House That Kept Changing Hands",
+        "heading_visible": false,
+        "number": "004",
+        "image": "shopify://shop_images/story-versace-hero.png",
+        "image_alt": "Versace",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-versace.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Versace was built by a tailor's son from Calabria who believed fashion should be loud, glamorous, and impossible to ignore. Nearly fifty years later, it has a new owner, a new creative director, and the same question every Versace era has asked: how much glamour is too much?”</p>",
+        "lede": "<p>Gianni Versace did not come from fashion's usual starting points. He grew up in Reggio Calabria, in the south of Italy, and worked alongside his mother in the family tailor's shop. On 5 February 1972, he left for Milan. It was an ordinary-sounding move that turned out to be the start of one of Italian fashion's defining careers.</p>",
+        "aside_image": "shopify://shop_images/story-versace-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

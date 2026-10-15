@@ -161,7 +161,7 @@
           "settings": {
             "image": "shopify://shop_images/label-toteme.png",
             "caption": "",
-            "link": "/collections/vendors?q=TOTEME"
+            "link": "shopify://pages/toteme"
           }
         },
         "jimmy_choo": {
@@ -169,7 +169,7 @@
           "settings": {
             "image": "shopify://shop_images/label-jimmy-choo.png",
             "caption": "",
-            "link": "/collections/vendors?q=Jimmy%20Choo"
+            "link": "shopify://pages/jimmy-choo"
           }
         },
         "dolce_gabbana": {
@@ -177,7 +177,7 @@
           "settings": {
             "image": "shopify://shop_images/label-dolce-gabbana.png",
             "caption": "",
-            "link": "/collections/vendors?q=Dolce%20%26%20Gabbana"
+            "link": "shopify://pages/dolce-gabbana"
           }
         },
         "versace": {
@@ -185,7 +185,7 @@
           "settings": {
             "image": "shopify://shop_images/label-versace.png",
             "caption": "",
-            "link": "/collections/vendors?q=Versace"
+            "link": "shopify://pages/versace"
           }
         },
         "maison_margiela": {
@@ -193,7 +193,7 @@
           "settings": {
             "image": "shopify://shop_images/label-maison-margiela.png",
             "caption": "",
-            "link": "/collections/vendors?q=Maison%20Margiela"
+            "link": "shopify://pages/maison-margiela"
           }
         },
         "moncler": {
@@ -201,7 +201,7 @@
           "settings": {
             "image": "shopify://shop_images/label-moncler.png",
             "caption": "",
-            "link": "/collections/vendors?q=Moncler"
+            "link": "shopify://pages/moncler"
           }
         },
         "stone_island": {
@@ -209,7 +209,7 @@
           "settings": {
             "image": "shopify://shop_images/label-stone-island.png",
             "caption": "",
-            "link": "/collections/vendors?q=Stone%20Island"
+            "link": "shopify://pages/stone-island"
           }
         },
         "ferragamo": {
@@ -217,7 +217,7 @@
           "settings": {
             "image": "shopify://shop_images/label-ferragamo.png",
             "caption": "",
-            "link": "/collections/vendors?q=Ferragamo"
+            "link": "shopify://pages/ferragamo"
           }
         },
         "brunello_cucinelli": {
@@ -225,7 +225,7 @@
           "settings": {
             "image": "shopify://shop_images/label-brunello-cucinelli.png",
             "caption": "",
-            "link": "/collections/vendors?q=Brunello%20Cucinelli"
+            "link": "shopify://pages/brunello-cucinelli"
           }
         },
         "christian_louboutin": {
@@ -233,7 +233,7 @@
           "settings": {
             "image": "shopify://shop_images/label-christian-louboutin.png",
             "caption": "",
-            "link": "/collections/vendors?q=Christian%20Louboutin"
+            "link": "shopify://pages/christian-louboutin"
           }
         },
         "jacquemus": {
@@ -241,7 +241,7 @@
           "settings": {
             "image": "shopify://shop_images/label-jacquemus.png",
             "caption": "",
-            "link": "/collections/vendors?q=JACQUEMUS"
+            "link": "shopify://pages/jacquemus"
           }
         },
         "burberry": {
@@ -249,7 +249,7 @@
           "settings": {
             "image": "shopify://shop_images/label-burberry.png",
             "caption": "",
-            "link": "/collections/vendors?q=Burberry"
+            "link": "shopify://pages/burberry"
           }
         },
         "victoria_beckham": {
@@ -257,7 +257,7 @@
           "settings": {
             "image": "shopify://shop_images/label-victoria-beckham.png",
             "caption": "",
-            "link": "/collections/vendors?q=Victoria%20Beckham"
+            "link": "shopify://pages/victoria-beckham"
           }
         },
         "slide_LnUiK3": {

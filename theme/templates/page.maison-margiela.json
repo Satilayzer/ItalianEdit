@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "An Antwerp graduate in Paris",
+            "text": "<p>Margiela was born on 9 April 1957 in Genk, Belgium, and graduated from the Royal Academy of Fine Arts in Antwerp in 1979. After five years of freelancing, he worked as a design assistant to Jean Paul Gaultier in Paris from 1984 to 1987. In 1988 he founded Maison Martin Margiela in Paris with his business partner, Jenny Meirens.</p><p>The first collection was shown for spring/summer 1989, and models wore masks at the show, drawing attention to the clothes instead of faces. The best-remembered early show came in autumn 1989, for spring/summer 1990. It was staged on a derelict playground on the outskirts of Paris, with an uneven runway, models who deliberately stumbled, and invitations hand-drawn by local children, who sat in the front row.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-maison-margiela-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-maison-margiela-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-maison-margiela-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The white label and other codes",
+            "text": "<p>The house's identity is made of small, repeatable signs. The trademark is a blank white cloth label, attached with four white stitches. A numeric code from 0 to 23 marks the line a piece belongs to. The brand's own materials also list brush-stroked white paint as a signature.</p><p>Other codes followed. The Tabi boot, based on the split-toe Japanese sock, was first shown in 1989 and introduced in 1992, and it is still the house's best-known shoe. Replica, a line of reproductions of vintage garments, arrived in 1994, and its fragrance collection came later. Clothes were often deliberately unfinished, with raw hems, exposed seams, and worn fabrics. The label's couture line, held under the Haute Couture appellation since 2012, is called Artisanal.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Hermès, Diesel, and an exit",
+            "text": "<p>From 1997 to 2003 Margiela also served as creative director of womenswear at Hermès, working in parallel with his own house. In 2002 the label was acquired by OTB, the holding company led by Renzo Rosso, which also owns Diesel. OTB remains the parent company today. Margiela stayed as creative director for several years after the sale. In 2009 he left, and the house continued under an anonymous in-house team.</p><p>Margiela has stayed out of fashion since then. In 2019 a documentary, Martin Margiela: In His Own Words, directed by Reiner Holzemer, was released. In October 2021 he held his first solo art exhibition at Lafayette Anticipations in Paris, with more than 40 works.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-maison-margiela-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "John Galliano's decade",
+            "text": "<p>In October 2014, the house appointed John Galliano, formerly chief designer at Dior, as creative director. In January 2015, during his couture debut, the name on the invitations changed to Maison Margiela, dropping \"Martin.\" A spokesperson told the New York Times that the change \"reflects the evolution of the house.\" Galliano's tenure ended in December 2024, and his Artisanal show in 2024 drew strong praise from critics.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Glenn Martens takes over",
+            "text": "<p>In January 2025, the house named Glenn Martens its new creative director. Martens, who has been creative director of Diesel since 2020 and previously spent more than a decade at Y/Project, keeps his Diesel role alongside Margiela. OTB chairman Renzo Rosso said he was proud to have a third couturier leading the house.</p><p>His first Artisanal show was held in Paris in July 2025, reportedly in the space where Martin Margiela presented his last collection in 2009. It opened with sculptural PVC gowns, and masks, a nod to the house's first show, appeared throughout. His first ready-to-wear collection for spring/summer 2026 followed in October 2025. It opened with an orchestra of 61 young musicians aged seven to 15, played deliberately imperfectly. Models wore metal bands over their mouths, a reference to the four stitches, and the collection was described as \"re-introductions and evolutions of archival ideas.\"</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "The business today",
+            "text": "<p>OTB reported 2025 revenue of about 1.7 billion euros, down 4.8 percent at constant exchange rates. Maison Margiela was the exception: its revenue grew 8.4 percent, the strongest of any brand in the group. The house has more than 70 of its own stores and has expanded recently into Canada, Mexico, and the Middle East.</p><p>It is an odd outcome for a brand built on refusing the spotlight. The founder is still out of view. The label still has no logo. And with Martens as creative director, Margiela is again selling the idea that the clothes should speak for themselves.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-maison-margiela.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Maison Margiela piece?",
+            "text": "<p>From Tabi boots to current-season ready-to-wear and accessories, sourcing genuine Maison Margiela from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Maison Margiela Brand History: The Fashion House That Hid Its Founder's Face and Its Own Logo",
+        "heading_visible": false,
+        "number": "005",
+        "image": "shopify://shop_images/story-maison-margiela-hero.png",
+        "image_alt": "Maison Margiela",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-maison-margiela.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Maison Margiela launched in 1988 with a blank white label and a designer who refused interviews. Nearly four decades later, it has had three creative directors and still sells on the idea of anonymity.”</p>",
+        "lede": "<p>Most luxury houses put the founder's name and face at the front. Maison Margiela did the opposite. Martin Margiela never gave a formal interview or posed for a magazine photograph after 1988, and he did not take a bow at the end of his shows. The clothes carried no logo, only a blank white label. That choice shaped everything the brand became.</p>",
+        "aside_image": "shopify://shop_images/story-maison-margiela-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

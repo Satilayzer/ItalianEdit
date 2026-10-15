@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "1985: the first collection",
+            "text": "<p>The company itself was founded in 1985 in Legnano, near Milan. That year the pair presented their first women's collection in the New Talents section of Milan Fashion Week, which showcases emerging designers. In 1986 they opened their first Milan store and presented their first self-produced collection, titled Donne Vere, or \"Real Women,\" in March, followed that September by the spring 1987 show Trasformismo.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-dolce-gabbana-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-dolce-gabbana-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-dolce-gabbana-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Menswear, fragrance, and a second line",
+            "text": "<p>The house quickly widened its scope. A first men's collection followed in autumn 1990, and the first perfumes, Dolce&amp;Gabbana Pour Homme and Pour Femme, launched the same year. In 1994 the brand introduced D&amp;G, a younger and less expensive diffusion line produced and distributed by Ittierre. It ran for seventeen years. In 2011 the company discontinued it, held its final independent D&amp;G show that September, and folded the lines back into the main Dolce&amp;Gabbana label.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Alta Moda in Sicily",
+            "text": "<p>In July 2012, Dolce &amp; Gabbana launched Alta Moda, its couture-level line, with a first presentation in Taormina, Sicily. Sicily is Domenico Dolce's home island, which made it a natural place to launch the house's couture line.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-dolce-gabbana-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "China in 2018",
+            "text": "<p>One episode changed the company's position in its most important growth market. In November 2018, a series of promotional videos on the Chinese platform Sina Weibo drew accusations of racism. The brand removed them, and the founders apologized. A planned show in Shanghai was cancelled, celebrity ambassadors cut ties, and Chinese e-commerce sites removed the products. Offensive comments by Stefano Gabbana about China were also widely criticized.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "The numbers: beauty up, fashion down",
+            "text": "<p>By 2021, the company reported revenue of about 1.5 billion euros and roughly 3,150 employees. More recent figures show a business shifting in shape. For the fiscal year ending March 2025, sales reached about 2.2 billion dollars, up 4 percent, but the company reported a net loss of 136 million dollars, against 15 million the year before.</p><p>The mix is telling. Fashion and home revenue fell 8 percent, to about 1.4 billion dollars, hit by weaker demand in Europe and China. Beauty grew 30 percent, to about 699 million dollars, after the company moved the division from licensing to direct management. It has since expanded its makeup range and launched a skincare line, and it is aiming for 1.1 billion dollars in annual beauty sales by the end of fiscal 2027.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "A house at a crossroads",
+            "text": "<p>The leadership has shifted too. According to a company filing reported by Reuters, Stefano Gabbana stepped down as chairman effective 1 January 2026. Alfonso Dolce, the company's chief executive and Domenico Dolce's brother, took over the chair. Gabbana remains a co-founder, and he and Domenico Dolce are still in charge of creative direction.</p><p>Reports from Bloomberg say the company is negotiating with lenders over a broader refinancing of about 450 million euros of debt, including as much as 150 million euros in new funds, and may sell real estate and renew licences to raise money. Gabbana, who holds roughly 40 percent of the company, is reportedly weighing options for his stake. The company has not ruled out a minority investor or a stock market listing, and no sale has been confirmed.</p><p>What has not changed is the creative partnership that began in a Milan studio in 1983: the same two designers are still in charge of what the house makes.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-dolce-gabbana.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Dolce & Gabbana piece?",
+            "text": "<p>From Sicilian-inspired prints to current-season ready-to-wear and accessories, sourcing genuine Dolce &amp; Gabbana from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Dolce & Gabbana Brand History: Two Designers, One Sicilian Heart, and a House at a Crossroads",
+        "heading_visible": false,
+        "number": "003",
+        "image": "shopify://shop_images/story-dolce-gabbana-hero.png",
+        "image_alt": "Dolce & Gabbana",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-dolce-gabbana.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Domenico Dolce and Stefano Gabbana met as colleagues in Milan and built one of Italy's most recognizable fashion houses. Forty years later, the company is working through a debt refinancing while its beauty business booms.”</p>",
+        "lede": "<p>Many fashion partnerships are a designer and a businessperson. Dolce &amp; Gabbana was two designers. Domenico Dolce, born in 1958 in Polizzi Generosa, a town in Sicily, and Stefano Gabbana, born in 1962 in Milan, met in the early 1980s while both were working at the Italian fashion label of Giorgio Correggiari. By 1983 they had set up a small design consulting studio under their own two names.</p>",
+        "aside_image": "shopify://shop_images/story-dolce-gabbana-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

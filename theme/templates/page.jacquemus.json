@@ -1,0 +1,138 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "2009: the start",
+            "text": "<p>He moved to Paris and began his brand in 2009, at 19. By 2011 he was working as a sales assistant at the Comme des Garçons store in Paris, where Rei Kawakubo and Adrian Joffe noticed his work and mentored him. The job helped fund his own label. In 2012 the brand was on the Paris Fashion Week schedule, three years after it launched.</p><p>Recognition followed quickly. Jacquemus was a finalist for the LVMH Prize in 2014 and won its Special Jury Prize in 2015.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-jacquemus-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-jacquemus-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-jacquemus-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "La Bomba and the mini bag",
+            "text": "<p>The collection that defined the brand's early look was La Bomba, shown in September 2017 at the Musée Picasso in Paris for spring/summer 2018. It presented a confident, sunlit woman from the south of France, in dresses, headbands, and earrings. The preceding spring/summer 2017 collection had already brought ruching, polka dots, and straw hats. The brand's sales reached over 11 million dollars in 2018, and in 2019 Simon told WWD that he expected sales of about 25 million euros.</p><p>That collection also introduced Le Chiquito, a tiny handbag that is widely credited with starting the mini-bag trend. Le Bambino, a larger dark beige bag from the L'Année 97 collection, became a best-seller, and a still smaller Mini Chiquito debuted for autumn/winter 2019. Clients such as the Kardashians, Beyoncé, and Rihanna helped carry the look.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Shows in fields",
+            "text": "<p>Jacquemus became known for staging shows outside the usual Paris venues. On 24 June 2019, to mark ten years of the brand, he presented a co-ed show in lavender fields near his childhood home in Provence, titled Le Coup de Soleil. In 2020, during the pandemic, the spring/summer 2021 collection was shown in a wheat field outside Paris to 100 guests. The autumn 2023 show was held at the Palace of Versailles on 26 June 2023.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-jacquemus-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "The business behind the image",
+            "text": "<p>For most of its history, Jacquemus has been controlled by its founder. Bastien Daguzan stepped down as CEO in December 2023, and Simon held both the CEO and creative director roles until March 2025, when Sarah Benady, who had run Céline's North American business, joined as CEO. The aim, according to the company, is to free him to focus on design and storytelling, while she runs the business.</p><p>In February 2025 the company signed a long-term exclusive beauty partnership with L'Oréal, which also took a minority stake. Reports put the stake at about 10 percent, and say Simon sold another 5 percent to Sandbridge Capital. In May 2025, a restructuring valued the group at 576.1 million euros, with the fashion arm at 530 million and a separate beauty company at 46.1 million. It has more than 300 employees.</p><p>Estimates of sales vary. Fashionbi puts them at about 213 million euros in 2022 and about 280 million in 2023, while Modaes cites reported revenue above 250 million euros in the latest fiscal year. No audited accounts for 2024 or 2025 had been made public as of the latest reports.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Stores, and where Jacquemus goes next",
+            "text": "<p>Retail has grown in step. The brand has boutiques in Paris on Avenue Montaigne, in New York's SoHo, on London's New Bond Street, and in Dubai. A Los Angeles store at 8800 Melrose Avenue opened in 2025. In 2026 it opened its third US flagship at 57 NE 40th Street in the Miami Design District, a two-floor store of about 2,900 square feet with works by Picasso and Miró. Mexico, through a local partner, and Madrid, through a six-month collaboration with El Corte Inglés, are next. The company has also talked about seasonal boutiques in Saint-Tropez, Ibiza, and Courchevel.</p><p>Of the L'Oréal partnership, Simon has said it is \"about finding the right balance between growth and brand protection.\"</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-jacquemus.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Jacquemus piece?",
+            "text": "<p>From Le Chiquito and Le Bambino bags to current-season ready-to-wear, sourcing genuine Jacquemus from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Jacquemus Brand History: How a Teenager from Provence Built Paris's Most Talked-About Label",
+        "heading_visible": false,
+        "number": "011",
+        "image": "shopify://shop_images/story-jacquemus-hero.png",
+        "image_alt": "Jacquemus",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-jacquemus.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Simon Porte Jacquemus launched his brand in 2009 with no training and a borrowed name. Seventeen years later it has stores from Paris to Miami, a stake held by L'Oréal, and a valuation above half a billion euros.”</p>",
+        "lede": "<p>Simon Porte Jacquemus was born on 16 January 1990 in Salon-de-Provence and grew up in Mallemort, in southern France. His path into fashion started with a loss. His mother, Valérie, died in an accident when he was 18, and the label he launched the next year took her maiden name: Jacquemus.</p>",
+        "aside_image": "shopify://shop_images/story-jacquemus-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

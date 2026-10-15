@@ -1,0 +1,138 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Showgirls, apprenticeships, and a detour through gardens",
+            "text": "<p>Born and raised in Paris, Louboutin was drawing shoes as a teenager, and he was drawn to cabaret. He took an internship at the Folies Bergère, where the showgirls' legs and the role of the shoe in defining a silhouette became something close to an obsession. While still there, he called Hélène de Mortemart, Christian Dior's fashion director, to show her his drawings. She suggested an internship at Charles Jourdan, the manufacturer of Dior's shoes. He later apprenticed in Roger Vivier's atelier and freelanced for houses including Chanel and Yves Saint Laurent.</p><p>Then, in the late 1980s, he walked away from fashion and worked as a landscape gardener. He missed shoes enough to come back. In 1991, with money from two backers, he opened his first boutique in a covered arcade near the Louvre, the Galerie Véro-Dodat, with Princess Caroline of Monaco as his first customer.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-christian-louboutin-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-christian-louboutin-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-christian-louboutin-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "The red sole: a prototype and a borrowed bottle of nail polish",
+            "text": "<p>The brand dates its defining detail to 1992 (Louboutin himself has placed the first red sole in 1993). He was working on a prototype that differed from his original sketch, so he took his assistant's nail polish and painted the sole a vivid, lacquered red. The shoe came to life. The gesture stuck, and the color was eventually codified as Pantone 18-1663 TPX.</p><p>It was an unusually efficient piece of branding. A red sole is visible only when the wearer walks, climbs stairs, or crosses her legs, which means the signature appears exactly when someone is watching her move. No logo needs to be printed anywhere.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "The Pigalle, and a cabaret by another name",
+            "text": "<p>Louboutin's most enduring design is the Pigalle, a low-cut pump named after the Paris district famous for its nightlife and cabarets, a quiet nod to where his imagination began. He has described it as the design that encapsulates his career. Its long, elegant line and sharply pointed toe became the template for how many women picture a Louboutin heel.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-christian-louboutin-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "The court case that defined a color",
+            "text": "<p>Few brands have had to defend a single color as hard as Louboutin. The red lacquered sole was registered as a trademark in the United States in 2008. In 2011, Louboutin sued Yves Saint Laurent for selling monochrome red shoes with red soles. A district court initially said a single color could not function as a fashion trademark. In September 2012, the Second Circuit disagreed: it held that the red outsole had acquired \"secondary meaning\" as a distinctive symbol of the brand, but it limited the trademark to cases where the red sole contrasts with the rest of the shoe. YSL's all-red shoes were therefore allowed, and the case was dismissed that December.</p><p>Protection elsewhere has been uneven. Louboutin holds trademark protection for the red sole in the European Union, China, Australia, and several other markets, while a Swiss court ruled that the sole was merely decorative and could not be protected under that country's trademark law.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Independent for thirty years, then a new partner",
+            "text": "<p>For most of its history, Louboutin operated as an independent maison, run alongside co-founder and CEO Bruno Chambelland. That changed in 2021, when Exor, the holding company of Italy's Agnelli family, agreed to buy roughly a quarter of the company for 541 million euros and took two of seven board seats. At the time, Louboutin ran about 150 directly operated stores in 30 countries.</p><p>The house has also stretched well beyond women's pumps into men's shoes, bags, and a beauty line covering makeup and fragrance. In 2020 it marked its thirtieth anniversary with a solo exhibition in Paris, and in 2024 Louboutin took a minority stake in the French hospitality group Experimental Group. Three decades on, the idea remains the same one he had in 1992: pick one detail, make it unmistakable, and never let it blend in.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-christian-louboutin.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Christian Louboutin piece?",
+            "text": "<p>From the Pigalle pump to current-season styles, sourcing genuine Christian Louboutin from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Christian Louboutin Brand History: How a Bottle of Nail Polish Became the Most Recognizable Sole in Luxury",
+        "heading_visible": false,
+        "number": "010",
+        "image": "shopify://shop_images/story-christian-louboutin-hero.png",
+        "image_alt": "Christian Louboutin",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-christian-louboutin.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Louboutin built a global house on a few square inches of lacquer. The idea began with a prototype that didn't look right and an assistant's nail polish.”</p>",
+        "lede": "<p>Most luxury houses are recognized by a logo. Christian Louboutin (pronounced loo-boo-TAN) is recognized by the underside of a shoe, readable across a room with no visible branding at all. The designer behind it didn't set out to build a color-coded empire. He set out to understand how a shoe shapes a woman's silhouette, and he spent a decade learning before he put his name on a door.</p>",
+        "aside_image": "shopify://shop_images/story-christian-louboutin-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

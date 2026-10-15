@@ -1,0 +1,138 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "2008: a small dress collection in New York",
+            "text": "<p>Beckham, known to the world as a member of the Spice Girls, launched her eponymous label in September 2008 with a small collection of dresses shown at New York Fashion Week. Critics doubted that a former pop star could succeed in high-end design, but the early dresses were praised for their silhouettes and construction. The look was figure-hugging, sleek, and tightly edited, with a focus on dresses and separates in a sophisticated palette.</p><p>In 2011 she won Designer Brand of the Year at the British Fashion Awards, the same year she introduced a lower-priced companion line, Victoria, Victoria Beckham. Running two labels proved complicated, and spring/summer 2022 was the first season in which everything was sold under a single name with a range of price points.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-victoria-beckham-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-victoria-beckham-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-victoria-beckham-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Online, then a London flagship",
+            "text": "<p>The label launched its e-commerce site in 2013, and a flagship on Dover Street in London followed, with sources dating the store to 2013 or 2014. Turnover doubled in 2013, passing 30 million pounds. The brand moved its biannual show from New York to London Fashion Week in 2018, and made its Paris Fashion Week debut in September 2022.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Outside money and a pivot to beauty",
+            "text": "<p>Growth was expensive. In 2017, the private equity firm NEO Investment Partners invested nearly 30 million pounds for a minority stake, which Forbes puts at 30 percent. The next year Ralph Toledano, the former president of the French Federation for Haute Couture and Fashion, joined as chairman, and a collaboration with Reebok launched in July.</p><p>Beauty was the next big bet. Beckham had released a collection with Estée Lauder in 2016, and in October 2019 she launched Victoria Beckham Beauty, sold directly to consumers. A partnership with the skincare brand Augustinus Bader followed in January 2020. The costs were considerable. By autumn 2022, the company's filed accounts showed debts of more than 53.9 million pounds.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-victoria-beckham-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "The turnaround",
+            "text": "<p>The figures for 2025, reported in late August 2026, tell a different story. Revenue rose 15 percent to 129.8 million pounds from 112.7 million, and the group reported an operating profit of 7.3 million pounds, against a loss of 1.6 million the year before. Reports describe it as the company's first ever operating profit. Beckham told the Financial Times, \"We have all worked hard for a long time for this moment of profitability and growth.\"</p><p>The mix of the business has changed. According to reports, beauty now accounts for about two-thirds of group revenue, and the brand says it sells one 32-pound Satin Kajal eyeliner every 30 seconds. Victoria Beckham Beauty went from three retail locations in 2023 to a planned 300 or so across 15 markets in 2026. On the fashion side, dresses and gowns make up about a third of sales, and the brand is working on extending its range into tailoring, knitwear, outerwear, swimwear, shoes, and leather goods, led by the Sloane bag launched in September 2026.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Leadership and what comes next",
+            "text": "<p>Sybille Darricarrère Lunel, a former Christian Dior Couture executive, joined as CEO of the fashion business in July 2025. Lauren Edelman, who was promoted from global chief marketing officer in January 2025, is CEO of the beauty business. Beckham remains creative director. David Belhassen chairs the group.</p><p>Expansion is focused on the United States, with the Middle East second. The brand opened a pop-up at Bal Harbour Shops in Miami, then a store on Mercer Street in New York in September 2026. Beckham has said she is open to selling another stake in the business: \"never say never.\"</p><p>Her own view of the progress is that, after 20 years, people no longer see the label as a celebrity brand. The accounts, for the first time, make that easier to believe.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-victoria-beckham.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Victoria Beckham piece?",
+            "text": "<p>From signature dresses to current-season bags and accessories, sourcing genuine Victoria Beckham from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Victoria Beckham Brand History: From Spice Girl to a Fashion Label Finally in the Black",
+        "heading_visible": false,
+        "number": "013",
+        "image": "shopify://shop_images/story-victoria-beckham-hero.png",
+        "image_alt": "Victoria Beckham",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-victoria-beckham.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Victoria Beckham launched her label in 2008, and critics doubted it would last. It took 18 years to report an operating profit, and by then beauty was carrying much of the business.”</p>",
+        "lede": "<p>Most celebrity fashion lines come and go within a few seasons. Victoria Beckham's has lasted nearly two decades, survived years of heavy losses, and in 2026 reported the first operating profit in its history. The way it got there is a useful lesson in what a celebrity name can and cannot do for a luxury brand.</p>",
+        "aside_image": "shopify://shop_images/story-victoria-beckham-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

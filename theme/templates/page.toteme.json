@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A blogger, an art director, and an unfinished word",
+            "text": "<p>Elin Kling and Karl Lindman, both born and raised in Sweden, met in New York in the early 2010s. Kling had built a large following as a fashion blogger and had launched a print magazine, Styleby, in 2011. Lindman had worked as a model and then as an art director at Interview magazine. They married and, in 2014, started a womenswear label together, Kling leading design and Lindman handling brand and image.</p><p>They first settled on the name Totem, which they felt carried the symbolism and neutrality they wanted. Kling thought it felt too heavy, so she added an \"e.\" Lindman also designed the logo: a symmetrical square monogram of the six letters that reads the same when flipped or mirrored.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-toteme-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-toteme-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-toteme-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Starting small",
+            "text": "<p>In the early days, the brand was two people at computers in a small space. They later sublet part of an office in New York from Emily Weiss, the founder of Glossier. The couple moved back to Stockholm in 2016, and the company has since run offices in Stockholm, New York, and London. Its first flagship, in Stockholm, opened in a small former coffee shop.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Pared-back clothes, deliberately",
+            "text": "<p>Toteme's design language is Scandinavian minimalism. Vogue Scandinavia compares its pared-back, detail-focused approach to Jil Sander or The Row, and Lindman says that Toteme \"should never feel like a big machine.\" The pieces that have sold best are everyday ones: cashmere coats, scarf jackets, striped turtlenecks, jersey leggings with zip cuffs, denim, silk shirts, and bags such as the T-lock. Prices were set at the entry level of luxury.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-toteme-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Profitable early, growth without a big marketing push",
+            "text": "<p>Business of Fashion reported that the company has been profitable since 2015, with growth that was mostly organic and not driven by heavy marketing. Wholesale and direct-to-consumer sales were split roughly 50-50 from the start, with Net-a-Porter and The Line among the early wholesale partners. Toteme launched on China's Tmall marketplace in 2020.</p><p>In May 2021, the Swedish investment firm Altor agreed to take a minority stake. The founders remained majority owners, and Kling and Lindman stayed on as creative director and brand director. At the time, the company's revenue was reported at about 350 million Swedish kronor, split roughly evenly between Asia, North America, and Europe.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "Stores, a Paris show, and a tenth birthday",
+            "text": "<p>From there, growth came from stores and from visibility. In January 2024, Toteme held its first runway show in Paris, off-schedule during couture week at Place Vendôme, with 27 looks drawn from the brand's own archives. That summer, it marked its tenth anniversary with a party at Millesgården in Stockholm, attended by Prince Daniel of Sweden.</p><p>The company had 14 stores worldwide by October 2025, when it opened a second London store on Sloane Street. Its flagship is on Mount Street. In July 2026 it opened its first Miami store at Bal Harbour Shops, its sixth in the United States, with other locations including New York, Los Angeles, and Aspen. Toteme appeared in the Q1 2025 Lyst Index among the world's 20 most popular brands, and it showed its spring/summer 2026 collection at New York Fashion Week.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "Where it stands now",
+            "text": "<p>Annual sales reached about 180 million euros in 2024, according to Vogue Business. Altor says the company has more than 150 employees, and its plans for the next phase are to open stores in key cities, broaden the product range, and grow online and wholesale sales. Business of Fashion reported plans to add categories such as jewelry, and the brand now sells it alongside shoes and bags. Lindman has said the founders are \"in it for the long run.\"</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-toteme.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Toteme piece?",
+            "text": "<p>From the cashmere coats and scarf jackets to current-season bags and accessories, sourcing genuine Toteme from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Toteme Brand History: The Swedish Label Built by a Blogger and an Art Director",
+        "heading_visible": false,
+        "number": "001",
+        "image": "shopify://shop_images/story-toteme-hero.png",
+        "image_alt": "Toteme",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-toteme.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Toteme began with two people working at computers in a small New York space. A decade later it has a Paris runway show, stores from London to Bal Harbour, and sales well over 100 million euros.”</p>",
+        "lede": "<p>Many of the houses in this series date back a century or more. Toteme launched in 2014, and the two people who started it are still running it.</p>",
+        "aside_image": "shopify://shop_images/story-toteme-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

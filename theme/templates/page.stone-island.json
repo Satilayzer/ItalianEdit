@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "ie-brand-story",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "A fabric before a fashion brand",
+            "text": "<p>Osti founded Stone Island in 1982 in Ravarino, in northern Italy. The first collection grew out of a heavy tarpaulin fabric of the kind used to cover trucks. He coated it on both sides with pigmented resins and then treated it with enzymes so that it looked stone-washed. He called the result Tela Stella. The debut collection was a capsule of seven military- and workwear-inspired jackets, each in six two-tone variations.</p><p>A year or two later came Raso Gommato, a rubberized, coated canvas (the brand dates it to 1983 or 1984, depending on the source). The pattern was set: new fabrics, new dye recipes, and finished garments treated as the outcome of experiments rather than seasonal moods.</p>",
+            "width": 62
+          }
+        },
+        "gallery-1": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-stone-island-g1.png",
+            "title_1": "",
+            "note_1": "",
+            "image_2": "shopify://shop_images/story-stone-island-g2.png",
+            "title_2": "",
+            "note_2": "",
+            "image_3": "shopify://shop_images/story-stone-island-g3.png",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "4 / 5",
+            "gap": 40
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "Where the name and the compass come from",
+            "text": "<p>The name came from literature. According to the brand's history, \"stone\" and \"island\" are two of the words that appear most often in the novels of Joseph Conrad. Osti liked the connection to boats and the sea, and he saw the brand as driven by what he described as a new sensibility oriented to science rather than fashion. Hence the compass rose with a nautical star, worn as a badge on the left side of a garment. The patch was originally edged in green and became black-edged around 2000.</p>",
+            "width": 62
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "Osti leaves, Rivetti builds",
+            "text": "<p>Osti stepped back from the business side in 1983, when Turin's Gruppo Finanziario Tessile (GFT) bought half of the company, with Carlo Rivetti involved. GFT took the other half in 1991. In 1993, GFT sold Stone Island to Rivetti, who combined it with C.P. Company. Osti left at the end of 1995, and in 1996 Rivetti hired designer Paul Harvey as creative director. Rivetti led the creative team himself after Harvey's departure and brought in Errolson Hugh to design the experimental Shadow Project line.</p>",
+            "width": 62
+          }
+        },
+        "gallery-2": {
+          "type": "gallery",
+          "settings": {
+            "image_1": "shopify://shop_images/story-stone-island-wide.png",
+            "title_1": "",
+            "note_1": "",
+            "title_2": "",
+            "note_2": "",
+            "title_3": "",
+            "note_3": "",
+            "ratio": "auto",
+            "gap": 40
+          }
+        },
+        "text-4": {
+          "type": "text",
+          "settings": {
+            "heading": "Research as the product",
+            "text": "<p>What kept Stone Island distinctive was how seriously it treated the lab. The brand introduced thermosensitive fabric and rubber wool in 1987. In 1989 it released the first Ice Jacket, made from a Japanese thermosensitive fabric that changed color with temperature. In the early 1990s, the Reflective Jacket opened a long line of work on reflective materials. Later projects included experiments dyeing Kevlar, the Pure Metal Shell jacket, hand-painted camouflage, and Liquid Reflective. In 2016 the brand formalized this impulse as the Prototype Research_Series, a line of experimental garments.</p>",
+            "width": 62
+          }
+        },
+        "text-5": {
+          "type": "text",
+          "settings": {
+            "heading": "From the terraces to the runway",
+            "text": "<p>Stone Island's audience was never only fashion people. It became a staple of the Italian Paninari in the 1980s, of English football casuals, and later of hip-hop in Britain, the United States, and Canada. It was associated early on with football supporters, and later with players such as Éric Cantona, David Beckham, Pep Guardiola, and Paolo Maldini, who helped carry it to a mainstream audience. Its popularity peaked in Europe in the 1980s and 1990s and returned in the United States and Canada in the 2010s.</p><p>In that decade the label also began to collaborate. After Adidas approached it, partnerships followed with New Balance, Supreme, NikeLab, Porter, and Persol. It marked its 30th anniversary in 2012 with an exhibition in Florence during Pitti Uomo.</p>",
+            "width": 62
+          }
+        },
+        "text-6": {
+          "type": "text",
+          "settings": {
+            "heading": "The Moncler era",
+            "text": "<p>In December 2020, Moncler announced it would buy Stone Island, valuing the company at 1.15 billion euros, with the deal completed in 2021. It had agreed to buy 70 percent from the Rivetti family and, in February 2021, the remaining 30 percent from Temasek for 345 million euros. The brand celebrated its 40th anniversary in 2022 and has since been led by Robert Triefus as president and CEO. Ferdinando Verderi has been creative director since 2024. That year the brand unveiled a manifesto called \"The Compass Inside\" and released a collaboration with Dior.</p><p>Forty-plus years on, Stone Island's pitch has barely changed: start with a material, treat it, test it, and let the finished jacket speak for itself, with a small compass patch as the only signature.</p>",
+            "width": 62
+          }
+        },
+        "label": {
+          "type": "label",
+          "settings": {
+            "image": "shopify://shop_images/label-stone-island.png",
+            "width": 200,
+            "ratio": "2 / 1",
+            "align": "left"
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "heading": "Looking for an authentic Stone Island piece?",
+            "text": "<p>From Ice Jackets to current-season outerwear, sourcing genuine Stone Island from Europe takes the right access. Italian Edit buys directly from official boutiques and trusted sellers across Europe, authenticates every item, and ships it to the United States.</p>",
+            "button_label": "",
+            "button_link": "",
+            "width": 62
+          }
+        }
+      },
+      "block_order": [
+        "text-1",
+        "gallery-1",
+        "text-2",
+        "text-3",
+        "gallery-2",
+        "text-4",
+        "text-5",
+        "text-6",
+        "label",
+        "cta"
+      ],
+      "settings": {
+        "heading": "Stone Island Brand History: The Fashion Label That Started as a Truck Tarpaulin",
+        "heading_visible": false,
+        "number": "007",
+        "image": "shopify://shop_images/story-stone-island-hero.png",
+        "image_alt": "Stone Island",
+        "image_ratio": "4 / 5",
+        "media_width": 45,
+        "label": "shopify://shop_images/label-stone-island.png",
+        "label_width": 200,
+        "label_ratio": "2 / 1",
+        "quote": "<p>“Stone Island did not begin with a silhouette or a muse. It began with a piece of heavy canvas from a truck cover and a designer who wanted to see what happened if he coated it in resin and washed it with enzymes.”</p>",
+        "lede": "<p>Most clothing brands are built around a look. Stone Island was built around a method. The Italian label's own history says it was \"born from a fabric,\" and that is close to literally true: its founder, Massimo Osti, started from a material and worked outward.</p>",
+        "aside_image": "shopify://shop_images/story-stone-island-aside.png",
+        "aside_caption": "",
+        "aside_width": 210,
+        "aside_ratio": "3 / 4",
+        "content_width": 1200,
+        "quote_size": 17,
+        "text_size": 13,
+        "heading_font": "source_serif_4_n4",
+        "heading_size": 28,
+        "heading_color": "#111111",
+        "padding_top": 24,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
