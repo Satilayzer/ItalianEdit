@@ -102,7 +102,7 @@
       <h2 class="designer-carousel__heading">{{ section.settings.heading }}</h2>
     {%- endif -%}
 
-    <designer-carousel class="dc">
+    <designer-carousel class="dc" data-visible="{{ section.settings.visible_cards | default: 5 }}">
       <div class="dc__stage" ref="stage">
         {%- assign dc_i = 0 -%}
         {%- if dc_source == 'manual' -%}
@@ -239,10 +239,12 @@
           if (!this.stage || this.n === 0) return;
 
           this.active = 0;
-          // Сколько карточек показываем с каждой стороны. При 4 и меньше —
-          // по одной, чтобы задняя (противоположная) не мелькала и стек был
-          // симметричным.
-          this.side = this.n <= 4 ? 1 : 2;
+          // Сколько карточек показываем с каждой стороны — из настройки
+          // «Cards visible» (всего, вместе с активной). Не больше, чем
+          // помещается симметрично: иначе задняя (противоположная) карточка
+          // мелькала бы с двух сторон. Совсем мало слайдов — хотя бы по одной.
+          const visible = parseInt(this.dataset.visible, 10) || 5;
+          this.side = Math.max(1, Math.min(Math.floor((visible - 1) / 2), Math.floor((this.n - 1) / 2)));
 
           this.dots.forEach((dot, i) => dot.addEventListener('click', () => this.go(i)));
 
@@ -271,7 +273,32 @@
           return o;
         }
 
+        // Шаг веера на десктопе. Шаг из настройки «Side cards visible» рассчитан
+        // на пару соседей; при 9 карточках крайние ушли бы за край секции.
+        // Тогда сжимаем шаг ровно настолько, чтобы веер поместился, но не
+        // плотнее четверти карточки — полоска соседа должна читаться.
+        // На телефоне не трогаем: там соседи и раньше уходили за край.
+        fitShift() {
+          if (!window.matchMedia('(min-width: 750px)').matches) {
+            this.style.removeProperty('--dc-shift');
+            return;
+          }
+          const w = this.slides[0].offsetWidth;
+          const pct = parseFloat(getComputedStyle(this).getPropertyValue('--dc-shift-pct')) || 50;
+          const shift = (w * pct) / 100;
+          const scaleStep = 0.1; // = --dc-scale-step
+          const half = this.clientWidth / 2;
+          const k = this.side;
+          const fit = (half - ((1 - k * scaleStep) * w) / 2) / k;
+          if (fit >= shift) {
+            this.style.removeProperty('--dc-shift');
+          } else {
+            this.style.setProperty('--dc-shift', Math.max(fit, w / 4) + 'px');
+          }
+        }
+
         layout() {
+          this.fitShift();
           this.slides.forEach((slide, i) => {
             const o = this.offset(i);
             const ao = Math.abs(o);
@@ -575,6 +602,16 @@
       "unit": "%",
       "default": 50,
       "info": "Какая доля соседней карточки выглядывает из-за активной. 50% — ровно половина."
+    },
+    {
+      "type": "range",
+      "id": "visible_cards",
+      "label": "Cards visible",
+      "min": 3,
+      "max": 11,
+      "step": 2,
+      "default": 5,
+      "info": "Сколько карточек видно сразу, вместе с центральной. Если дизайнеров меньше — видны все. На десктопе веер сам сжимается, чтобы поместиться."
     },
     {
       "type": "range",

@@ -203,6 +203,7 @@
         "heading": "Recommended Designers",
         "source": "manual",
         "side_reveal": 50,
+        "visible_cards": 9,
         "max_designers": 12,
         "aspect_ratio": "4 / 5",
         "card_width": 420,
