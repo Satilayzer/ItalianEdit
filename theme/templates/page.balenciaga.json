@@ -14,10 +14,13 @@
         "gallery-1": {
           "type": "gallery",
           "settings": {
-            "title_1": "BALENCIAGA",
+            "image_1": "shopify://shop_images/06dddfc7d4ad90f585eaad4f62bde85d92ad1122.png",
+            "title_1": "",
             "note_1": "",
+            "image_2": "shopify://shop_images/5a4f8424b06bfcab1a0baaf987e968ecacc4950f.png",
             "title_2": "",
             "note_2": "",
+            "image_3": "shopify://shop_images/99d59597e5da2254aafb2815ed8f3e1f1b3f6950.png",
             "title_3": "",
             "note_3": "",
             "ratio": "4 / 5",
@@ -43,13 +46,14 @@
         "gallery-2": {
           "type": "gallery",
           "settings": {
+            "image_1": "shopify://shop_images/e6b14ff941700b9746eb4de4cc76243ba6a96ca2.png",
             "title_1": "",
             "note_1": "",
             "title_2": "",
             "note_2": "",
             "title_3": "",
             "note_3": "",
-            "ratio": "4 / 5",
+            "ratio": "3 / 1",
             "gap": 40
           }
         },
@@ -64,6 +68,7 @@
         "label": {
           "type": "label",
           "settings": {
+            "image": "shopify://shop_images/14.png",
             "width": 200,
             "ratio": "2 / 1",
             "align": "left"
@@ -93,15 +98,18 @@
       "settings": {
         "heading": "Balenciaga Brand History: The Couturier Other Designers Called \"The Master\"",
         "heading_visible": false,
-        "number": "007",
-        "image_alt": "Balenciaga",
+        "number": "014",
+        "image": "shopify://shop_images/1965408b82dfa5d176934cbf998fd45eceff0abf.png",
+        "image_alt": "",
         "image_ratio": "4 / 5",
         "media_width": 45,
+        "label": "shopify://shop_images/14.png",
         "label_width": 200,
         "label_ratio": "2 / 1",
         "quote": "<p>“Christian Dior called him the master of us all. Coco Chanel said he was the only true couturier. Then, at the height of his fame, Cristóbal Balenciaga closed his own house and walked away.”</p>",
         "lede": "<p>Cristóbal Balenciaga opened his first boutique in San Sebastián, Spain, in 1917, having trained since childhood as a tailor's apprentice under the patronage of a Spanish aristocrat who noticed his talent. He expanded to Madrid and Barcelona over the following two decades, dressing the Spanish royal family and aristocracy, before the Spanish Civil War forced him to close his stores and relocate to Paris in 1937.</p>",
-        "aside_caption": "Balenciaga",
+        "aside_image": "shopify://shop_images/3c475525bdfddcb2f40c54755745c5fe10fa321d.png",
+        "aside_caption": "",
         "aside_width": 210,
         "aside_ratio": "3 / 4",
         "content_width": 1200,

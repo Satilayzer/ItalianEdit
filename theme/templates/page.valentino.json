@@ -14,10 +14,13 @@
         "gallery-1": {
           "type": "gallery",
           "settings": {
-            "title_1": "VALENTINO",
+            "image_1": "shopify://shop_images/image_71.png",
+            "title_1": "",
             "note_1": "",
+            "image_2": "shopify://shop_images/image_72.png",
             "title_2": "",
             "note_2": "",
+            "image_3": "shopify://shop_images/image_73.png",
             "title_3": "",
             "note_3": "",
             "ratio": "4 / 5",
@@ -43,13 +46,14 @@
         "gallery-2": {
           "type": "gallery",
           "settings": {
+            "image_1": "shopify://shop_images/Rectangle_40.png",
             "title_1": "",
             "note_1": "",
             "title_2": "",
             "note_2": "",
             "title_3": "",
             "note_3": "",
-            "ratio": "4 / 5",
+            "ratio": "auto",
             "gap": 40
           }
         },
@@ -80,6 +84,7 @@
         "label": {
           "type": "label",
           "settings": {
+            "image": "shopify://shop_images/5_36a507cf-f35d-4efb-bd27-07aaedb38824.png",
             "width": 200,
             "ratio": "2 / 1",
             "align": "left"
@@ -111,15 +116,18 @@
       "settings": {
         "heading": "Valentino Brand History: The Roman Couturier Who Turned a Color Into a Signature",
         "heading_visible": false,
-        "number": "018",
-        "image_alt": "Valentino",
+        "number": "016",
+        "image": "shopify://shop_images/image_69.png",
+        "image_alt": "",
         "image_ratio": "4 / 5",
         "media_width": 45,
+        "label": "shopify://shop_images/5_36a507cf-f35d-4efb-bd27-07aaedb38824.png",
         "label_width": 200,
         "label_ratio": "2 / 1",
         "quote": "<p>“Valentino Garavani built his house on one unshakeable idea: a woman in the right red dress needs no further introduction. Six decades later, the world still calls that shade by his name.”</p>",
         "lede": "<p>Valentino Garavani opened his own atelier on Rome's Via Condotti in 1959, backed financially by his father, after training in Paris under Jean Dessès and Guy Laroche and absorbing the discipline of the Balenciaga school of construction that shaped so many great couturiers of the era. He was 27, ambitious, and, by his own later admission, close to running out of money within the first year. The business that would eventually carry his name almost didn't survive its opening season.</p>",
-        "aside_caption": "Valentino",
+        "aside_image": "shopify://shop_images/image_70.png",
+        "aside_caption": "",
         "aside_width": 210,
         "aside_ratio": "3 / 4",
         "content_width": 1200,

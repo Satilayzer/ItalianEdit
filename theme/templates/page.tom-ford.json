@@ -14,10 +14,13 @@
         "gallery-1": {
           "type": "gallery",
           "settings": {
-            "title_1": "TOM FORD",
+            "image_1": "shopify://shop_images/image_145.png",
+            "title_1": "",
             "note_1": "",
+            "image_2": "shopify://shop_images/image_146.png",
             "title_2": "",
             "note_2": "",
+            "image_3": "shopify://shop_images/image_147.png",
             "title_3": "",
             "note_3": "",
             "ratio": "4 / 5",
@@ -43,13 +46,14 @@
         "gallery-2": {
           "type": "gallery",
           "settings": {
+            "image_1": "shopify://shop_images/Rectangle_52.png",
             "title_1": "",
             "note_1": "",
             "title_2": "",
             "note_2": "",
             "title_3": "",
             "note_3": "",
-            "ratio": "4 / 5",
+            "ratio": "auto",
             "gap": 40
           }
         },
@@ -64,6 +68,7 @@
         "label": {
           "type": "label",
           "settings": {
+            "image": "shopify://shop_images/20.png",
             "width": 200,
             "ratio": "2 / 1",
             "align": "left"
@@ -94,14 +99,17 @@
         "heading": "Tom Ford Brand History: The Designer Who Rebuilt Two Houses Before Building His Own",
         "heading_visible": false,
         "number": "015",
-        "image_alt": "Tom Ford",
+        "image": "shopify://shop_images/image_143.png",
+        "image_alt": "",
         "image_ratio": "4 / 5",
         "media_width": 45,
+        "label": "shopify://shop_images/20.png",
         "label_width": 200,
         "label_ratio": "2 / 1",
         "quote": "<p>“Tom Ford spent a decade saving other people's fashion houses before he finally put his own name on the door.”</p>",
         "lede": "<p>Tom Ford had already reshaped two of the industry's most storied names, Gucci and Yves Saint Laurent, before launching his own label in 2005. As Gucci's creative director from 1994 to 2004, he pulled the house back from near financial collapse into one of the most talked-about brands of the decade, defined by unapologetic sex appeal and razor-sharp tailoring. He simultaneously led Yves Saint Laurent's ready-to-wear from 2000, after the Gucci Group acquired a controlling stake in the French house. Both roles ended in 2004 after a corporate ownership change, and Ford, alongside longtime Gucci business partner Domenico De Sole, walked away from both houses in the same year.</p>",
-        "aside_caption": "Tom Ford",
+        "aside_image": "shopify://shop_images/image_148.png",
+        "aside_caption": "",
         "aside_width": 210,
         "aside_ratio": "3 / 4",
         "content_width": 1200,
