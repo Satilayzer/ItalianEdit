@@ -10,10 +10,11 @@ import { parseBrandRegistry, brandEntry, loadBrandSnapshot } from "../src/tdf/br
 import { classify } from "../src/tdf/category";
 import { evaluate, seasonAge, REVIEW } from "../src/tdf/rules";
 import { autoPrice, decidePrice, economics, floorPriceCents, offerUsdCents, toCents } from "../src/tdf/pricing";
-import { estimateCosts, purchaseEurCents, countryCode, retailItalyUsdCents, compareAtCents } from "../src/tdf/economics";
+import { estimateCosts, purchaseEurCents, countryCode, retailItalyUsdCents, compareAtCents, dutyRateBp, DEFAULT_COSTS } from "../src/tdf/economics";
 import { normalizeSize, sortVariants, productSetInput, productTags, priceProduct, PRICE_AUTO_TAG, PRICE_PENDING_TAG } from "../src/tdf/productInput";
 import { planSync, sameHsCode, EXCLUDED_TAG, COST_CHANGED_TAG, BELOW_GRID_TAG, type IndexedProduct } from "../src/tdf/sync";
 import { resolveCategory } from "../src/shopify/category";
+import { parseMarket, buildMarket } from "../src/tdf/market";
 import { subcategoryValues, genderValues, colorFamilies } from "../src/shopify/facets";
 
 // ── Фикстура: две записи одной модели + одна другой ─────────────────────────
@@ -589,5 +590,72 @@ describe("зачёркнутая цена — розница в Италии с 
     // Ручная цена выше розницы — зачёркнутую снимаем.
     expect(planSync([e], new Map([[p.key, shop(62_900, 70_000)]])).compareAts)
       .toEqual([{ productId: "gid://shopify/Product/1", variants: [{ id: "v40", compareAtCents: null }] }]);
+  });
+});
+
+describe("пошлина по HS-коду (тариф США, сделка США–ЕС)", () => {
+  const shoes = classify("Apparel & Accessories > Shoes", "Leather sneakers");
+  const cloth = classify("Apparel & Accessories > Clothing > Pants", "Pants");
+  it.each([
+    ["кожаная обувь из ЕС: MFN 10% → минимум сделки 15%", shoes, "IT", "64039998", 1500],
+    ["синтетические брюки из ЕС: MFN 28,6% > 15% → MFN", cloth, "IT", "62046300", 2860],
+    ["хлопковые брюки из ЕС: MFN 16,6%", cloth, "PT", "62046231", 1660],
+    ["кожаная обувь не из ЕС: не ниже прежних 30%", shoes, "CN", "64039998", 3000],
+    ["синтетический трикотаж не из ЕС: MFN 32% выше 30%", cloth, "CN", "61099020", 3200],
+    ["код с точками тоже распознаётся", shoes, "IT", "6403.99.98", 1500],
+    ["кода нет — оценка по группе (обувь ЕС 25%)", shoes, "IT", "", 2500],
+  ])("%s", (_name, category, country, hs, bp) => {
+    expect(dutyRateBp(category, country, DEFAULT_COSTS, hs)).toBe(bp);
+  });
+
+  it("основание пошлины видно в расчёте", () => {
+    expect(estimateCosts(500, 300, shoes, "Made in Italy", DEFAULT_COSTS, "64039998")!.dutyBasis).toBe("HTS");
+    expect(estimateCosts(500, 300, shoes, "Made in Italy")!.dutyBasis).toBe("estimate");
+  });
+});
+
+describe("цены конкурентов (data/tdf-market.csv)", () => {
+  const CSV =
+    "model_code,competitor,total_usd,currency,country,checked_at,url,note\n" +
+    "spsferitoco,farfetch,\"1,000.00\",USD,US,2026-10-10,,\n" +
+    "SPSFERITOCO,farfetch,950.00,USD,US,2026-10-14,,свежее\n" +
+    "SPSFERITOCO,italist,\"1 020,00\",USD,US,2026-10-14,,\n" +
+    "OLDMODEL,farfetch,500,USD,US,2026-09-01,,устарело\n" +
+    "EURMODEL,farfetch,500,EUR,IT,2026-10-14,,\n" +
+    "BAD,amazon,10,USD,US,2026-10-14,,\n";
+  const now = new Date("2026-10-16T12:00:00Z");
+
+  it("разбор: артикул в верхнем регистре, суммы в разных форматах, лишние конкуренты пропускаются", () => {
+    const rows = parseMarket(CSV);
+    expect(rows.map((r) => r.offer.totalCents)).toEqual([100_000, 95_000, 102_000, 50_000, 50_000]);
+    expect(rows[0].modelCode).toBe("SPSFERITOCO");
+  });
+
+  it("берём последнее предложение конкурента; старше 14 дней — не берём", () => {
+    const table = buildMarket(parseMarket(CSV), now);
+    expect(table.get("SPSFERITOCO")?.farfetch?.totalCents).toBe(95_000);
+    expect(table.get("SPSFERITOCO")?.italist?.totalCents).toBe(102_000);
+    expect(table.has("OLDMODEL")).toBe(false);
+  });
+
+  it("рыночное решение v1.0 в расчёте товара по артикулу модели", () => {
+    const [p] = groupProducts(parseFeed(XML));
+    const e = evaluate(p, REGISTRY);
+    // Затраты брюк ≈ $311; два пригодных предложения $950 и $1 020 → база $985 > ориентира $950;
+    // −2,5% = $960,38 > $950; −5% = $935,75 ≤ $950 и сетка проходит → TEST_5.
+    const market = buildMarket(parseMarket(CSV), now);
+    const priced = priceProduct(e.product, e.category, undefined, market).price!;
+    expect(priced.method).toBe("MARKET");
+    expect(priced.decision).toBe("TEST_5");
+    expect(priced.priceCents).toBe(93_575);
+    // Без цен конкурентов — минимум сетки, как раньше.
+    expect(priceProduct(e.product, e.category).price!.method).toBe("GRID");
+  });
+
+  it("предложение в евро или не с американской версии — не учитывается", () => {
+    const market = buildMarket(parseMarket(CSV), now);
+    const p = autoPrice(31_149, market.get("EURMODEL"))!;
+    expect(p.method).toBe("GRID");
+    expect(p.reason).toContain("валюта EUR");
   });
 });

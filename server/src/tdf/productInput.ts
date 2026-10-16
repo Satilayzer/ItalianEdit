@@ -24,6 +24,7 @@ import {
   type CostSettings,
 } from "./economics";
 import { autoPrice, POLICY_VERSION, type AutoPrice } from "./pricing";
+import type { MarketTable } from "./market";
 import { buildDescriptionHtml, type SpecItem } from "../shopify/description";
 import { resolveCategory } from "../shopify/category";
 import { genderTags, normalizeGender } from "../shopify/gender";
@@ -195,16 +196,21 @@ export interface BuildOptions {
   costs?: CostSettings;
   /** Правило «отдавать 1»: потолок остатка в Shopify (INVENTORY_CAP). */
   inventoryCap?: number;
+  /** Цены конкурентов (market.ts). */
+  market?: MarketTable;
 }
 
 /** Затраты и автоматическая цена модели — общий расчёт для импорта и синка. */
 export function priceProduct(
   p: FeedProduct,
   category: Evaluation["category"],
-  settings: CostSettings = DEFAULT_COSTS
+  settings: CostSettings = DEFAULT_COSTS,
+  market?: MarketTable
 ): { costs: CostEstimate | null; price: AutoPrice | null } {
-  const costs = estimateCosts(p.price, p.salePrice, category, p.madeIn, settings);
-  return { costs, price: autoPrice(costs?.directCostsCents ?? null, undefined, settings.fee) };
+  const costs = estimateCosts(p.price, p.salePrice, category, p.madeIn, settings, p.hsCode);
+  // Цены Farfetch US / Italist US по артикулу модели — рыночный режим v1.0.
+  const offers = market?.get(styleCode(p.variants[0]?.id ?? "")?.toUpperCase() ?? "");
+  return { costs, price: autoPrice(costs?.directCostsCents ?? null, offers, settings.fee) };
 }
 
 /** Расчёт цены для метаполя `tdf.pricing`: синк по нему узнаёт, что цена ещё автоматическая. */
@@ -285,7 +291,7 @@ export function variantInput(
 export function productSetInput(e: Evaluation, opts: BuildOptions) {
   const p = e.product;
   const settings = opts.costs ?? DEFAULT_COSTS;
-  const { costs, price } = priceProduct(p, e.category, settings);
+  const { costs, price } = priceProduct(p, e.category, settings, opts.market);
   const country = countryCode(p.madeIn);
   const tags = productTags(e, price !== null);
   const category = resolveCategory(tags);
@@ -316,6 +322,7 @@ export function productSetInput(e: Evaluation, opts: BuildOptions) {
       purchase_eur: costs.purchaseEurCents / 100,
       purchase_usd: costs.purchaseUsdCents / 100,
       duty_rate: costs.dutyBp / 10_000,
+      duty_basis: costs.dutyBasis,
       duty_usd: costs.dutyCents / 100,
       shipping_usd: settings.shippingCents / 100,
       broker_usd: settings.brokerCents / 100,

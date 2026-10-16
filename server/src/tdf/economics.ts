@@ -4,7 +4,14 @@
  * доставка и брокер «заменить договорным тарифом», пошлина «временная
  * ставка до получения HTS-кода». Поэтому результат помечается как estimate
  * и сам по себе цену не утверждает.
+ *
+ * Пошлина с 16.10.2026 — по HS-коду поставщика: базовая ставка США (MFN) из
+ * data/us-hts-rates.json (scripts/us-hts-rates.ts), для товаров из ЕС — не
+ * ниже 15% (сделка США–ЕС, «15% всё включено», с 01.07.2026), для остальных —
+ * не ниже прежней осторожной оценки. Кода нет в таблице — оценка по группе.
  */
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import type { CategoryResult } from "./category";
 import { DEFAULT_PAYMENT_FEE, divHalfUp, floorPriceCents, type PaymentFee } from "./pricing";
@@ -19,8 +26,12 @@ export interface CostSettings {
   fee: PaymentFee;
   /** НДС Италии, базисные пункты: розничная цена поставщика = price × (1 + НДС). */
   retailVatBp: number;
+  /** Базовые ставки США по 6-значному HS-коду, %. null — считаем по группе. */
+  usRates: Record<string, number> | null;
   /** Оценка пошлины, базисные пункты. */
   duty: {
+    /** Минимум для товаров из ЕС по сделке США–ЕС («15% всё включено»). */
+    euDealFloor: number;
     euAccessories: number;
     euClothing: number;
     euShoes: number;
@@ -37,7 +48,8 @@ export const DEFAULT_COSTS: CostSettings = {
   otherCents: 0,
   fee: DEFAULT_PAYMENT_FEE,
   retailVatBp: 2200,
-  duty: { euAccessories: 1500, euClothing: 2200, euShoes: 2500, nonEu: 3000 },
+  usRates: loadUsRates(),
+  duty: { euDealFloor: 1500, euAccessories: 1500, euClothing: 2200, euShoes: 2500, nonEu: 3000 },
 };
 
 /** Страна производства из «Made in …» → ISO-код (для таможни и выбора ставки). */
@@ -85,12 +97,32 @@ export function eurToUsdCents(eurCents: number, rate: number): number {
   return divHalfUp(eurCents * Math.round(rate * 10_000), 10_000);
 }
 
+function loadUsRates(): Record<string, number> | null {
+  try {
+    const path = fileURLToPath(new URL("../../data/us-hts-rates.json", import.meta.url));
+    return JSON.parse(readFileSync(path, "utf8")).rates ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Базовая ставка США по HS-коду, базисные пункты. null — кода нет в таблице. */
+export function usMfnBp(hsCode: string, s: CostSettings = DEFAULT_COSTS): number | null {
+  const hs6 = hsCode.replace(/\D/g, "").slice(0, 6);
+  const pct = hs6.length === 6 ? s.usRates?.[hs6] : undefined;
+  return pct === undefined ? null : Math.round(pct * 100);
+}
+
 export function dutyRateBp(
   category: CategoryResult | null,
   country: string | null,
-  s: CostSettings
+  s: CostSettings,
+  hsCode = ""
 ): number {
-  if (!country || !EU.has(country)) return s.duty.nonEu;
+  const eu = !!country && EU.has(country);
+  const mfn = usMfnBp(hsCode, s);
+  if (mfn !== null) return Math.max(mfn, eu ? s.duty.euDealFloor : s.duty.nonEu);
+  if (!eu) return s.duty.nonEu;
   if (category?.section === "Shoes") return s.duty.euShoes;
   if (category?.section === "Clothing") return s.duty.euClothing;
   return s.duty.euAccessories;
@@ -100,6 +132,8 @@ export interface CostEstimate {
   purchaseEurCents: number;
   purchaseUsdCents: number;
   dutyBp: number;
+  /** HTS — ставка по HS-коду; estimate — оценка по группе товара. */
+  dutyBasis: "HTS" | "estimate";
   dutyCents: number;
   /** Все прямые затраты без платёжной комиссии. */
   directCostsCents: number;
@@ -136,12 +170,13 @@ export function estimateCosts(
   salePrice: number | null,
   category: CategoryResult | null,
   madeIn: string,
-  s: CostSettings = DEFAULT_COSTS
+  s: CostSettings = DEFAULT_COSTS,
+  hsCode = ""
 ): CostEstimate | null {
   const eur = purchaseEurCents(price, salePrice);
   if (eur === null) return null;
   const usd = eurToUsdCents(eur, s.eurUsd);
-  const dutyBp = dutyRateBp(category, countryCode(madeIn), s);
+  const dutyBp = dutyRateBp(category, countryCode(madeIn), s, hsCode);
   const dutyCents = divHalfUp(usd * dutyBp, 10_000);
   const direct = usd + dutyCents + s.shippingCents + s.brokerCents + s.otherCents;
   const breakEven = Math.ceil(((direct + s.fee.fixedCents) * 10_000) / (10_000 - s.fee.rateBp));
@@ -149,6 +184,7 @@ export function estimateCosts(
     purchaseEurCents: eur,
     purchaseUsdCents: usd,
     dutyBp,
+    dutyBasis: usMfnBp(hsCode, s) !== null ? "HTS" : "estimate",
     dutyCents,
     directCostsCents: direct,
     breakEvenCents: breakEven,

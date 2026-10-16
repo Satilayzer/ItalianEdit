@@ -37,6 +37,7 @@ import {
 import { compareAtCents, countryCode, retailItalyUsdCents, DEFAULT_COSTS, type CostSettings } from "./economics";
 import { economics, type AutoPrice } from "./pricing";
 import { classifyByFeed } from "./category";
+import { loadMarket, type MarketTable } from "./market";
 import { resolveCategory } from "../shopify/category";
 
 /** API, под который написаны мутации модуля (changeFromQuantity, productSet.files). */
@@ -251,7 +252,7 @@ export function sameHsCode(feed: string, stored: string | null): boolean {
 export function planSync(
   evaluations: Evaluation[],
   index: Map<string, IndexedProduct>,
-  opts: { inventoryCap?: number; costs?: CostSettings } = {}
+  opts: { inventoryCap?: number; costs?: CostSettings; market?: MarketTable } = {}
 ): SyncPlan {
   const cap = opts.inventoryCap ?? Infinity;
   const settings = opts.costs ?? DEFAULT_COSTS;
@@ -298,7 +299,7 @@ export function planSync(
     let belowGrid = false;
     let modelPriceCents: number | null = [...shop.variants.values()][0]?.priceCents ?? null;
     if (e) {
-      const priced = priceProduct(e.product, e.category, settings);
+      const priced = priceProduct(e.product, e.category, settings, opts.market);
       const est = priced.costs;
       price = priced.price;
       if (est) {
@@ -467,6 +468,8 @@ export interface SyncOptions {
   /** Только посчитать план, ничего не писать. */
   dryRun?: boolean;
   registry?: BrandRegistry;
+  /** Цены конкурентов; по умолчанию — TDF_MARKET_CSV_URL или снимок data/tdf-market.csv. */
+  market?: MarketTable;
   log?: (msg: string) => void;
 }
 
@@ -477,7 +480,8 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
   const evaluations = products.map((p) => evaluate(p, registry));
   const locationId = await primaryLocationId(client);
   const index = await fetchIndex(client);
-  const plan = planSync(evaluations, index, opts);
+  const market = opts.market ?? (await loadMarket()).table;
+  const plan = planSync(evaluations, index, { ...opts, market });
   const create = plan.create.slice(0, opts.createLimit ?? Infinity);
 
   const stats: SyncStats = {
@@ -502,7 +506,7 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
   );
   if (opts.dryRun) return stats;
 
-  const buildOpts = { locationId, inventoryCap: opts.inventoryCap, costs: opts.costs };
+  const buildOpts = { locationId, inventoryCap: opts.inventoryCap, costs: opts.costs, market };
 
   // Файл bulk-мутации Shopify ограничен 20 МБ, а модель в productSet весит ~4,7 КБ:
   // весь каталог (~4,4 тыс.) упирается в предел — грузим пачками.
@@ -623,7 +627,7 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
 
   for (const nv of plan.newVariants) {
     const e = nv.evaluation;
-    const { costs: est } = priceProduct(e.product, e.category, settings);
+    const { costs: est } = priceProduct(e.product, e.category, settings, opts.market);
     const variants = nv.variants.map((v) => {
       // sku у productVariantsBulkCreate живёт только в inventoryItem.
       const { inventoryQuantities, sku: _sku, ...rest } = variantInput(
