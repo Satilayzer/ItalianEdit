@@ -75,6 +75,20 @@ describe("фид TheDoubleF", () => {
     expect(products[0].link).toBe("https://vip.thedoublef.com/products/wide-leg-trousers-sportmax-spsferitoco");
   });
 
+  it("доп. фото берёт из additional_images и additional_images_2 по порядку", () => {
+    const xml = `<feed>${entry({
+      additional_images: "https://cdn.shopify.com/b.jpg,https://cdn.shopify.com/c.jpg",
+      additional_images_2: "https://cdn.shopify.com/d.jpg, https://cdn.shopify.com/b.jpg",
+    })}</feed>`;
+    const [p] = groupProducts(parseFeed(xml));
+    expect(p.images).toEqual([
+      "https://cdn.shopify.com/a.jpg",
+      "https://cdn.shopify.com/b.jpg",
+      "https://cdn.shopify.com/c.jpg",
+      "https://cdn.shopify.com/d.jpg",
+    ]);
+  });
+
   it("цена: пусто — null, а не ноль", () => {
     expect(parseMoney("EUR 182.46")).toBe(182.46);
     expect(parseMoney("0")).toBe(0);

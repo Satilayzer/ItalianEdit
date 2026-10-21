@@ -87,6 +87,24 @@ export function decodeXml(text: string): string {
     });
 }
 
+/**
+ * Доп. фото лежат в нескольких колонках: `additional_images`, затем
+ * `additional_images_2` (добавлена поставщиком 2026-10-21) и, возможно, дальше
+ * по номерам. Порядок колонок сохраняем — он задаёт порядок фото в карточке.
+ */
+function additionalImages(entry: string): string[] {
+  const columns = [...entry.matchAll(/<(?:g:)?(additional_images(?:_(\d+))?)(?:\s[^>]*)?>/g)]
+    .map((m) => ({ tag: m[1], n: m[2] ? Number(m[2]) : 1 }))
+    .sort((a, b) => a.n - b.n);
+  const urls: string[] = [];
+  for (const { tag } of columns) {
+    for (const url of field(entry, tag).split(/[\s,|]+/)) {
+      if (url.startsWith("http") && !urls.includes(url)) urls.push(url);
+    }
+  }
+  return urls;
+}
+
 function field(entry: string, tag: string): string {
   // Поля бывают и с префиксом g: (Google Merchant), и без него.
   const re = new RegExp(`<(?:g:)?${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</(?:g:)?${tag}>`);
@@ -117,14 +135,13 @@ export function parseFeed(xml: string): FeedVariant[] {
   for (const m of xml.matchAll(/<entry(?:\s[^>]*)?>([\s\S]*?)<\/entry>/g)) {
     const e = m[1];
     const link = field(e, "link");
-    const extra = field(e, "additional_images");
     variants.push({
       id: field(e, "id"),
       supplierVariantId: supplierVariantIdFromLink(link),
       productKey: productKeyFromLink(link),
       link,
       imageLink: field(e, "image_link"),
-      additionalImages: extra ? extra.split(/[\s,|]+/).filter((u) => u.startsWith("http")) : [],
+      additionalImages: additionalImages(e),
       price: parseMoney(field(e, "price")),
       salePrice: parseMoney(field(e, "sale_price")),
       availability: field(e, "availability"),
