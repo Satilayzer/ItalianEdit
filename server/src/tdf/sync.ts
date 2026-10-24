@@ -31,6 +31,7 @@ import {
   priceProduct,
   pricingMetafield,
   SOURCE_TAG,
+  TDF_NAMESPACE,
   PRICE_AUTO_TAG,
   PRICE_PENDING_TAG,
 } from "./productInput";
@@ -90,6 +91,7 @@ const INDEX_QUERY = /* GraphQL */ `
               node {
                 id
                 sku
+                title
                 price
                 compareAtPrice
                 inventoryQuantity
@@ -106,6 +108,8 @@ const INDEX_QUERY = /* GraphQL */ `
 export interface IndexedVariant {
   id: string;
   sku: string;
+  /** Значение опции «Размер» (у наших товаров она одна) — уже нормализовано. */
+  title: string;
   quantity: number;
   inventoryItemId: string;
   costCents: number | null;
@@ -163,6 +167,7 @@ export async function fetchIndex(client: ShopifyClient): Promise<Map<string, Ind
     parent.variants.set(r.sku, {
       id: r.id,
       sku: r.sku,
+      title: r.title ?? "",
       quantity: r.inventoryQuantity ?? 0,
       inventoryItemId: r.inventoryItem?.id,
       costCents: amount != null ? Math.round(Number(amount) * 100) : null,
@@ -199,7 +204,18 @@ export interface PriceChange {
   price: AutoPrice;
 }
 
+export interface VariantRemap {
+  productId: string;
+  variantId: string;
+  fromSku: string;
+  /** Новый ID записи фида (SKU) того же размера. */
+  toSku: string;
+  supplierVariantId: string | null;
+}
+
 export interface SyncPlan {
+  /** Поставщик сменил артикул размера: существующий вариант перепривязываем к новому. */
+  remaps: VariantRemap[];
   create: Evaluation[];
   quantities: { inventoryItemId: string; quantity: number; from: number }[];
   costs: { inventoryItemId: string; costCents: number }[];
@@ -260,7 +276,7 @@ export function planSync(
   const cap = opts.inventoryCap ?? Infinity;
   const settings = opts.costs ?? DEFAULT_COSTS;
   const byKey = new Map(evaluations.map((e) => [e.product.key, e]));
-  const plan: SyncPlan = { create: [], quantities: [], costs: [], customs: [], prices: [], compareAts: [], newVariants: [], tags: [], categories: [] };
+  const plan: SyncPlan = { create: [], quantities: [], costs: [], customs: [], prices: [], compareAts: [], newVariants: [], tags: [], categories: [], remaps: [] };
 
   for (const e of evaluations) {
     if (e.include && !index.has(e.product.key)) plan.create.push(e);
@@ -270,9 +286,31 @@ export function planSync(
     const e = byKey.get(key);
     const feedVariants = new Map((e?.product.variants ?? []).map((v) => [v.id, v]));
 
+    // Поставщик сменил артикул размера: у нас размер есть, но его SKU в фиде
+    // пропал, а в фиде есть другой SKU того же размера. Создать размер заново
+    // Shopify не даст (значения опции уникальны) — перепривязываем существующий.
+    const remapped = new Map<string, FeedProduct["variants"][number]>();
+    if (e) {
+      const orphans = [...shop.variants.values()].filter((sv) => !feedVariants.has(sv.sku));
+      for (const fv of e.product.variants) {
+        if (shop.variants.has(fv.id)) continue;
+        const size = normalizeSize(fv.size);
+        const sv = orphans.find((o) => normalizeSize(o.title) === size && !remapped.has(o.sku));
+        if (!sv) continue;
+        remapped.set(sv.sku, fv);
+        plan.remaps.push({
+          productId: shop.id,
+          variantId: sv.id,
+          fromSku: sv.sku,
+          toSku: fv.id,
+          supplierVariantId: fv.supplierVariantId,
+        });
+      }
+    }
+
     // Остатки: правда — фид. Нет в фиде → 0.
     for (const [sku, sv] of shop.variants) {
-      const fv = feedVariants.get(sku);
+      const fv = feedVariants.get(sku) ?? remapped.get(sku);
       const want = fv ? Math.max(0, Math.min(fv.quantity, cap)) : 0;
       if (want !== sv.quantity && sv.inventoryItemId) {
         plan.quantities.push({ inventoryItemId: sv.inventoryItemId, quantity: want, from: sv.quantity });
@@ -335,13 +373,12 @@ export function planSync(
       }
       if (compareFixes.length > 0) plan.compareAts.push({ productId: shop.id, variants: compareFixes });
       // Новые размеры, которых в магазине ещё нет.
-      const missing = e.product.variants.filter((v) => !shop.variants.has(v.id) && v.quantity > 0);
-      const existingSizes = new Set(
-        [...shop.variants.keys()]
-          .map((sku) => feedVariants.get(sku))
-          .filter(Boolean)
-          .map((v) => normalizeSize(v!.size))
+      const remappedTo = new Set([...remapped.values()].map((v) => v.id));
+      const missing = e.product.variants.filter(
+        (v) => !shop.variants.has(v.id) && !remappedTo.has(v.id) && v.quantity > 0
       );
+      // Размеры в магазине — по самим вариантам, а не по SKU из фида: SKU мог смениться.
+      const existingSizes = new Set([...shop.variants.values()].map((sv) => normalizeSize(sv.title)));
       const fresh = missing.filter((v) => !existingSizes.has(normalizeSize(v.size)));
       if (fresh.length > 0) {
         plan.newVariants.push({ productId: shop.id, evaluation: e, variants: fresh, priceCents: modelPriceCents });
@@ -459,6 +496,7 @@ export interface SyncStats {
   pricesUpdated: number;
   compareAtsUpdated: number;
   variantsAdded: number;
+  variantsRemapped: number;
   tagsChanged: number;
   errors: string[];
 }
@@ -500,13 +538,14 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     pricesUpdated: 0,
     compareAtsUpdated: 0,
     variantsAdded: 0,
+    variantsRemapped: 0,
     tagsChanged: 0,
     errors: [],
   };
   log(
     `TDF: фид ${products.length} моделей, к импорту ${stats.eligible}, в магазине ${index.size}; ` +
       `создать ${create.length}, остатков ${plan.quantities.length}, закупок ${plan.costs.length}, кодов ${plan.customs.length}, категорий ${plan.categories.length}, цен ${plan.prices.length}, зачёркнутых ${plan.compareAts.length}, ` +
-      `новых размеров ${plan.newVariants.length}, тегов ${plan.tags.length}`
+      `новых размеров ${plan.newVariants.length}, смена артикула ${plan.remaps.length}, тегов ${plan.tags.length}`
   );
   if (opts.dryRun) return stats;
 
@@ -662,6 +701,29 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     } catch (err) {
       stats.errors.push(`bulk зачёркнутые цены: ${String(err)}`);
     }
+  }
+
+  for (const r of plan.remaps) {
+    const data = await client.graphql<Errors>(UPDATE_PRICES, {
+      productId: r.productId,
+      variants: [{
+        id: r.variantId,
+        inventoryItem: { sku: r.toSku },
+        metafields: [
+          { namespace: TDF_NAMESPACE, key: "variant_id", type: "single_line_text_field", value: r.toSku },
+          ...(r.supplierVariantId
+            ? [{
+                namespace: TDF_NAMESPACE,
+                key: "supplier_variant_gid",
+                type: "single_line_text_field",
+                value: `gid://shopify/ProductVariant/${r.supplierVariantId}`,
+              }]
+            : []),
+        ],
+      }],
+    });
+    collect(stats.errors, "смена артикула", data);
+    stats.variantsRemapped++;
   }
 
   for (const nv of plan.newVariants) {

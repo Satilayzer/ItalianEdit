@@ -381,7 +381,7 @@ describe("план синхронизации — трогаем только п
       autoPriceCents: 32_800,
       variants: new Map([
         ["SPSFERITOCO/XM_SPORM-001_102-40", {
-          id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", quantity: 1,
+          id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", title: "40 IT", quantity: 1,
           inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 32_800,
           compareAtCents: 62_900, hsCode: null, countryCode: "RO",
         }],
@@ -425,6 +425,23 @@ describe("план синхронизации — трогаем только п
     expect(planSync([e], stored("620462")).customs).toEqual([]);
     expect(sameHsCode("62046239", "6204.62")).toBe(true);
     expect(sameHsCode("62046239", "6203")).toBe(false);
+  });
+
+  it("поставщик сменил артикул размера — перепривязываем вариант, а не создаём размер заново", () => {
+    const renamed = {
+      ...trousers,
+      variants: trousers.variants.map((v) =>
+        v.id === "SPSFERITOCO/XM_SPORM-001_102-40" ? { ...v, id: "SPSFERITOCO/XN_NEW-40", supplierVariantId: "999", quantity: 3 } : v
+      ),
+    };
+    const plan = planSync([evaluate(renamed, REGISTRY)], new Map([[trousers.key, shopProduct()]]), { inventoryCap: 1 });
+    expect(plan.remaps).toEqual([{
+      productId: "gid://shopify/Product/1", variantId: "v40",
+      fromSku: "SPSFERITOCO/XM_SPORM-001_102-40", toSku: "SPSFERITOCO/XN_NEW-40", supplierVariantId: "999",
+    }]);
+    // Остаток — по новому артикулу (не обнуляем), размер 40 заново не создаём; 38 — новый.
+    expect(plan.quantities).toEqual([]);
+    expect(plan.newVariants[0].variants.map((v) => v.size)).toEqual(["38 IT"]);
   });
 
   it("новая модель — в создание; существующая — нет", () => {
@@ -595,7 +612,7 @@ describe("зачёркнутая цена — розница в Италии с 
     const [p] = groupProducts(parseFeed(XML));
     const e = evaluate(p, REGISTRY);
     const variant = (compareAt: number | null) => new Map([["SPSFERITOCO/XM_SPORM-001_102-40", {
-      id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", quantity: 1, inventoryItemId: "ii40",
+      id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", title: "40 IT", quantity: 1, inventoryItemId: "ii40",
       costCents: Math.round(18_246 * 1.1298), priceCents: 40_500, compareAtCents: compareAt, hsCode: null, countryCode: "RO",
     }]]);
     const shop = (compareAt: number | null, priceCents = 40_500): IndexedProduct => {
