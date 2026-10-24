@@ -9,7 +9,7 @@ import { parseFeed, groupProducts, parseMoney } from "../src/tdf/feed";
 import { parseBrandRegistry, brandEntry, loadBrandSnapshot } from "../src/tdf/brands";
 import { classify } from "../src/tdf/category";
 import { evaluate, seasonAge, REVIEW } from "../src/tdf/rules";
-import { autoPrice, decidePrice, economics, floorPriceCents, offerUsdCents, toCents } from "../src/tdf/pricing";
+import { autoPrice, decidePrice, economics, floorPriceCents, offerUsdCents, toCents, markupFor, markupPriceCents } from "../src/tdf/pricing";
 import { estimateCosts, purchaseEurCents, countryCode, retailItalyUsdCents, compareAtCents, dutyRateBp, DEFAULT_COSTS } from "../src/tdf/economics";
 import { normalizeSize, sortVariants, productSetInput, productTags, priceProduct, PRICE_AUTO_TAG, PRICE_PENDING_TAG } from "../src/tdf/productInput";
 import { planSync, sameHsCode, EXCLUDED_TAG, COST_CHANGED_TAG, BELOW_GRID_TAG, type IndexedProduct } from "../src/tdf/sync";
@@ -184,6 +184,9 @@ describe("правила отбора R01–R29", () => {
 
 // ── Pricing Logic v1.0: лист «Тесты приёмки» ────────────────────────────────
 
+/** Комиссия v1.0 из листа «Тесты приёмки»: 2,9% + $0,30 (v3.0 по умолчанию — 2,7%). */
+const V1_FEE = { rateBp: 290, fixedCents: 30 };
+
 describe("Pricing Logic v1.0 — тесты приёмки T01–T16", () => {
   const cases: [string, number | null, number | null, number | null, string, number, number | null, number | null][] = [
     // id,   farfetch, italist, затраты, решение,            скидка‰, цена,     остаток
@@ -210,6 +213,7 @@ describe("Pricing Logic v1.0 — тесты приёмки T01–T16", () => {
       farfetchCents: ff === null ? null : toCents(ff),
       italistCents: it_ === null ? null : toCents(it_),
       directCostsCents: costs === null ? null : toCents(costs),
+      fee: V1_FEE,
     });
     expect(r.decision).toBe(decision);
     expect(r.discountPermille).toBe(permille);
@@ -234,7 +238,7 @@ describe("Pricing Logic v1.0 — тесты приёмки T01–T16", () => {
 describe("автоматическая цена при импорте", () => {
   it("нет цен конкурентов — минимум сетки в целых долларах", () => {
     // Брюки Sportmax из фикстуры: закупка €182,46 → $206,14, пошлина 22% $45,35, $35 + $25.
-    const p = autoPrice(31_149)!;
+    const p = autoPrice(31_149, undefined, V1_FEE)!;
     expect(p.method).toBe("GRID");
     expect(p.decision).toBe("MANUAL_DATA");
     expect(p.priceCents).toBe(40_500);
@@ -291,13 +295,13 @@ describe("автоматическая цена при импорте", () => {
 });
 
 describe("затраты — пример с листа «Расчет на 1 товар»", () => {
-  it("закупка €100, одежда, Италия: $112,98 + пошлина 22% $24,86 + $35 + $25", () => {
+  it("закупка €100, одежда, Италия: $112,98 + пошлина 22% $24,86 + доставка $20 + сбор DHL $17,5 (v3.0)", () => {
     const c = estimateCosts(120, 100, classify("Apparel & Accessories > Clothing > Pants", "Pants"), "Made in Italy")!;
     expect(c.purchaseUsdCents).toBe(11_298);
     expect(c.dutyCents).toBe(2_486);
-    expect(c.directCostsCents).toBe(11_298 + 2_486 + 3_500 + 2_500);
-    // Комиссия $4,23 при цене $135,58 → итого затрат $202,07, как в таблице.
-    expect(economics(13_558, c.directCostsCents).feeCents).toBe(423);
+    expect(c.directCostsCents).toBe(11_298 + 2_486 + 2_000 + 1_750);
+    // Комиссия v3.0: 2,7% + $0,30 → $3,96 при цене $135,58.
+    expect(economics(13_558, c.directCostsCents).feeCents).toBe(396);
   });
 
   it("sale_price = 0 → закупка = price; пропуск — null", () => {
@@ -329,13 +333,15 @@ describe("товар для Shopify", () => {
     expect(input.status).toBe("DRAFT");
     expect(input.vendor).toBe("Sportmax");
     expect(input.variants.map((v) => v.optionValues[0].name)).toEqual(["38 IT", "40 IT"]);
-    expect(input.variants.every((v) => v.price === "405.00")).toBe(true);
+    expect(input.variants.every((v) => v.price === "328.00")).toBe(true);
     // Розница в Италии: €456,15 + НДС 22% = €556,50 × 1,1298 = $628,73 → $629.
     expect(input.variants.every((v) => v.compareAtPrice === "629.00")).toBe(true);
     expect(input.tags).toContain(PRICE_AUTO_TAG);
     expect(input.tags).not.toContain(PRICE_PENDING_TAG);
     const pricing = JSON.parse(input.metafields.find((m) => m.key === "pricing")!.value);
-    expect(pricing).toMatchObject({ method: "GRID", price_usd: 405, remaining_usd: 81.46, min_margin: 0.2, min_remaining_usd: 40 });
+    // v3.0: затраты $288,99 (закупка $206,14 + пошлина 22% + $20 + $17,5), закупка < $300 → наценка 10%:
+    // ($288,99 + $0,30) × 1,1 / (1 − 2,7% × 1,1) = $327,95 → $328.
+    expect(pricing).toMatchObject({ policy_version: "3.0", method: "MARKUP", price_usd: 328, remaining_usd: 29.85, markup: 0.1 });
     expect(input.variants[0].inventoryItem.cost).toBe((Math.round(18_246 * 1.1298) / 100).toFixed(2));
     // Правило «отдавать 1»: в фиде 2, в магазине 1.
     expect(input.variants[0].inventoryQuantities[0].quantity).toBe(1);
@@ -372,11 +378,11 @@ describe("план синхронизации — трогаем только п
       status: "DRAFT",
       tags: ["tdf", "review:customs", "price:auto", "manual-tag"],
       key: trousers.key,
-      autoPriceCents: 40_500,
+      autoPriceCents: 32_800,
       variants: new Map([
         ["SPSFERITOCO/XM_SPORM-001_102-40", {
           id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", quantity: 1,
-          inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 40_500,
+          inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 32_800,
           compareAtCents: 62_900, hsCode: null, countryCode: "RO",
         }],
       ]),
@@ -429,7 +435,7 @@ describe("план синхронизации — трогаем только п
   it("новый размер добавляется, лишних изменений нет", () => {
     const plan = planSync([e], new Map([[trousers.key, shopProduct()]]), { inventoryCap: 1 });
     expect(plan.newVariants[0].variants.map((v) => v.size)).toEqual(["38 IT"]);
-    expect(plan.newVariants[0].priceCents).toBe(40_500);
+    expect(plan.newVariants[0].priceCents).toBe(32_800);
     expect(plan.quantities).toEqual([]);
     expect(plan.costs).toEqual([]);
     expect(plan.prices).toEqual([]);
@@ -448,7 +454,7 @@ describe("план синхронизации — трогаем только п
     const plan = planSync([changed], new Map([[trousers.key, shopProduct()]]));
     expect(plan.costs[0]).toEqual({ inventoryItemId: "ii40", costCents: Math.round(15_000 * 1.1298) });
     const expected = priceProduct(changed.product, changed.category).price!.priceCents;
-    expect(expected).toBe(34_700);
+    expect(expected).toBe(27_800);
     expect(plan.prices).toEqual([expect.objectContaining({ productId: "gid://shopify/Product/1", variantIds: ["v40"] })]);
     expect(plan.prices[0].price.priceCents).toBe(expected);
     expect(plan.newVariants[0].priceCents).toBe(expected);
@@ -464,8 +470,8 @@ describe("план синхронизации — трогаем только п
     expect(plan.tags[0].remove).toContain(PRICE_AUTO_TAG);
   });
 
-  it("ручная цена ниже сетки — пометка review:below-grid", () => {
-    const plan = planSync([e], new Map([[trousers.key, withPrice(35_000)]]));
+  it("ручная цена ниже формулы v3.0 — пометка review:below-grid", () => {
+    const plan = planSync([e], new Map([[trousers.key, withPrice(30_000)]]));
     expect(plan.prices).toEqual([]);
     expect(plan.tags[0].add).toContain(BELOW_GRID_TAG);
   });
@@ -473,7 +479,7 @@ describe("план синхронизации — трогаем только п
   it("товар без цены (0, price:pending) — цена ставится, пометки меняются", () => {
     const pending = { ...withPrice(0), tags: ["tdf", "review:customs", "price:pending"], autoPriceCents: null };
     const plan = planSync([e], new Map([[trousers.key, pending]]));
-    expect(plan.prices[0].price.priceCents).toBe(40_500);
+    expect(plan.prices[0].price.priceCents).toBe(32_800);
     expect(plan.tags[0].add).toContain(PRICE_AUTO_TAG);
     expect(plan.tags[0].remove).toContain(PRICE_PENDING_TAG);
   });
@@ -652,18 +658,17 @@ describe("цены конкурентов (data/tdf-market.csv)", () => {
     expect(table.has("OLDMODEL")).toBe(false);
   });
 
-  it("рыночное решение v1.0 в расчёте товара по артикулу модели", () => {
+  it("рыночный режим v1.0 по-прежнему считается (autoPrice), но цену товара в v3.0 не задаёт", () => {
     const [p] = groupProducts(parseFeed(XML));
     const e = evaluate(p, REGISTRY);
-    // Затраты брюк ≈ $311; два пригодных предложения $950 и $1 020 → база $985 > ориентира $950;
-    // −2,5% = $960,38 > $950; −5% = $935,75 ≤ $950 и сетка проходит → TEST_5.
     const market = buildMarket(parseMarket(CSV), now);
-    const priced = priceProduct(e.product, e.category, undefined, market).price!;
-    expect(priced.method).toBe("MARKET");
-    expect(priced.decision).toBe("TEST_5");
-    expect(priced.priceCents).toBe(93_575);
-    // Без цен конкурентов — минимум сетки, как раньше.
-    expect(priceProduct(e.product, e.category).price!.method).toBe("GRID");
+    // Два пригодных предложения $950 и $1 020 → база $985; −5% = $935,75 ≤ ориентира $950 → TEST_5.
+    const m = autoPrice(31_149, market.get("SPSFERITOCO"), V1_FEE)!;
+    expect(m.decision).toBe("TEST_5");
+    expect(m.priceCents).toBe(93_575);
+    // Цена товара — по v3.0, с ценами конкурентов и без.
+    expect(priceProduct(e.product, e.category, undefined, market).price!.method).toBe("MARKUP");
+    expect(priceProduct(e.product, e.category).price!.priceCents).toBe(32_800);
   });
 
   it("предложение в евро или не с американской версии — не учитывается", () => {
@@ -671,5 +676,32 @@ describe("цены конкурентов (data/tdf-market.csv)", () => {
     const p = autoPrice(31_149, market.get("EURMODEL"))!;
     expect(p.method).toBe("GRID");
     expect(p.reason).toContain("валюта EUR");
+  });
+});
+
+describe("Pricing Logic v3.0 — наценка на все расходы", () => {
+  it("сетка наценки по закупке: до $300 — 10%, дальше 15%", () => {
+    expect(markupFor(29_999).markupBp).toBe(1000);
+    expect(markupFor(30_000).markupBp).toBe(1500);
+    expect(markupFor(300_000).markupBp).toBe(1500);
+  });
+
+  it("примеры из таблицы v3.0", () => {
+    // Эспадрильи Off-White: закупка $185,66, пошлина 15% (ЕС), +$20 +$17,5 → $251,01; ×1,1 с комиссией → $285.
+    expect(markupPriceCents(25_101, 18_566)).toBe(28_500);
+    // Поло Balenciaga: закупка $636,53, пошлина 19,7% → $799,43; ×1,15 с комиссией → $950.
+    expect(markupPriceCents(79_943, 63_653)).toBe(95_000);
+  });
+
+  it("цена покрывает все расходы с наценкой (комиссия — от самой цены); на доллар дешевле — уже нет", () => {
+    for (let buy = 5_000; buy < 400_000; buy += 913) {
+      const direct = Math.round(buy * 1.15) + 3_750;
+      const k = 10_000 + markupFor(buy).markupBp;
+      const covers = (price: number) => price * 10_000 >= (direct + economics(price, direct).feeCents) * k;
+      const p = markupPriceCents(direct, buy);
+      expect(p % 100).toBe(0);
+      expect(covers(p)).toBe(true);
+      expect(covers(p - 100)).toBe(false);
+    }
   });
 });

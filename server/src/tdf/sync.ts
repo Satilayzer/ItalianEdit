@@ -35,13 +35,16 @@ import {
   PRICE_PENDING_TAG,
 } from "./productInput";
 import { compareAtCents, countryCode, retailItalyUsdCents, DEFAULT_COSTS, type CostSettings } from "./economics";
-import { economics, type AutoPrice } from "./pricing";
+import { markupPriceCents, type AutoPrice } from "./pricing";
 import { classifyByFeed } from "./category";
 import { loadMarket, type MarketTable } from "./market";
 import { resolveCategory } from "../shopify/category";
 
 /** API, под который написаны мутации модуля (changeFromQuantity, productSet.files). */
 export const TDF_API_VERSION = "2026-07";
+
+/** Больше стольких смен цены — массовой операцией, а не поштучно. */
+const BULK_PRICES_FROM = 50;
 
 /** Моделей в одной bulk-мутации создания (лимит файла — 20 МБ). */
 const CREATE_CHUNK = 1000;
@@ -318,7 +321,8 @@ export function planSync(
         }
         modelPriceCents = target;
       } else if (!auto && est && modelPriceCents) {
-        belowGrid = !economics(modelPriceCents, est.directCostsCents, settings.fee).passes;
+        // Ручная цена ниже формулы v3.0 (все расходы с наценкой) — повод проверить.
+        belowGrid = modelPriceCents < markupPriceCents(est.directCostsCents, est.purchaseUsdCents, settings.fee);
       }
       // Зачёркнутая цена: розница в Италии, если она выше цены размера.
       // Ведём её и у ручных цен — это факт о рынке, а не наша цена.
@@ -583,20 +587,55 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
   }
 
   const settings = opts.costs ?? DEFAULT_COSTS;
-  for (const pc of plan.prices) {
-    if (pc.variantIds.length > 0) {
-      const data = await client.graphql<Errors>(UPDATE_PRICES, {
-        productId: pc.productId,
-        variants: pc.variantIds.map((id) => ({ id, price: (pc.price.priceCents / 100).toFixed(2) })),
-      });
-      collect(stats.errors, "цена", data);
+  if (plan.prices.length > BULK_PRICES_FROM) {
+    // Смена логики цен (v3.0) или курса пересчитывает почти весь каталог:
+    // поштучно это час, массово — минуты. Сначала цены, потом расчёт в tdf.pricing
+    // (по нему следующий проход понимает, что цена ещё автоматическая).
+    const priceChanges = plan.prices.filter((pc) => pc.variantIds.length > 0);
+    try {
+      const { results } = await runBulkMutation<any>(
+        client,
+        UPDATE_PRICES,
+        priceChanges.map((pc) => ({
+          productId: pc.productId,
+          variants: pc.variantIds.map((id) => ({ id, price: (pc.price.priceCents / 100).toFixed(2) })),
+        })),
+        { onProgress: (op) => log(`TDF: цены — ${op.status}, ${op.objectCount}`) }
+      );
+      for (const r of results) {
+        const errs = r.data?.productVariantsBulkUpdate?.userErrors ?? [];
+        if (errs.length > 0 || r.errors) stats.errors.push(`цена: ${errs.map((x: any) => x.message).join("; ") || JSON.stringify(r.errors)}`);
+      }
+      const meta = await runBulkMutation<any>(
+        client,
+        SET_METAFIELDS,
+        plan.prices.map((pc) => ({ metafields: [{ ownerId: pc.productId, ...pricingMetafield(pc.price, settings) }] })),
+        { onProgress: (op) => log(`TDF: расчёт цен — ${op.status}, ${op.objectCount}`) }
+      );
+      for (const r of meta.results) {
+        const errs = r.data?.metafieldsSet?.userErrors ?? [];
+        if (errs.length > 0 || r.errors) stats.errors.push(`расчёт цены: ${errs.map((x: any) => x.message).join("; ") || JSON.stringify(r.errors)}`);
+        else stats.pricesUpdated++;
+      }
+    } catch (err) {
+      stats.errors.push(`bulk цены: ${String(err)}`);
     }
-    // Записанная цена — признак «цена ещё автоматическая» для следующего прохода.
-    const meta = await client.graphql<Errors>(SET_METAFIELDS, {
-      metafields: [{ ownerId: pc.productId, ...pricingMetafield(pc.price, settings) }],
-    });
-    collect(stats.errors, "расчёт цены", meta);
-    stats.pricesUpdated++;
+  } else {
+    for (const pc of plan.prices) {
+      if (pc.variantIds.length > 0) {
+        const data = await client.graphql<Errors>(UPDATE_PRICES, {
+          productId: pc.productId,
+          variants: pc.variantIds.map((id) => ({ id, price: (pc.price.priceCents / 100).toFixed(2) })),
+        });
+        collect(stats.errors, "цена", data);
+      }
+      // Записанная цена — признак «цена ещё автоматическая» для следующего прохода.
+      const meta = await client.graphql<Errors>(SET_METAFIELDS, {
+        metafields: [{ ownerId: pc.productId, ...pricingMetafield(pc.price, settings) }],
+      });
+      collect(stats.errors, "расчёт цены", meta);
+      stats.pricesUpdated++;
+    }
   }
 
   // Зачёркнутые цены — массово: при первом проходе это весь каталог.

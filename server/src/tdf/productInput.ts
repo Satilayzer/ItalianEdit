@@ -23,7 +23,7 @@ import {
   type CostEstimate,
   type CostSettings,
 } from "./economics";
-import { autoPrice, POLICY_VERSION, type AutoPrice } from "./pricing";
+import { v3Price, POLICY_VERSION, type AutoPrice } from "./pricing";
 import type { MarketTable } from "./market";
 import { buildDescriptionHtml, type SpecItem } from "../shopify/description";
 import { resolveCategory } from "../shopify/category";
@@ -210,7 +210,9 @@ export function priceProduct(
   const costs = estimateCosts(p.price, p.salePrice, category, p.madeIn, settings, p.hsCode);
   // Цены Farfetch US / Italist US по артикулу модели — рыночный режим v1.0.
   const offers = market?.get(styleCode(p.variants[0]?.id ?? "")?.toUpperCase() ?? "");
-  return { costs, price: autoPrice(costs?.directCostsCents ?? null, offers, settings.fee) };
+  // Цены конкурентов (offers) в v3.0 цену не задают — они для отчёта сравнения.
+  void offers;
+  return { costs, price: v3Price(costs, settings.fee) };
 }
 
 /** Расчёт цены для метаполя `tdf.pricing`: синк по нему узнаёт, что цена ещё автоматическая. */
@@ -224,8 +226,7 @@ export function pricingFacts(price: AutoPrice, settings: CostSettings = DEFAULT_
     payment_fee_usd: e.feeCents / 100,
     remaining_usd: e.remainingCents / 100,
     margin: Math.round(e.margin * 10_000) / 10_000,
-    min_margin: e.band.minMarginBp / 10_000,
-    min_remaining_usd: e.band.minRemainingCents / 100,
+    markup: price.markupBp !== undefined ? price.markupBp / 10_000 : null,
     fx_eur_usd: settings.eurUsd,
     fx_date: settings.eurUsdDate,
     costs_status: "estimate",

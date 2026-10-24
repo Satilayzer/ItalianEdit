@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+
+# Кэш ответов Serper (scripts/tdf-google-prices.ts) — оплаченные запросы, не для git
+data/google-prices-cache.jsonl

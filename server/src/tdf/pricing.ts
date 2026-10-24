@@ -12,12 +12,55 @@
  * Деньги — целые центы, никакого binary float. Округление half-up до цента,
  * сравнения после округления (требование I06).
  *
- * Цена при импорте — autoPrice(): рыночное решение, если оно есть, иначе
- * минимум сетки маржи по нашим затратам. Модуль в магазин не пишет; товар
- * остаётся черновиком, публикацию утверждает человек.
+ * С 24.10.2026 цена при импорте — Pricing Logic v3.0 (markupPrice): наценка
+ * на все расходы по сетке от закупки. Функции v1.0 (decidePrice, сетка маржи)
+ * остаются для рыночного режима и отчётов.
  */
 
-export const POLICY_VERSION = "1.0";
+export const POLICY_VERSION = "3.0";
+
+// ── Pricing Logic v3.0 (Italian_Edit_Pricing_Logic_v3.0.xlsx, 24.10.2026) ──
+//
+// Все расходы = закупка + доставка $20 + сбор DHL $17,5 + пошлина по HS-коду
+// + комиссия оплаты (2,7% от цены + $0,30). Цена = все расходы × (1 + наценка),
+// наценка — по закупке в USD. Комиссия зависит от самой цены, поэтому:
+//   P = (прочие расходы + $0,30) × (1 + m) / (1 − 2,7% × (1 + m)),
+// вверх до целого доллара. Проценты сетки ещё будут меняться.
+
+export interface MarkupBand {
+  /** Закупка от, центы USD, включительно. */
+  fromCents: number;
+  /** Наценка на все расходы, базисные пункты (15% = 1500). */
+  markupBp: number;
+}
+
+export const MARKUP_BANDS: MarkupBand[] = [
+  { fromCents: 0, markupBp: 1000 },
+  { fromCents: 30_000, markupBp: 1500 },
+  { fromCents: 80_000, markupBp: 1500 },
+  { fromCents: 120_000, markupBp: 1500 },
+  { fromCents: 180_000, markupBp: 1500 },
+  { fromCents: 250_000, markupBp: 1500 },
+];
+
+export function markupFor(purchaseUsdCents: number, bands: MarkupBand[] = MARKUP_BANDS): MarkupBand {
+  let band = bands[0];
+  for (const b of bands) if (purchaseUsdCents >= b.fromCents) band = b;
+  return band;
+}
+
+/** Цена по v3.0: все расходы с наценкой, комиссия — от этой же цены, до целого доллара вверх. */
+export function markupPriceCents(
+  directCostsCents: number,
+  purchaseUsdCents: number,
+  fee: PaymentFee = DEFAULT_PAYMENT_FEE,
+  bands: MarkupBand[] = MARKUP_BANDS
+): number {
+  const k = 10_000 + markupFor(purchaseUsdCents, bands).markupBp; // (1 + m) × 10 000
+  const num = (directCostsCents + fee.fixedCents) * k * 10_000;
+  const den = 10_000 * 10_000 - fee.rateBp * k;
+  return Math.ceil(Math.ceil(num / den) / 100) * 100;
+}
 
 export type Decision =
   | "KEEP_BASE"
@@ -68,7 +111,8 @@ export interface PaymentFee {
   fixedCents: number;
 }
 
-export const DEFAULT_PAYMENT_FEE: PaymentFee = { rateBp: 290, fixedCents: 30 };
+/** Комиссия оплаты: 2,7% + $0,30 (Pricing Logic v3.0; в v1.0 было 2,9%). */
+export const DEFAULT_PAYMENT_FEE: PaymentFee = { rateBp: 270, fixedCents: 30 };
 
 export function paymentFeeCents(priceCents: number, fee: PaymentFee): number {
   return divHalfUp(priceCents * fee.rateBp, 10_000) + fee.fixedCents;
@@ -279,13 +323,15 @@ export function wholeDollarPriceCents(
  *  - MARKET — по рынку v1.0 (KEEP_BASE / TEST_2_5 / TEST_5), когда есть цены конкурентов;
  *  - GRID — минимум сетки маржи по нашим затратам, когда рыночного решения нет.
  */
-export type PriceMethod = "MARKET" | "GRID";
+export type PriceMethod = "MARKET" | "GRID" | "MARKUP";
 
 export interface AutoPrice {
   priceCents: number;
   method: PriceMethod;
-  /** Решение v1.0 по рынку (MANUAL_DATA, пока цен конкурентов нет). */
-  decision: Decision;
+  /** Решение v1.0 по рынку; для v3.0 — "V3". */
+  decision: Decision | "V3";
+  /** Наценка v3.0, базисные пункты (для MARKUP). */
+  markupBp?: number;
   economics: Economics;
   reason: string;
 }
@@ -336,6 +382,27 @@ export function offerUsdCents(offer: MarketOffer | null): { cents: number | null
  *
  * null — затраты неизвестны: фиктивную цену не считаем (MANUAL_DATA).
  */
+/**
+ * Цена товара по Pricing Logic v3.0. null — затраты неизвестны (нет закупки):
+ * фиктивную цену не считаем.
+ */
+export function v3Price(
+  costs: { directCostsCents: number; purchaseUsdCents: number } | null,
+  fee: PaymentFee = DEFAULT_PAYMENT_FEE
+): AutoPrice | null {
+  if (!costs) return null;
+  const band = markupFor(costs.purchaseUsdCents);
+  const priceCents = markupPriceCents(costs.directCostsCents, costs.purchaseUsdCents, fee);
+  return {
+    priceCents,
+    method: "MARKUP",
+    decision: "V3",
+    markupBp: band.markupBp,
+    economics: economics(priceCents, costs.directCostsCents, fee),
+    reason: `v3.0: все расходы × (1 + ${band.markupBp / 100}%), наценка по закупке от $${band.fromCents / 100}.`,
+  };
+}
+
 export function autoPrice(
   directCostsCents: number | null,
   market: MarketOffers = { farfetch: null, italist: null },
