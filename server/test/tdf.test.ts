@@ -697,10 +697,14 @@ describe("цены конкурентов (data/tdf-market.csv)", () => {
 });
 
 describe("Pricing Logic v3.0 — наценка на все расходы", () => {
-  it("сетка наценки по закупке: до $300 — 10%, дальше 15%", () => {
+  it("сетка наценки по закупке: до $300 — 10%, до $800 — 15%, до $1 200 — 20%, дальше 25%", () => {
     expect(markupFor(29_999).markupBp).toBe(1000);
     expect(markupFor(30_000).markupBp).toBe(1500);
-    expect(markupFor(300_000).markupBp).toBe(1500);
+    expect(markupFor(79_999).markupBp).toBe(1500);
+    expect(markupFor(80_000).markupBp).toBe(2000);
+    expect(markupFor(119_999).markupBp).toBe(2000);
+    expect(markupFor(120_000).markupBp).toBe(2500);
+    expect(markupFor(300_000).markupBp).toBe(2500);
   });
 
   it("примеры из таблицы v3.0", () => {

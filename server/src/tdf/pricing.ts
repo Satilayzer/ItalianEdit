@@ -34,13 +34,12 @@ export interface MarkupBand {
   markupBp: number;
 }
 
+/** Сетка с 24.10.2026: до $300 — 10%, $300–799 — 15%, $800–1 199 — 20%, от $1 200 — 25%. */
 export const MARKUP_BANDS: MarkupBand[] = [
   { fromCents: 0, markupBp: 1000 },
   { fromCents: 30_000, markupBp: 1500 },
-  { fromCents: 80_000, markupBp: 1500 },
-  { fromCents: 120_000, markupBp: 1500 },
-  { fromCents: 180_000, markupBp: 1500 },
-  { fromCents: 250_000, markupBp: 1500 },
+  { fromCents: 80_000, markupBp: 2000 },
+  { fromCents: 120_000, markupBp: 2500 },
 ];
 
 export function markupFor(purchaseUsdCents: number, bands: MarkupBand[] = MARKUP_BANDS): MarkupBand {
@@ -59,7 +58,11 @@ export function markupPriceCents(
   const k = 10_000 + markupFor(purchaseUsdCents, bands).markupBp; // (1 + m) × 10 000
   const num = (directCostsCents + fee.fixedCents) * k * 10_000;
   const den = 10_000 * 10_000 - fee.rateBp * k;
-  return Math.ceil(Math.ceil(num / den) / 100) * 100;
+  let price = Math.ceil(Math.ceil(num / den) / 100) * 100;
+  // Комиссия округляется до цента — изредка и доллар ниже уже покрывает всё с наценкой.
+  const covers = (p: number) => p * 10_000 >= (directCostsCents + paymentFeeCents(p, fee)) * k;
+  while (price > 100 && covers(price - 100)) price -= 100;
+  return price;
 }
 
 export type Decision =

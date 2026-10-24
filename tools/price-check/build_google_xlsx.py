@@ -160,6 +160,50 @@ for j in range(r1 + 2, r1 + 2 + len(brands)):
     s.conditional_formatting.add(f"D{j}", CellIsRule(operator="greaterThan", formula=["0.1"], fill=red_fill))
     s.conditional_formatting.add(f"D{j}", CellIsRule(operator="lessThan", formula=["-0.1"], fill=green_fill))
 
+# ── По ступеням наценки ──────────────────────────────────────────────────
+# Ступени — из MARKUP_BANDS (server/src/tdf/pricing.ts); синие ячейки можно править для подписи.
+BANDS = [(0, 300, 0.10), (300, 800, 0.15), (800, 1200, 0.20), (1200, 1_000_000, 0.25)]
+m = wb.create_sheet("По наценке", 1)
+m["A1"] = "Наши цены v3.0 против Google по ступеням наценки (закупка, USD)"
+m["A1"].font = Font(name=F, bold=True, size=14)
+m["A2"] = ("«Мы к Google» = наша цена / средняя первых трёх − 1: минус — мы дешевле. "
+           "Основная цифра — Google с брендом в названии; без фильтра — для справки.")
+m["A2"].font = grey
+m["A2"].alignment = Alignment(wrap_text=True)
+m.merge_cells("A2:J2")
+m.row_dimensions[2].height = 30
+header(m, 4, ["Закупка от, USD", "Закупка до, USD", "Наценка на все расходы", "Моделей", "Наша цена, в среднем",
+              "Google с брендом, в среднем", "Мы к Google (с брендом), в среднем", "Дешевле Google", "Дороже >10%",
+              "Мы к Google (первые 3 без фильтра), в среднем"], [11, 11, 11, 9, 12, 12, 14, 10, 10, 16])
+m.row_dimensions[4].height = 58
+E_, N_ = (f"'Сравнение'!${c}$2:${c}${last}" for c in "EN")
+Ia, Ka, La = (f"'Сравнение'!${c}$2:${c}${last}" for c in "IKL")
+for r, (lo, hi, mk) in enumerate(BANDS, 5):
+    for col, v, fmt in ((1, lo, "$#,##0"), (2, hi, "$#,##0"), (3, mk, "0%")):
+        c = m.cell(row=r, column=col, value=v)
+        c.font, c.number_format = blue, fmt
+    cond = f'{E_},">="&A{r},{E_},"<"&B{r}'
+    for col, (fm, fmt) in {
+        4: (f"=COUNTIFS({cond})", "0"),
+        5: (f'=IFERROR(AVERAGEIFS({Ia},{cond}),"")', "$#,##0"),
+        6: (f'=IFERROR(AVERAGEIFS({Ka},{cond}),"")', "$#,##0"),
+        7: (f'=IFERROR(AVERAGEIFS({La},{cond}),"")', "+0.0%;-0.0%"),
+        8: (f'=COUNTIFS({cond},{La},"<0")', "0"),
+        9: (f'=COUNTIFS({cond},{La},">0.1")', "0"),
+        10: (f'=IFERROR(AVERAGEIFS({N_},{cond}),"")', "+0.0%;-0.0%"),
+    }.items():
+        c = m.cell(row=r, column=col, value=fm)
+        c.font, c.number_format = green_f, fmt
+tot = 5 + len(BANDS)
+m.cell(row=tot, column=1, value="Итого").font = bold
+for col, (fm, fmt) in {4: (f"=SUM(D5:D{tot - 1})", "0"), 7: (f"=AVERAGE({La})", "+0.0%;-0.0%"),
+                       8: (f"=SUM(H5:H{tot - 1})", "0"), 9: (f"=SUM(I5:I{tot - 1})", "0"),
+                       10: (f"=AVERAGE({N_})", "+0.0%;-0.0%")}.items():
+    c = m.cell(row=tot, column=col, value=fm)
+    c.font, c.number_format = green_f, fmt
+m.conditional_formatting.add(f"G5:G{tot}", CellIsRule(operator="greaterThan", formula=["0"], fill=red_fill))
+m.conditional_formatting.add(f"G5:G{tot}", CellIsRule(operator="lessThan", formula=["0"], fill=green_fill))
+
 wb.calculation.fullCalcOnLoad = True
 wb.save(out)
 print(f"{len(rows)} строк, брендов в сводке {len(brands)} → {out}")
