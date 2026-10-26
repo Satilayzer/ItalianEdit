@@ -443,8 +443,41 @@
       aspect-ratio: 4 / 5;
     }
 
+    /*
+     * На телефоне бирки листаются вбок, одной строкой под видео: столбик
+     * в 60vh занимал полэкрана и прятал большую часть списка. Свайп
+     * родной, стрелки не нужны. Следующая бирка выглядывает с края —
+     * видно, что лента листается.
+     */
     .ie-dsg__viewport {
-      height: 60vh;
+      height: auto;
+      padding-inline-start: 0;
+    }
+
+    .ie-dsg__track {
+      flex-direction: row;
+      column-gap: var(--ie-dsg-gap, 24px);
+      row-gap: 0;
+      height: auto;
+      padding-inline: var(--ie-gutter);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-padding-block: 0;
+      scroll-padding-inline: var(--ie-gutter);
+      overscroll-behavior-x: contain;
+    }
+
+    /* Номер над биркой, а не слева: в ряду каждая колонка — одна бирка. */
+    .ie-dsg__item {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.5rem;
+      min-height: 0;
+      padding-inline: 0;
+    }
+
+    .ie-dsg__label {
+      width: min(var(--ie-dsg-label, 160px), 62vw);
     }
 
     .ie-dsg__nav {

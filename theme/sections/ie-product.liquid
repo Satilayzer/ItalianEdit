@@ -320,6 +320,8 @@
         </span>
       </p>
 
+      <p class="ie-pdp__duties">Shipping and import duties are included in the price.</p>
+
       {%- if color_name != blank -%}
         <div class="ie-pdp__option">
           <p class="ie-pdp__option-label">{{ section.settings.color_label }}: {{ color_name }}</p>
@@ -987,6 +989,14 @@
 
   .ie-pdp__discount {
     color: var(--ie-bordo);
+  }
+
+  .ie-pdp__duties {
+    margin: 0;
+    font-family: var(--ie-sans);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--ie-muted);
   }
 
   /* ------------------------------------------------------------------ */
