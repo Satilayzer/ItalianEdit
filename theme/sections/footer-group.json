@@ -77,6 +77,18 @@
           },
           "blocks": {}
         },
+        "ie_socials": {
+          "type": "ie-socials",
+          "settings": {
+            "heading": "OUR SOCIALS",
+            "instagram": "https://www.instagram.com/italian__edit/",
+            "pinterest": "https://www.pinterest.com/italian__edit/",
+            "facebook": "https://www.facebook.com/ItalianEdit",
+            "telegram": "https://t.me/italian_edit",
+            "menu_spacing": 12
+          },
+          "blocks": {}
+        },
         "image_seal": {
           "type": "image",
           "name": "t:names.image",
@@ -106,6 +118,7 @@
         "menu_ywDwTf",
         "menu_UR3gWa",
         "menu_4KapTg",
+        "ie_socials",
         "image_seal"
       ],
       "name": "t:names.footer",
@@ -120,15 +133,6 @@
     "utilities": {
       "type": "footer-utilities",
       "blocks": {
-        "ie_instagram": {
-          "type": "ie-instagram",
-          "settings": {
-            "url": "https://www.instagram.com/italian__edit/",
-            "label": "Follow Our Instagram",
-            "icon_size": 32
-          },
-          "blocks": {}
-        },
         "footer_copyright_gF93Yj": {
           "type": "footer-copyright",
           "name": "t:names.copyright",
@@ -142,7 +146,6 @@
         }
       },
       "block_order": [
-        "ie_instagram",
         "footer_copyright_gF93Yj"
       ],
       "settings": {
