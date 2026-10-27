@@ -1,31 +1,40 @@
 {% doc %}
-  «More» в мобильной строке категорий раскрывает то же подменю, что на ПК
-  открывается наведением: Jewelry, Accessories, Kids.
+  Пункты мобильной строки категорий с подпунктами раскрывают то же
+  подменю, что на ПК открывается наведением: Designers — бренды для
+  женщин и мужчин, Clothing / Shoes / Bags — виды, More — Jewelry,
+  Accessories.
 
   Строку рисует блок темы blocks/_header-menu.liquid (ветка navigation_bar)
   плоским списком ссылок — подменю там нет вовсе. Сам блок почти не правим:
   в нём две наши строки, обе вызывают этот сниппет.
 
-  @param {string} part - 'toggle' — кнопка вместо ссылки у одного пункта
-    (для остальных пунктов сниппет ничего не выводит, и блок рисует свою
-    ссылку); 'panels' — панели с подпунктами, стили и скрипт.
+  @param {string} part - 'toggle' — кнопка вместо ссылки у пункта с
+    подпунктами (для остальных пунктов сниппет ничего не выводит, и блок
+    рисует свою ссылку); 'panels' — панели с подпунктами, стили и скрипт.
   @param {object} [link] - пункт меню (для 'toggle').
   @param {number} [index] - номер пункта в меню (для 'toggle').
   @param {object[]} [links] - все пункты меню (для 'panels').
   @param {string} block_id - id блока меню: из него собираются id панелей.
 
-  Какие пункты раскрываются: с подпунктами И ведущие на служебный список
-  всех коллекций (/collections). Это ровно «More» — тот же признак, по
-  которому header-actions-extra гасит переход. Остальные пункты с
-  подпунктами (Clothing, Shoes…) ведут на свои коллекции, и по тапу
-  человек ждёт перехода, а не меню. Название пункта не проверяем:
-  менеджер может переписать «More» в любой момент.
+  Раскрывается каждый пункт, у которого есть подпункты; без подпунктов
+  (New) тап, как и раньше, ведёт по ссылке. Раньше раскрывался только
+  «More», а Clothing и прочие сразу уводили в коллекцию — подкатегорий
+  с телефона было не найти. Сама коллекция остаётся в панели: в меню
+  первым подпунктом стоит «All Clothing» и т. п., а если такого пункта
+  нет, панель добавляет «View all» сама (кроме «More»: он ведёт на
+  служебный /collections, переход туда header-actions-extra гасит).
+
+  Третий уровень меню (у Designers: Women / Men → бренды) выводим
+  группами: подпункт — подпись, под ним его ссылки. Свои адреса у Women и
+  Men — та же /pages/designers, что у «All designers», поэтому ссылками их
+  не делаем.
 
   Панель — родной popover. Он рисуется в верхнем слое страницы, поэтому
   его не обрезает прокрутка строки категорий (overflow-x: auto у её
   контейнера обрезал бы любой выпадающий блок внутри). Закрытие по Esc
-  браузер делает сам. Тап мимо — тоже, но у popover он проходит
-  насквозь на страницу, поэтому под списком своя подложка (см. стили).
+  браузер делает сам, а открытие одной панели закрывает другую. Тап
+  мимо — тоже закрывает, но у popover он проходит насквозь на страницу,
+  поэтому под списком своя подложка (см. стили).
 {% enddoc %}
 
 {%- liquid
@@ -33,7 +42,7 @@
 -%}
 
 {%- if part == 'toggle' -%}
-  {%- if link.links.size > 0 and link.url == index_url -%}
+  {%- if link.links.size > 0 -%}
     <button
       type="button"
       class="menu-list__item ie-more-toggle"
@@ -45,25 +54,60 @@
   {%- endif -%}
 {%- elsif part == 'panels' -%}
   {%- for link in links -%}
-    {%- if link.links.size > 0 and link.url == index_url -%}
+    {%- if link.links.size > 0 -%}
+      {%- liquid
+        assign show_all = true
+        if link.url == index_url
+          assign show_all = false
+        else
+          for child in link.links
+            if child.url == link.url
+              assign show_all = false
+              break
+            endif
+          endfor
+        endif
+      -%}
       <div
         id="ie-more-{{ block_id }}-{{ forloop.index }}"
         class="ie-more-panel"
         popover
       >
         <ul class="ie-more-panel__list list-unstyled" role="list">
-          {%- for child in link.links -%}
+          {%- if show_all -%}
             <li>
-              <a
-                href="{{ child.url }}"
-                class="ie-more-panel__link"
-                {% if child.current %}
-                  aria-current="page"
-                {% endif %}
-              >
-                {{- child.title -}}
-              </a>
+              <a href="{{ link.url }}" class="ie-more-panel__link">View all</a>
             </li>
+          {%- endif -%}
+          {%- for child in link.links -%}
+            {%- if child.links.size > 0 -%}
+              <li class="ie-more-panel__group">{{ child.title }}</li>
+              {%- for grandchild in child.links -%}
+                <li>
+                  <a
+                    href="{{ grandchild.url }}"
+                    class="ie-more-panel__link"
+                    {% if grandchild.current %}
+                      aria-current="page"
+                    {% endif %}
+                  >
+                    {{- grandchild.title -}}
+                  </a>
+                </li>
+              {%- endfor -%}
+            {%- else -%}
+              <li>
+                <a
+                  href="{{ child.url }}"
+                  class="ie-more-panel__link"
+                  {% if child.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{- child.title -}}
+                </a>
+              </li>
+            {%- endif -%}
           {%- endfor -%}
         </ul>
       </div>
@@ -175,9 +219,17 @@
     color: var(--color-foreground, #111);
   }
 
+  /*
+   * У Designers в списке под тридцать строк — выше экрана телефона.
+   * Список прокручивается внутри панели, а contain не даёт прокрутке
+   * перейти на страницу: прокрутка страницы закрывает меню (см. скрипт).
+   */
   .ie-more-panel__list {
+    max-height: 100%;
     margin: 0;
     padding: 0.25rem 0 0.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     border-block: 1px solid var(--ie-line, #e5e1da);
     background: var(--color-background, #fff);
   }
@@ -196,6 +248,15 @@
    */
   .ie-more-panel:popover-open .ie-more-panel__list > li {
     padding: 0;
+  }
+
+  /* Подпись группы (Women / Men у Designers) — не ссылка, мельче и тише. */
+  .ie-more-panel:popover-open .ie-more-panel__list > .ie-more-panel__group {
+    padding: 1rem var(--ie-gutter, 24px) 0.25rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ie-muted, #8a8a8a);
   }
 
   /* Строки по 44px — палец попадает, не целясь. */
