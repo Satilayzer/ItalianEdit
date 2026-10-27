@@ -1050,8 +1050,33 @@ product-card .product-card__content > .product-grid-view-zoom-out--details,
  * Селектор берём тройной специфичности: у темы это
  * .footer-content[style*='--grid-columns: 4'] с весом (0,2,0), а стили
  * секций грузятся после нашего слоя, так что вес решает всё.
+ *
+ * С 1100px, а не с 750: четыре колонки, три промежутка от 4.5rem и две
+ * дорожки по 128px требуют ≈910px, и уже ≈1000px экрана мало — колонки
+ * сжимались до 24px, пункты меню наезжали друг на друга. Планшет ниже.
  */
-@media (min-width: 750px) {
+@media (min-width: 750px) and (max-width: 1099px) {
+  /*
+   * Планшет: четыре равные колонки на всю ширину, печать над ними у правого
+   * края, приложенная к кромке подвала, — так же, как на телефоне. Сдвиг
+   * печати отступом, а не transform: transform оставил бы над колонками
+   * пустую полосу. Вес (0,4,0) — чтобы перебить правила печати для ≥750px
+   * ниже по файлу.
+   */
+  .shopify-section-group-footer-group .footer-content.footer-content {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .shopify-section-group-footer-group .footer-content.footer-content > .image-block {
+    --ie-seal-shift-y: 0px;
+
+    order: -1;
+    grid-column: 1 / -1;
+    margin-block-start: -80px;
+  }
+}
+
+@media (min-width: 1100px) {
   .shopify-section-group-footer-group .footer-content.footer-content {
     --ie-footer-gap: clamp(4.5rem, 7vw, 9rem);
 
@@ -1166,6 +1191,20 @@ product-card .product-card__content > .product-grid-view-zoom-out--details,
      * отрисовки у .footer-content мы сняли выше для всех ширин.
      */
     margin-block-start: -80px;
+  }
+}
+
+/*
+ * Копирайт в нижней строке — у правого края, где и стоял.
+ *
+ * Слева от него была ссылка на инстаграм; соцсети переехали колонкой
+ * в подвал, и блок в строке остался один. Одиночный блок тема ставит
+ * влево (.utilities--blocks-1), а копирайту место справа, под печатью.
+ */
+@media (min-width: 750px) {
+  .shopify-section-group-footer-group .utilities.utilities--blocks-1 > * {
+    justify-self: end;
+    text-align: right;
   }
 }
 
