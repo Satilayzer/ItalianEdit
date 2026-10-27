@@ -9,7 +9,8 @@
   Разметку и классы берём у blocks/menu.liquid (menu__heading, h5,
   menu__item, paragraph): шрифт, вес заголовка и шаг между пунктами
   подтягиваются из тех же правил, и колонка не отличается от соседних.
-  Пустая ссылка в настройках — пункта нет.
+  Пустая ссылка в настройках — пункта нет. Ключ ссылки (instagram, …)
+  заодно имя значка в snippets/icon.liquid.
 {%- endcomment -%}
 
 {%- liquid
@@ -33,7 +34,18 @@
           -%}
           {%- if url != blank -%}
             <li class="menu__item paragraph">
-              <a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ parts[1] }}</a>
+              <a class="ie-socials__link" href="{{ url }}" target="_blank" rel="noopener noreferrer">
+                <svg
+                  class="ie-socials__icon"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  {%- render 'icon', icon: parts[0] -%}
+                </svg>
+                {{- parts[1] -}}
+              </a>
             </li>
           {%- endif -%}
         {%- endfor -%}
@@ -52,6 +64,26 @@
   .ie-socials .menu__heading {
     margin: 0;
     padding-block: var(--padding-sm);
+  }
+
+  .ie-socials__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  /*
+   * Значки из snippets/icon.liquid — те же, что у штатного social-links.
+   * fill задаём явно: у путей там своего fill нет, а по умолчанию в SVG он
+   * чёрный — значок не подхватил бы цвет ссылки. Размер в em — от шрифта
+   * пункта, чтобы значок не перерастал строку.
+   */
+  .ie-socials__icon {
+    display: block;
+    flex-shrink: 0;
+    width: 1.2em;
+    height: 1.2em;
+    fill: currentColor;
   }
 {% endstylesheet %}
 
