@@ -120,45 +120,67 @@
     шапка на телефоне бывает разной высоты (прокрутка, второй ряд,
     баннер сверху). При прокрутке закрываем: шапка уедет, а панель
     осталась бы висеть посреди страницы.
+
+    Слушатели висят на документе, а не на самих панелях. Тема
+    перерисовывает шапку уже после загрузки, и новые панели оставались
+    без слушателей: открывались родным popover без отступа — от самого
+    верха экрана, поверх шапки — и не закрывались прокруткой. Событие
+    beforetoggle не всплывает, поэтому ловим его на погружении (true).
   {%- endcomment -%}
   <script>
     (() => {
-      document.querySelectorAll('.ie-more-panel').forEach((panel) => {
-        if (panel.dataset.ieBound) return;
-        panel.dataset.ieBound = 'true';
+      if (window.ieNavMoreBound) return;
+      window.ieNavMoreBound = true;
 
-        const toggle = document.querySelector(`[popovertarget="${panel.id}"]`);
+      const openPanels = () => document.querySelectorAll('.ie-more-panel:popover-open');
 
-        const place = () => {
-          const row = panel.parentElement;
-          const bottom = row ? row.getBoundingClientRect().bottom : 0;
-          panel.style.setProperty('--ie-more-top', `${Math.max(0, bottom)}px`);
-        };
+      const place = (panel) => {
+        const row = panel.parentElement;
+        const bottom = row ? row.getBoundingClientRect().bottom : 0;
+        // Строка категорий ушла за верх экрана — ставить панель не под что.
+        if (bottom <= 0) return false;
+        panel.style.setProperty('--ie-more-top', `${bottom}px`);
+        return true;
+      };
 
-        panel.addEventListener('beforetoggle', (event) => {
+      document.addEventListener(
+        'beforetoggle',
+        (event) => {
+          const panel = event.target;
+          if (!(panel instanceof HTMLElement) || !panel.classList.contains('ie-more-panel')) return;
+
           const open = event.newState === 'open';
-          toggle?.toggleAttribute('data-open', open);
-          if (open) place();
-        });
+          if (open && !place(panel)) {
+            event.preventDefault();
+            return;
+          }
+          document
+            .querySelector(`[popovertarget="${panel.id}"]`)
+            ?.toggleAttribute('data-open', open);
+        },
+        true
+      );
 
-        // Поворот телефона с открытым меню меняет высоту шапки.
-        window.addEventListener('resize', () => {
-          if (panel.matches(':popover-open')) place();
-        });
-
-        // Тап в подложку под списком: цель события — сама панель.
-        panel.addEventListener('click', (event) => {
-          if (event.target === panel) panel.hidePopover();
-        });
-
-        window.addEventListener(
-          'scroll',
-          () => {
-            if (panel.matches(':popover-open')) panel.hidePopover();
-          },
-          { passive: true }
-        );
+      // Тап в подложку под списком: цель события — сама панель.
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLElement && target.classList.contains('ie-more-panel')) {
+          target.hidePopover();
+        }
       });
+
+      // Поворот телефона с открытым меню меняет высоту шапки.
+      window.addEventListener('resize', () => {
+        openPanels().forEach((panel) => {
+          if (!place(panel)) panel.hidePopover();
+        });
+      });
+
+      window.addEventListener(
+        'scroll',
+        () => openPanels().forEach((panel) => panel.hidePopover()),
+        { passive: true }
+      );
     })();
   </script>
 {%- endif -%}
@@ -221,11 +243,15 @@
 
   /*
    * У Designers в списке под тридцать строк — выше экрана телефона.
-   * Список прокручивается внутри панели, а contain не даёт прокрутке
-   * перейти на страницу: прокрутка страницы закрывает меню (см. скрипт).
+   * Высота списка — до Valentino Garavani у Designers (All designers,
+   * подпись Women и четыре бренда) и краешек следующей строки, чтобы было
+   * видно, что дальше есть ещё. Короткие списки (Bags, More) занимают
+   * свою высоту. Остальное прокручивается внутри списка, а contain не
+   * даёт прокрутке перейти на страницу: прокрутка страницы закрывает
+   * меню (см. скрипт).
    */
   .ie-more-panel__list {
-    max-height: 100%;
+    max-height: min(100%, var(--ie-more-max, 18rem));
     margin: 0;
     padding: 0.25rem 0 0.5rem;
     overflow-y: auto;
