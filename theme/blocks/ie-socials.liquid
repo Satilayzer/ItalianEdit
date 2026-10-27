@@ -66,10 +66,16 @@
     padding-block: var(--padding-sm);
   }
 
+  /*
+   * vertical-align: top — иначе inline-flex садится на базовую линию,
+   * под ним остаётся место под выносные элементы, и пункт выходил 29px
+   * против 24px у соседних колонок.
+   */
   .ie-socials__link {
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
+    vertical-align: top;
   }
 
   /*
