@@ -79,7 +79,7 @@ describe("buildDraftInput", () => {
     ]);
     const input = b.input as any;
     expect(input.lineItems).toEqual([{ variantId: "gid://shopify/ProductVariant/777", quantity: 1 }]);
-    expect(input.poNumber).toBe("#1023");
+    expect(input.poNumber).toBe("1023");
     expect(input.purchasingEntity.purchasingCompany.companyContactId).toBe("gid://shopify/CompanyContact/3");
     expect(input.customAttributes).toEqual([{ key: "payment_method", value: "Bank Transfer" }]);
     expect(input.shippingAddress).toMatchObject({ countryCode: "IT", provinceCode: "MI", phone: "+390212345" });

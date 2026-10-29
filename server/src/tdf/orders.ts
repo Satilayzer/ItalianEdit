@@ -306,7 +306,8 @@ export function buildDraftInput(
     input: {
       paymentTerms: { paymentTermsTemplateId: PAYMENT_TERMS_TEMPLATE },
       lineItems: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-      poNumber: order.name,
+      // Без «#»: кабинет поставщика сам ставит его перед PO (иначе «PO ##1001»).
+      poNumber: order.name.replace(/^#/, ""),
       purchasingEntity: {
         purchasingCompany: {
           companyId: settings.companyId,
