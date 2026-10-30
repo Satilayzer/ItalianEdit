@@ -58,7 +58,7 @@ export interface CategoryStats {
 
 export async function categorizeStoreProducts(
   client: ShopifyClient,
-  opts: { maxProducts?: number } = {}
+  opts: { maxProducts?: number; refineGeneric?: boolean } = {}
 ): Promise<CategoryStats> {
   const stats: CategoryStats = {
     scanned: 0,
@@ -85,7 +85,7 @@ export async function categorizeStoreProducts(
 
     for (const node of nodes) {
       stats.scanned++;
-      const patch = categoryPatch(node);
+      const patch = categoryPatch(node, { refineGeneric: opts.refineGeneric });
 
       if (!patch) {
         // Разделяем два разных «ничего не делаем»: поля уже стоят —

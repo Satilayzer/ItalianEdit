@@ -41,19 +41,29 @@ const T = {
   sweatshirts: node("aa-1-13-14", "Sweatshirts"),
   shorts: node("aa-1-14", "Shorts"),
   skirts: node("aa-1-15", "Skirts"),
+  onePieces: node("aa-1-9", "One-Pieces"),
   sleepwear: node("aa-1-17", "Sleepwear & Loungewear"),
+  suits: node("aa-1-19", "Suits"),
   swimwear: node("aa-1-20", "Swimwear"),
   kidsClothing: node("aa-1-25", "Baby & Children's Clothing"),
 
   clothingAccessories: node("aa-2", "Clothing Accessories"),
   belts: node("aa-2-6", "Belts"),
   gloves: node("aa-2-13", "Gloves & Mittens"),
+  hats: node("aa-2-17", "Hats"),
+  neckties: node("aa-2-23", "Neckties"),
   scarves: node("aa-2-26", "Scarves & Shawls"),
+  sunglasses: node("aa-2-27", "Sunglasses"),
+
+  bagCharms: node("aa-4-8", "Bag Charms"),
 
   handbags: node("aa-5-4", "Handbags"),
   clutchBags: node("aa-5-4-5", "Clutch Bags"),
   shoulderBags: node("aa-5-4-19", "Shoulder Bags"),
   wallets: node("aa-5-5", "Wallets & Money Clips"),
+
+  // Рюкзаки у Shopify не в «Сумках» одежды, а в отдельной ветке Luggage & Bags.
+  backpacks: node("lb-1", "Backpacks"),
 
   jewelry: node("aa-6", "Jewelry"),
   necklaces: node("aa-6-8", "Necklaces"),
@@ -86,6 +96,7 @@ const RULES: Record<string, CategoryAssignment> = {
   "handbags - bags": T.handbags,
   "shoulder bags - bags": T.shoulderBags,
   "clutch bags - bags": T.clutchBags,
+  "backpacks - bags": T.backpacks,
 
   "boots - shoes": T.boots,
   "sandals - shoes": T.sandals,
@@ -95,6 +106,9 @@ const RULES: Record<string, CategoryAssignment> = {
   "loafers - shoes": T.flats,
   // BG зовёт лодочки Pumps, у Shopify это Heels.
   "pumps - shoes": T.heels,
+  // Lace-Ups (оксфорды, дерби) — тоже плоская обувь. Mules и Clogs своего
+  // узла у Shopify не имеют, а угадывать каблук нельзя: остаются на Shoes.
+  "lace-ups - shoes": T.flats,
 
   "dresses - clothing": T.dresses,
   "skirts - clothing": T.skirts,
@@ -103,10 +117,20 @@ const RULES: Record<string, CategoryAssignment> = {
   "jackets - clothing": T.coatsJackets,
   "sweaters - clothing": T.sweaters,
   "shirts - clothing": T.shirts,
+  "shorts - clothing": T.shorts,
+  "swimwear - clothing": T.swimwear,
+  "suits - clothing": T.suits,
+  // Комбинезоны у Shopify — One-Pieces.
+  "jumpsuits - clothing": T.onePieces,
+  "matching sets - clothing": T.outfitSets,
 
   "belts - accessories": T.belts,
   "gloves - accessories": T.gloves,
   "scarves - accessories": T.scarves,
+  "hats - accessories": T.hats,
+  "ties - accessories": T.neckties,
+  "sunglasses - accessories": T.sunglasses,
+  "bag charms - accessories": T.bagCharms,
   "wallets - accessories": T.wallets,
   // BG пишет Jewellery (британское), у Shopify узел Jewelry.
   "jewellery - accessories": T.jewelry,
@@ -205,13 +229,29 @@ export interface CategoryPatch {
  * Category и Product type не трогаем — иначе задача затирала бы работу менеджера
  * на каждом проходе. Отсюда же идемпотентность.
  */
-export function categoryPatch(product: CategorizableProduct): CategoryPatch | null {
+export function categoryPatch(
+  product: CategorizableProduct,
+  opts: { refineGeneric?: boolean } = {}
+): CategoryPatch | null {
   const assignment = resolveCategory(product.tags);
   if (!assignment) return null;
 
+  // refineGeneric: уточнить общий узел, который дал запасной верхний тег
+  // (Shoes, Accessories…), когда для частного тега появилось правило. Общий —
+  // значит ровно то, что вышло бы из одних верхних тегов: такую категорию
+  // ставили мы сами. Любая другая считается ручной и остаётся.
+  const fallback = opts.refineGeneric
+    ? resolveCategory(product.tags.filter((t) => !t.includes(" - ")))
+    : null;
+  const generic =
+    !!fallback &&
+    fallback.taxonomyId !== assignment.taxonomyId &&
+    product.category?.id === fallback.taxonomyId;
+
   const patch: CategoryPatch = {};
-  if (!product.category?.id) patch.category = assignment.taxonomyId;
-  if (!product.productType?.trim()) patch.productType = assignment.productType;
+  if (!product.category?.id || generic) patch.category = assignment.taxonomyId;
+  const type = product.productType?.trim();
+  if (!type || (generic && type === fallback!.productType)) patch.productType = assignment.productType;
 
   return Object.keys(patch).length > 0 ? patch : null;
 }

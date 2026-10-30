@@ -3,6 +3,8 @@
  *
  *   npx tsx scripts/categorize-products.ts            # показать план, ничего не менять
  *   npx tsx scripts/categorize-products.ts --apply    # записать в Shopify
+ *   … --refine — заодно уточнить общую категорию (Accessories → Sunglasses и т. п.),
+ *                которую дал запасной верхний тег, если для частного тега есть правило
  *
  * Та же логика, что у фоновой задачи shopify-categorizer (см. category.ts):
  * поля выводятся из категорийных тегов и только ДОПИСЫВАЮТСЯ — заполненное
@@ -16,6 +18,7 @@ import { categoryPatch } from "../src/shopify/category";
 import { categorizeStoreProducts } from "../src/shopify/categorizeStoreProducts";
 
 const apply = process.argv.includes("--apply");
+const refineGeneric = process.argv.includes("--refine");
 
 const config = loadConfig();
 if (!config.shopify) {
@@ -25,7 +28,7 @@ if (!config.shopify) {
 const client = new ShopifyClient(config.shopify);
 
 if (apply) {
-  const stats = await categorizeStoreProducts(client, { maxProducts: 1000 });
+  const stats = await categorizeStoreProducts(client, { maxProducts: 20_000, refineGeneric });
   console.log(
     `Просмотрено ${stats.scanned}, заполнено ${stats.updated}, ` +
       `уже было ${stats.skipped}, ошибок ${stats.failed}`
@@ -72,7 +75,7 @@ for (;;) {
 
   for (const n of data.products.nodes) {
     scanned++;
-    const patch = categoryPatch(n);
+    const patch = categoryPatch(n, { refineGeneric });
     if (patch) planned.push({ title: n.title, ...patch });
     else if (n.category?.id && n.productType?.trim()) untouched.push(n.title);
     else unresolved.push(n.title);
@@ -91,4 +94,6 @@ for (const p of planned) {
 console.log(`\nУже заполнены, трогать не будем: ${untouched.length}`);
 console.log(`Категория не опознана: ${unresolved.length}`);
 for (const t of unresolved) console.log(`  · ${t}`);
-console.log("\nЭто сухой прогон. Записать: npx tsx scripts/categorize-products.ts --apply");
+console.log(
+  `\nЭто сухой прогон. Записать: npx tsx scripts/categorize-products.ts --apply${refineGeneric ? " --refine" : ""}`
+);
