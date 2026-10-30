@@ -97,10 +97,12 @@ describe("фид TheDoubleF", () => {
 });
 
 describe("реестр брендов", () => {
-  it("снимок таблицы: 266 брендов, HERO/SHOW/HIDE", () => {
+  it("снимок таблицы: 269 брендов, HERO/SHOW/HIDE", () => {
     const reg = loadBrandSnapshot();
-    expect(reg.size).toBe(266);
+    expect(reg.size).toBe(269);
     expect(brandEntry(reg, "Dolce&Gabbana")).toMatchObject({ displayName: "Dolce & Gabbana", status: "HERO" });
+    // Поставщик пишет GUCCI капсом — на сайте бренд выводится как «Gucci».
+    expect(brandEntry(reg, "GUCCI")).toMatchObject({ displayName: "Gucci", status: "HERO" });
   });
 
   it("понимает экспорт листа Google с заголовками над шапкой", () => {
