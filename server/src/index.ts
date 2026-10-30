@@ -13,6 +13,7 @@ import { tagStoreProducts } from "./shopify/tagStoreProducts";
 import { categorizeStoreProducts } from "./shopify/categorizeStoreProducts";
 import { facetStoreProducts } from "./shopify/facetStoreProducts";
 import { googleStoreProducts } from "./shopify/googleStoreProducts";
+import { googleProductStore } from "./shopify/googleProductStore";
 import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 import { syncTdf, TDF_API_VERSION } from "./tdf/sync";
@@ -270,8 +271,18 @@ if (shopifyClient) {
         // Не ошибка: правила в google.ts не вывели значение — товар уйдёт в фид без него.
         console.warn(`shopify-google: без пола ${gender}, без MPN ${mpn}, без раздела ${section}`);
       }
+      // Цвет и материал — на товаре, в стандартных атрибутах shopify.* (googleProduct.ts).
+      const attrs = await googleProductStore(shopifyClient);
+      if (attrs.updated > 0 || attrs.failed > 0) {
+        console.log(
+          `shopify-google: цвет/материал — просмотрено ${attrs.scanned}, обновлено ${attrs.updated}, ошибок ${attrs.failed}`
+        );
+      }
       if (stats.failed > 0) {
         throw new Error(`не записались поля Google у ${stats.failed} вариантов, например: ${stats.errors[0]}`);
+      }
+      if (attrs.failed > 0) {
+        throw new Error(`не записались цвет/материал у ${attrs.failed} товаров, например: ${attrs.errors[0]}`);
       }
     },
   });
