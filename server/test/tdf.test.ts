@@ -297,11 +297,11 @@ describe("автоматическая цена при импорте", () => {
 });
 
 describe("затраты — пример с листа «Расчет на 1 товар»", () => {
-  it("закупка €100, одежда, Италия: $112,98 + пошлина 22% $24,86 + доставка $20 + сбор DHL $17,5 (v3.0)", () => {
+  it("закупка €100, одежда, Италия: $112,98 + пошлина 22% $24,86 + доставка $34 + сбор DHL $17,5 (v3.0)", () => {
     const c = estimateCosts(120, 100, classify("Apparel & Accessories > Clothing > Pants", "Pants"), "Made in Italy")!;
     expect(c.purchaseUsdCents).toBe(11_298);
     expect(c.dutyCents).toBe(2_486);
-    expect(c.directCostsCents).toBe(11_298 + 2_486 + 2_000 + 1_750);
+    expect(c.directCostsCents).toBe(11_298 + 2_486 + 3_400 + 1_750);
     // Комиссия v3.0: 2,7% + $0,30 → $3,96 при цене $135,58.
     expect(economics(13_558, c.directCostsCents).feeCents).toBe(396);
   });
@@ -335,15 +335,15 @@ describe("товар для Shopify", () => {
     expect(input.status).toBe("DRAFT");
     expect(input.vendor).toBe("Sportmax");
     expect(input.variants.map((v) => v.optionValues[0].name)).toEqual(["38 IT", "40 IT"]);
-    expect(input.variants.every((v) => v.price === "328.00")).toBe(true);
+    expect(input.variants.every((v) => v.price === "344.00")).toBe(true);
     // Розница в Италии: €456,15 + НДС 22% = €556,50 × 1,1298 = $628,73 → $629.
     expect(input.variants.every((v) => v.compareAtPrice === "629.00")).toBe(true);
     expect(input.tags).toContain(PRICE_AUTO_TAG);
     expect(input.tags).not.toContain(PRICE_PENDING_TAG);
     const pricing = JSON.parse(input.metafields.find((m) => m.key === "pricing")!.value);
-    // v3.0: затраты $288,99 (закупка $206,14 + пошлина 22% + $20 + $17,5), закупка < $300 → наценка 10%:
-    // ($288,99 + $0,30) × 1,1 / (1 − 2,7% × 1,1) = $327,95 → $328.
-    expect(pricing).toMatchObject({ policy_version: "3.0", method: "MARKUP", price_usd: 328, remaining_usd: 29.85, markup: 0.1 });
+    // v3.0: затраты $302,99 (закупка $206,14 + пошлина 22% + $34 + $17,5), закупка < $300 → наценка 10%:
+    // ($302,99 + $0,30) × 1,1 / (1 − 2,7% × 1,1) = $343,82 → $344.
+    expect(pricing).toMatchObject({ policy_version: "3.0", method: "MARKUP", price_usd: 344, remaining_usd: 31.42, markup: 0.1 });
     expect(input.variants[0].inventoryItem.cost).toBe((Math.round(18_246 * 1.1298) / 100).toFixed(2));
     // Правило «отдавать 1»: в фиде 2, в магазине 1.
     expect(input.variants[0].inventoryQuantities[0].quantity).toBe(1);
@@ -380,11 +380,11 @@ describe("план синхронизации — трогаем только п
       status: "DRAFT",
       tags: ["tdf", "review:customs", "price:auto", "manual-tag"],
       key: trousers.key,
-      autoPriceCents: 32_800,
+      autoPriceCents: 34_400,
       variants: new Map([
         ["SPSFERITOCO/XM_SPORM-001_102-40", {
           id: "v40", sku: "SPSFERITOCO/XM_SPORM-001_102-40", title: "40 IT", quantity: 1,
-          inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 32_800,
+          inventoryItemId: "ii40", costCents: Math.round(18_246 * 1.1298), priceCents: 34_400,
           compareAtCents: 62_900, hsCode: null, countryCode: "RO",
         }],
       ]),
@@ -454,7 +454,7 @@ describe("план синхронизации — трогаем только п
   it("новый размер добавляется, лишних изменений нет", () => {
     const plan = planSync([e], new Map([[trousers.key, shopProduct()]]), { inventoryCap: 1 });
     expect(plan.newVariants[0].variants.map((v) => v.size)).toEqual(["38 IT"]);
-    expect(plan.newVariants[0].priceCents).toBe(32_800);
+    expect(plan.newVariants[0].priceCents).toBe(34_400);
     expect(plan.quantities).toEqual([]);
     expect(plan.costs).toEqual([]);
     expect(plan.prices).toEqual([]);
@@ -473,7 +473,7 @@ describe("план синхронизации — трогаем только п
     const plan = planSync([changed], new Map([[trousers.key, shopProduct()]]));
     expect(plan.costs[0]).toEqual({ inventoryItemId: "ii40", costCents: Math.round(15_000 * 1.1298) });
     const expected = priceProduct(changed.product, changed.category).price!.priceCents;
-    expect(expected).toBe(27_800);
+    expect(expected).toBe(29_400);
     expect(plan.prices).toEqual([expect.objectContaining({ productId: "gid://shopify/Product/1", variantIds: ["v40"] })]);
     expect(plan.prices[0].price.priceCents).toBe(expected);
     expect(plan.newVariants[0].priceCents).toBe(expected);
@@ -498,7 +498,7 @@ describe("план синхронизации — трогаем только п
   it("товар без цены (0, price:pending) — цена ставится, пометки меняются", () => {
     const pending = { ...withPrice(0), tags: ["tdf", "review:customs", "price:pending"], autoPriceCents: null };
     const plan = planSync([e], new Map([[trousers.key, pending]]));
-    expect(plan.prices[0].price.priceCents).toBe(32_800);
+    expect(plan.prices[0].price.priceCents).toBe(34_400);
     expect(plan.tags[0].add).toContain(PRICE_AUTO_TAG);
     expect(plan.tags[0].remove).toContain(PRICE_PENDING_TAG);
   });
@@ -687,7 +687,7 @@ describe("цены конкурентов (data/tdf-market.csv)", () => {
     expect(m.priceCents).toBe(93_575);
     // Цена товара — по v3.0, с ценами конкурентов и без.
     expect(priceProduct(e.product, e.category, undefined, market).price!.method).toBe("MARKUP");
-    expect(priceProduct(e.product, e.category).price!.priceCents).toBe(32_800);
+    expect(priceProduct(e.product, e.category).price!.priceCents).toBe(34_400);
   });
 
   it("предложение в евро или не с американской версии — не учитывается", () => {

@@ -43,9 +43,9 @@ export const DEFAULT_COSTS: CostSettings = {
   // Справочный курс ЕЦБ на 09.10.2026 (в таблице экономики было 1,1298 на 01.10).
   eurUsd: Number(process.env.TDF_EUR_USD) || 1.1206,
   eurUsdDate: process.env.TDF_EUR_USD_DATE || "2026-10-09",
-  // Pricing Logic v3.0: доставка $20 и сбор DHL $17,5 на отправление
-  // (было $35 доставка + $25 брокер по таблице экономики).
-  shippingCents: 2_000,
+  // Pricing Logic v3.0: доставка $34 (с 30.10.2026, было $20) и сбор DHL
+  // $17,5 на отправление (по таблице экономики было $35 доставка + $25 брокер).
+  shippingCents: 3_400,
   brokerCents: 1_750,
   otherCents: 0,
   fee: DEFAULT_PAYMENT_FEE,
