@@ -12,6 +12,7 @@ import { pushPendingProducts } from "./shopify/products";
 import { tagStoreProducts } from "./shopify/tagStoreProducts";
 import { categorizeStoreProducts } from "./shopify/categorizeStoreProducts";
 import { facetStoreProducts } from "./shopify/facetStoreProducts";
+import { googleStoreProducts } from "./shopify/googleStoreProducts";
 import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 import { syncTdf, TDF_API_VERSION } from "./tdf/sync";
@@ -243,6 +244,34 @@ if (shopifyClient) {
       }
       if (stats.failed > 0) {
         throw new Error(`не записались метаполя фильтров у ${stats.failed} товаров`);
+      }
+    },
+  });
+}
+
+// Атрибуты Google Merchant Center на вариантах (mm-google-shopping.*): пол, возраст,
+// состояние, MPN, система размеров, custom labels. Приложение Google & YouTube
+// берёт их только отсюда. Labels зависят от цены и скидки, поэтому проход
+// полный, а не только по новинкам. Раз в час: чтение 10 тыс. вариантов упирается
+// в лимит API (~10 мин), чаще — значит тормозить остальные задачи.
+if (shopifyClient) {
+  jobs.push({
+    name: "shopify-google",
+    intervalMs: 60 * 60_000,
+    run: async () => {
+      const stats = await googleStoreProducts(shopifyClient);
+      if (stats.updated > 0 || stats.failed > 0) {
+        console.log(
+          `shopify-google: просмотрено ${stats.scanned}, обновлено ${stats.updated}, ошибок ${stats.failed}`
+        );
+      }
+      const { gender, mpn, section } = stats.gaps;
+      if (gender + mpn + section > 0) {
+        // Не ошибка: правила в google.ts не вывели значение — товар уйдёт в фид без него.
+        console.warn(`shopify-google: без пола ${gender}, без MPN ${mpn}, без раздела ${section}`);
+      }
+      if (stats.failed > 0) {
+        throw new Error(`не записались поля Google у ${stats.failed} вариантов, например: ${stats.errors[0]}`);
       }
     },
   });
