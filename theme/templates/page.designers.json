@@ -171,9 +171,42 @@
             "link": "",
             "number": ""
           }
+        },
+        "gucci": {
+          "type": "designer",
+          "settings": {
+            "name": "Gucci",
+            "image": "shopify://shop_images/11.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "prada": {
+          "type": "designer",
+          "settings": {
+            "name": "Prada",
+            "image": "shopify://shop_images/4.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
+        },
+        "saint-laurent": {
+          "type": "designer",
+          "settings": {
+            "name": "Saint Laurent",
+            "image": "shopify://shop_images/9.png",
+            "collection": "",
+            "link": "",
+            "number": ""
+          }
         }
       },
       "block_order": [
+        "gucci",
+        "prada",
+        "saint-laurent",
         "toteme",
         "jimmy-choo",
         "dolce-gabbana",
