@@ -104,6 +104,24 @@
     endfor
   endunless
 
+  comment
+    Есть ли у товара таблица размеров — по тем же тегам, что на странице
+    товара: обувь, джинсы, одежда; сумки и «One Size» без таблицы.
+  endcomment
+  assign has_guide = false
+  unless product.has_only_default_variant
+    if product.tags contains 'Shoes' or product.tags contains 'Jeans Denim - Clothing' or product.tags contains 'Clothing'
+      for option in product.options_with_values
+        for value in option.values
+          if value.name != 'One Size'
+            assign has_guide = true
+            break
+          endif
+        endfor
+      endfor
+    endif
+  endunless
+
   assign product_form_id = 'ie-qa-form-' | append: product.id
 -%}
 
@@ -222,6 +240,8 @@
       </span>
     </p>
 
+    <p class="ie-qa__duties">Shipping from the EU and import duties are included in the price.</p>
+
     {%- if color_name != blank -%}
       <div class="ie-qa__option">
         <p class="ie-qa__option-label">{{ section.settings.color_label }}: {{ color_name }}</p>
@@ -253,7 +273,13 @@
             endfor
           -%}
 
-          <fieldset class="ie-qa__option" data-ie-qa-option-group>
+          <fieldset
+            class="ie-qa__option"
+            data-ie-qa-option-group
+            {% if is_size %}
+              data-ie-qa-size-group
+            {% endif %}
+          >
             <legend class="ie-qa__option-label">
               {{ option.name }}: <span data-ie-qa-option-value>{{ option.selected_value }}</span>
             </legend>
@@ -302,6 +328,24 @@
         {%- endfor -%}
       </div>
     {%- endunless -%}
+
+    {%- comment -%}
+      Таблица размеров. Таблицы лежат в настройках секции товара, а у этой
+      секции настроек в редакторе нет — поэтому саму шторку скрипт по клику
+      забирает со страницы товара (assets/ie-quick-add.js), а здесь только
+      ссылка. Условия показа — те же, что в sections/ie-product.liquid.
+    {%- endcomment -%}
+    {%- if has_guide -%}
+      <button
+        type="button"
+        class="ie-qa__guide-link"
+        data-ie-qa-guide-open
+        data-url="{{ product.url }}"
+        aria-haspopup="dialog"
+      >
+        {{- section.settings.guide_label -}}
+      </button>
+    {%- endif -%}
 
     {%- comment -%}
       Форма темы целиком: <product-form-component> — свой элемент, он
@@ -421,6 +465,7 @@
       "info": "Через запятую. Опции с такими словами в названии показываются прямоугольниками, остальные — цветными кружками."
     },
     { "type": "text", "id": "sku_label", "label": "Подпись артикула", "default": "Ref." },
+    { "type": "text", "id": "guide_label", "label": "Ссылка на таблицу размеров", "default": "Size guide" },
     { "type": "text", "id": "more_label", "label": "Ссылка на страницу товара", "default": "View full details" }
   ]
 }

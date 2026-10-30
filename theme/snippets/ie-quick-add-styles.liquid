@@ -241,6 +241,38 @@
     color: var(--ie-bordo);
   }
 
+  /* Сразу под ценой, к которой относится, — отступ колонки тут велик. */
+  .ie-qa__duties {
+    margin: -0.5rem 0 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--ie-muted);
+  }
+
+  /* Ссылка под размерами — как на странице товара: подпись, а не кнопка. */
+  .ie-qa__guide-link {
+    align-self: flex-start;
+    margin-top: -0.25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--ie-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .ie-qa__guide-link:hover {
+    color: var(--ie-muted);
+  }
+
+  .ie-qa__guide-link[aria-busy='true'] {
+    cursor: progress;
+  }
+
   /* ---------- Опции ---------- */
 
   .ie-qa__options {

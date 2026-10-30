@@ -10,7 +10,8 @@
  *   — добавление в корзину делает тоже тема: внутри начинки лежит
  *     <product-form-component>, он оживает при вставке в документ.
  *
- * Наша работа — принести разметку и переключать варианты.
+ * Наша работа — принести разметку, переключать варианты и показать
+ * таблицу размеров (её шторку берём у страницы товара, см. ниже).
  *
  * Штатный быстрый выбор Horizon (assets/quick-add.js) не годится: он
  * тянет со страницы товара узел [data-product-grid-content], которого
@@ -232,6 +233,129 @@ function sync(root) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Таблица размеров                                                    */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Таблицы живут в настройках секции товара (sections/ie-product.liquid),
+ * поэтому шторку не повторяем, а берём готовую у страницы товара — её
+ * секция стоит в шаблоне product.json под ключом main. Оформление шторки
+ * общее: snippets/ie-size-guide-styles.liquid.
+ *
+ * Шторку кладём в <body>, а не в начинку. Внутри окна быстрой покупки
+ * любой клик по ней тема сочла бы кликом мимо окна (isClickedOutside
+ * сравнивает координаты) и закрыла бы покупку. Открытая через showModal
+ * позже, шторка ложится в верхнем слое поверх окна; Esc закрывает
+ * верхний диалог — то есть её.
+ */
+const GUIDE_SECTION = 'main';
+
+/** Как в ie-product.js: французская и итальянская обувь — в колонке «IT/EU». */
+const GUIDE_FALLBACK = { fr: ['eu', 'it'], it: ['eu'], eu: ['it'] };
+
+/** Разметка шторки по адресу товара; null — у товара таблицы нет. */
+const guideCache = new Map();
+
+async function fetchGuide(productUrl) {
+  if (guideCache.has(productUrl)) return guideCache.get(productUrl);
+
+  const url = new URL(productUrl, window.location.origin);
+  url.searchParams.set('section_id', GUIDE_SECTION);
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Таблица размеров: ответ ${response.status}`);
+
+  const parsed = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const node = parsed.querySelector('[data-ie-guide]');
+  const html = node ? node.outerHTML : null;
+  guideCache.set(productUrl, html);
+  return html;
+}
+
+async function openGuide(button) {
+  const root = button.closest('[data-ie-qa]');
+  const productUrl = button.dataset.url;
+  if (!root || !productUrl || button.getAttribute('aria-busy') === 'true') return;
+
+  button.setAttribute('aria-busy', 'true');
+  let html = null;
+  try {
+    html = await fetchGuide(productUrl);
+  } catch (error) {
+    console.warn(error);
+  } finally {
+    button.removeAttribute('aria-busy');
+  }
+
+  // Шторку не получили — таблица всё равно есть на странице товара.
+  if (!html) {
+    window.location.href = productUrl;
+    return;
+  }
+
+  document.querySelector('[data-ie-qa-guide]')?.remove();
+
+  const holder = document.createElement('div');
+  holder.innerHTML = html;
+  const guide = holder.firstElementChild;
+
+  // Своя метка вместо data-ie-guide: на странице товара (рекомендации
+  // с быстрой покупкой) родная шторка тоже в документе, и путать их нельзя.
+  guide.removeAttribute('data-ie-guide');
+  guide.setAttribute('data-ie-qa-guide', '');
+  const title = guide.querySelector('[id]');
+  if (title) {
+    title.id = `${title.id}-qa`;
+    guide.setAttribute('aria-labelledby', title.id);
+  }
+
+  document.body.append(guide);
+  guide.addEventListener('close', () => guide.remove());
+
+  markGuideRow(guide, root);
+  guide.showModal();
+}
+
+/**
+ * Подсветить строку выбранного размера — то же правило, что #markGuideRow
+ * в ie-product.js: «42 IT» → колонка IT, «38 FR» → FR, потом EU и IT,
+ * «M» → INT, голое число у джинсов → W.
+ */
+function markGuideRow(guide, root) {
+  const table = guide.querySelector('[data-ie-guide-table]');
+  if (!table || !table.tHead || !table.tBodies[0]) return;
+
+  const group = root.querySelector('[data-ie-qa-size-group]');
+  const input = group ? group.querySelector('input[data-ie-qa-option]:checked') : null;
+  const value = input ? input.value : null;
+  if (!value) return;
+
+  const match = value.trim().match(/^(\d+(?:[.,]\d+)?)\s*([a-z]+)?$/i);
+  let size;
+  let systems;
+  if (match) {
+    size = match[1].replace(',', '.');
+    const system = (match[2] || '').toLowerCase();
+    systems = system ? [system, ...(GUIDE_FALLBACK[system] || [])] : ['w', 'it', 'eu'];
+  } else {
+    size = value.trim().toLowerCase();
+    systems = ['int'];
+  }
+
+  const headers = Array.from(table.tHead.rows[0].cells).map((cell) =>
+    cell.textContent.trim().toLowerCase().split(/[\s/]+/)
+  );
+  const column = systems.map((system) => headers.findIndex((tokens) => tokens.includes(system))).find((i) => i !== -1);
+  if (column === undefined) return;
+
+  const row = Array.from(table.tBodies[0].rows).find((tr) => {
+    const cell = tr.cells[column];
+    return cell && cell.textContent.trim().toLowerCase().replace(',', '.') === size;
+  });
+  if (row) row.setAttribute('data-current', '');
+}
+
+/* ------------------------------------------------------------------ */
 /* Слушатели                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -250,6 +374,20 @@ document.addEventListener('click', (event) => {
     event.preventDefault();
     event.stopPropagation();
     open(button);
+    return;
+  }
+
+  const guideButton = event.target.closest('[data-ie-qa-guide-open]');
+  if (guideButton) {
+    event.preventDefault();
+    openGuide(guideButton);
+    return;
+  }
+
+  // Крестик или клик по затемнению: у <dialog> затемнение — это сам диалог.
+  const guide = event.target.closest('[data-ie-qa-guide]');
+  if (guide) {
+    if (event.target.closest('[data-ie-guide-close]') || event.target === guide) guide.close();
     return;
   }
 
