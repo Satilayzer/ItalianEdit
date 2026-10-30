@@ -238,9 +238,11 @@ function sync(root) {
 
 /*
  * Таблицы живут в настройках секции товара (sections/ie-product.liquid),
- * поэтому шторку не повторяем, а берём готовую у страницы товара — её
- * секция стоит в шаблоне product.json под ключом main. Оформление шторки
- * общее: snippets/ie-size-guide-styles.liquid.
+ * поэтому шторку не повторяем, а берём готовую со страницы товара.
+ * Страницу целиком, а не Section Rendering API: секция шаблона отзывается
+ * только на полный id вида template--<число>__main, а число своё у каждой
+ * копии темы — «main» отдаёт 404. Запрос идёт лишь по клику и кешируется.
+ * Оформление шторки общее: snippets/ie-size-guide-styles.liquid.
  *
  * Шторку кладём в <body>, а не в начинку. Внутри окна быстрой покупки
  * любой клик по ней тема сочла бы кликом мимо окна (isClickedOutside
@@ -248,8 +250,6 @@ function sync(root) {
  * позже, шторка ложится в верхнем слое поверх окна; Esc закрывает
  * верхний диалог — то есть её.
  */
-const GUIDE_SECTION = 'main';
-
 /** Как в ie-product.js: французская и итальянская обувь — в колонке «IT/EU». */
 const GUIDE_FALLBACK = { fr: ['eu', 'it'], it: ['eu'], eu: ['it'] };
 
@@ -259,10 +259,7 @@ const guideCache = new Map();
 async function fetchGuide(productUrl) {
   if (guideCache.has(productUrl)) return guideCache.get(productUrl);
 
-  const url = new URL(productUrl, window.location.origin);
-  url.searchParams.set('section_id', GUIDE_SECTION);
-
-  const response = await fetch(url);
+  const response = await fetch(productUrl);
   if (!response.ok) throw new Error(`Таблица размеров: ответ ${response.status}`);
 
   const parsed = new DOMParser().parseFromString(await response.text(), 'text/html');
