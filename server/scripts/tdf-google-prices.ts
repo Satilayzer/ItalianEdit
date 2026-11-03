@@ -6,7 +6,7 @@
  * сколько наша цена выше или ниже. Вторая средняя — только по результатам
  * с брендом в названии (первая тройка Google часто содержит другие модели).
  *
- *   SERPER_API_KEY=… npx tsx scripts/tdf-google-prices.ts [--feed <путь>] [--limit N] [--out файл.csv]
+ *   SERPER_API_KEY=… npx tsx scripts/tdf-google-prices.ts [--feed <путь>] [--brands "Gucci,Prada"] [--limit N] [--out файл.csv]
  *
  * Ответы Serper кэшируются в data/google-prices-cache.jsonl (вне git): при
  * повторном запуске оплаченные запросы не повторяются. Один запрос — 2 кредита.
@@ -88,6 +88,8 @@ async function main() {
   const products = existsSync(feedSrc) ? groupProducts(parseFeed(readFileSync(feedSrc, "utf8"))) : await fetchFeed(feedSrc);
   const registry = await loadBrandRegistry();
   let evals = products.map((p) => evaluate(p, registry)).filter((e) => e.include);
+  const brands = new Set((opt("brands") ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean));
+  if (brands.size > 0) evals = evals.filter((e) => brands.has(e.brand.displayName.toLowerCase()));
   if (opt("limit")) evals = evals.slice(0, Number(opt("limit")));
   console.log(`Моделей: ${evals.length}, в кэше уже: ${evals.filter((e) => cache.has(`${e.brand.displayName} ${e.product.title}`)).length}`);
 

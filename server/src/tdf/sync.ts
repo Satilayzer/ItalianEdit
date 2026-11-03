@@ -12,7 +12,10 @@
  *     пока она автоматическая: цена всех размеров равна записанной в `tdf.pricing`
  *     (или ещё 0 / `price:pending`). Цену, исправленную вручную, не трогает:
  *     ставит `review:cost-changed`, а если она ниже сетки — `review:below-grid`.
- *     Статус, название, описание и ручные теги не трогает никогда.
+ *     Название, описание и ручные теги не трогает никогда;
+ *  6. черновики брендов автопубликации (publish.ts, по умолчанию Gucci, Prada,
+ *     Saint Laurent) после проверки цены и скидки публикует — единственное, что
+ *     синк делает со статусом. Остальные бренды публикует человек (R19).
  *
  * Пропавший из фида размер или модель → остаток 0 (продать нельзя), товар
  * не удаляется: на нём может быть ручная цена и работа менеджера.
@@ -40,6 +43,7 @@ import { markupPriceCents, type AutoPrice } from "./pricing";
 import { classifyByFeed } from "./category";
 import { loadMarket, type MarketTable } from "./market";
 import { resolveCategory } from "../shopify/category";
+import { autoPublishBrands, publishCandidates, publishProducts } from "./publish";
 
 /** API, под который написаны мутации модуля (changeFromQuantity, productSet.files). */
 export const TDF_API_VERSION = "2026-07";
@@ -498,6 +502,7 @@ export interface SyncStats {
   variantsAdded: number;
   variantsRemapped: number;
   tagsChanged: number;
+  published: number;
   errors: string[];
 }
 
@@ -512,6 +517,8 @@ export interface SyncOptions {
   registry?: BrandRegistry;
   /** Цены конкурентов; по умолчанию — TDF_MARKET_CSV_URL или снимок data/tdf-market.csv. */
   market?: MarketTable;
+  /** Бренды автопубликации (в нижнем регистре); по умолчанию — autoPublishBrands(). */
+  autoPublishBrands?: Set<string>;
   log?: (msg: string) => void;
 }
 
@@ -540,6 +547,7 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
     variantsAdded: 0,
     variantsRemapped: 0,
     tagsChanged: 0,
+    published: 0,
     errors: [],
   };
   log(
@@ -774,6 +782,19 @@ export async function syncTdf(client: ShopifyClient, opts: SyncOptions = {}): Pr
       collect(stats.errors, "теги", await client.graphql<Errors>(TAGS_REMOVE, { id: t.productId, tags: t.remove }));
     }
     stats.tagsChanged++;
+  }
+
+  // Автопубликация — по свежему состоянию магазина: цены и остатки этого прохода
+  // уже записаны, новые черновики созданы.
+  const brands = opts.autoPublishBrands ?? autoPublishBrands();
+  if (brands.size > 0) {
+    try {
+      const ready = publishCandidates(await fetchIndex(client), evaluations, brands, settings);
+      if (ready.length > 0) log(`TDF: к публикации ${ready.length} (${[...brands].join(", ")})`);
+      stats.published = await publishProducts(client, ready, stats.errors);
+    } catch (err) {
+      stats.errors.push(`публикация: ${String(err)}`);
+    }
   }
 
   log(`TDF: готово — ${JSON.stringify({ ...stats, errors: stats.errors.length })}`);
