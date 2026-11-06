@@ -330,8 +330,8 @@
       <div class="cart-totals__item cart-totals__tax-note cart-totals__drawer-note cart-primary-typography">
         <small>
           {%- if ie_free_us -%}Free US shipping{%- else -%}US shipping {{ ie_us_rate | money }}{%- endif %}
+          {%- if ships_from_eu %} · import duties included{% endif %}
           · taxes at checkout
-          {%- if ships_from_eu %} · duties paid on delivery{% endif -%}
         </small>
       </div>
     {%- else -%}
@@ -379,9 +379,14 @@
 </div>
 
 {%- unless is_drawer -%}
+  {%- comment -%}
+    Таможенное оформление включено: пошлины в цене (как на странице товара
+    и в быстрой покупке — «import duties are included in the price»).
+    Покупатель ничего не доплачивает курьеру — не писать обратного.
+  {%- endcomment -%}
   {%- if ships_from_eu -%}
     <p class="cart-summary__duties cart-primary-typography">
-      Ships from the EU. US import duties may apply and are paid by the recipient on delivery.
+      Ships from the EU. Import duties are included in the price, nothing to pay on delivery.
     </p>
   {%- endif -%}
 
