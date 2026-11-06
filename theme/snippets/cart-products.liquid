@@ -810,13 +810,15 @@
         'media error';
     }
 
-    .cart-items__price-cell {
+    /* Вес (0,2,0) нарочно: базовые правила обоих элементов стоят ниже
+       в этом файле и с равным весом выиграли бы по порядку. */
+    .cart-items__table-row .cart-items__price-cell {
       display: none;
     }
   }
 
   @container cart-items (min-width: 560px) {
-    .cart-items__price-row--page {
+    .cart-items__details .cart-items__price-row--page {
       display: none;
     }
   }
