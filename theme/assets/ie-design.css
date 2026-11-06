@@ -599,7 +599,8 @@ cart-drawer-component .theme-drawer__badge {
 }
 
 .ie-card__price-compare {
-  color: var(--ie-muted, #9a9a9a);
+  /* #767676 (4.5:1 на белом), как в корзине; общий --ie-muted даёт 2.8:1. */
+  color: #767676;
   white-space: nowrap;
 }
 

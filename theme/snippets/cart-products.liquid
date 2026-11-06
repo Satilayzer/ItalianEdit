@@ -50,20 +50,54 @@
   "
 >
   {% if cart.empty? or force_empty %}
-    {%- if shop.customer_accounts_enabled and customer == null -%}
-      <p>
-        {{ 'actions.log_in_html' | t: link: routes.account_login_url }}
-      </p>
-    {%- endif -%}
+    {%- if context == 'drawer' -%}
+      {%- if shop.customer_accounts_enabled and customer == null -%}
+        <p>
+          {{ 'actions.log_in_html' | t: link: routes.account_login_url }}
+        </p>
+      {%- endif -%}
 
-    <a
-      class="button cart-items__empty-button"
-      href="{{ settings.empty_cart_button_link | default: routes.all_products_collection_url }}"
-    >
-      <span class="button-text">
-        {{ 'actions.continue_shopping' | t }}
-      </span>
-    </a>
+      <a
+        class="button cart-items__empty-button"
+        href="{{ settings.empty_cart_button_link | default: routes.all_products_collection_url }}"
+      >
+        <span class="button-text">
+          {{ 'actions.continue_shopping' | t }}
+        </span>
+      </a>
+    {%- else -%}
+      {%- comment -%}
+        Пустая страница корзины: две равные кнопки — новинки и вишлист —
+        и ссылки на разделы. Новинки ведут в /collections/new, только пока
+        там есть товары; пустая коллекция показала бы «No products found».
+      {%- endcomment -%}
+      {%- liquid
+        assign empty_shop_url = settings.empty_cart_button_link | default: routes.all_products_collection_url
+        if collections['new'].products_count > 0
+          assign empty_shop_url = collections['new'].url
+        endif
+      -%}
+      <div class="cart-empty">
+        <p class="cart-empty__text">
+          Authentic pieces from boutiques in Italy and Europe. Saved something earlier? It is waiting in your wishlist.
+        </p>
+        <div class="cart-empty__actions">
+          <a class="cart-empty__button cart-empty__button--primary" href="{{ empty_shop_url }}">Shop new arrivals</a>
+          <a class="cart-empty__button" href="{{ routes.root_url | append: '/pages/wishlist' | replace: '//', '/' }}">View wishlist</a>
+        </div>
+        <nav class="cart-empty__links" aria-label="Popular sections">
+          <a href="{{ routes.root_url | append: '/pages/designers' | replace: '//', '/' }}">Designers</a>
+          <a href="{{ routes.collections_url }}/clothing">Clothing</a>
+          <a href="{{ routes.collections_url }}/shoes">Shoes</a>
+          <a href="{{ routes.collections_url }}/bags">Bags</a>
+        </nav>
+        {%- if shop.customer_accounts_enabled and customer == null -%}
+          <p class="cart-empty__login">
+            {{ 'actions.log_in_html' | t: link: routes.account_login_url }}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
   {%- else -%}
     <span
       class="visually-hidden"
@@ -258,7 +292,7 @@
                     {%- render 'ie-discount-percent', compare_at: line_compare, price: line_price -%}
                   {%- endcapture -%}
                   {%- assign line_discount = line_discount | strip -%}
-                  <p class="cart-items__price-row">
+                  <p class="cart-items__price-row{% unless context == 'drawer' %} cart-items__price-row--page{% endunless %}">
                     <span class="visually-hidden">
                       {%- if line_discount != blank -%}
                         {{ 'content.price_sale' | t }}
@@ -332,22 +366,66 @@
                     endunless
                   -%}
 
-                  {%- if line_color_name != blank or line_product.has_only_default_variant == false -%}
-                    <div class="cart-items__options">
-                      {%- if line_color_name != blank -%}
-                        <div class="cart-items__option">
-                          <p class="cart-items__option-label">Color: {{ line_color_name }}</p>
-                          <div class="cart-items__values">
-                            <span
-                              class="cart-items__value cart-items__value--circle cart-items__value--static"
-                              style="--ie-swatch: {{ line_color_hex }};"
-                            >
-                              <span class="cart-items__value-face"></span>
-                            </span>
-                          </div>
-                        </div>
-                      {%- endif -%}
+                  {%- comment -%}
+                    Цвет и размер — одной строкой текста: «Color: Gray · Size: 46 IT».
+                    Переключатели размеров раньше стояли в строке всегда и
+                    съедали полэкрана на телефоне; теперь они спрятаны под
+                    «Change» (обычный <details>, без скрипта). После смены
+                    размера тема перерисовывает корзину целиком, и раскрытие
+                    само сворачивается.
 
+                    Цвет из тега — только текстом: вариант всего один, выбирать
+                    нечего. Подпись размера — «Size», а не имя опции: у части
+                    поставщиков опция называется «Italian Size WOMEN».
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign meta_line = ''
+                    if line_color_name != blank
+                      assign meta_line = 'Color: ' | append: line_color_name
+                    endif
+                    assign can_change = false
+                    unless line_product.has_only_default_variant
+                      for option in line_product.options_with_values
+                        assign option_key = option.name | downcase
+                        assign meta_is_size = false
+                        for word in size_words
+                          assign needle = word | strip
+                          if needle != blank and option_key contains needle
+                            assign meta_is_size = true
+                            break
+                          endif
+                        endfor
+                        assign meta_label = option.name
+                        if meta_is_size
+                          assign meta_label = 'Size'
+                        endif
+                        assign meta_value = cur1
+                        if forloop.index == 2
+                          assign meta_value = cur2
+                        elsif forloop.index == 3
+                          assign meta_value = cur3
+                        endif
+                        if meta_line != blank
+                          assign meta_line = meta_line | append: ' · '
+                        endif
+                        assign meta_line = meta_line | append: meta_label | append: ': ' | append: meta_value
+                        if option.values.size > 1
+                          assign can_change = true
+                        endif
+                      endfor
+                    endunless
+                  -%}
+
+                  {%- if can_change -%}
+                    <details class="cart-items__change">
+                      <summary class="cart-items__meta">
+                        <span class="cart-items__meta-text">{{ meta_line }}</span>
+                        <span class="cart-items__change-link">
+                          <span class="cart-items__change-open">Change</span>
+                          <span class="cart-items__change-close">Done</span>
+                        </span>
+                      </summary>
+                    <div class="cart-items__options">
                       {%- unless line_product.has_only_default_variant -%}
                         {%- for option in line_product.options_with_values -%}
                           {%- liquid
@@ -382,7 +460,7 @@
                             data-ie-current-value="{{ current_value | escape }}"
                           >
                             <legend class="cart-items__option-label">
-                              {{ option.name }}: {{ current_value }}
+                              {%- if is_size -%}Choose a size{%- else -%}Choose {{ option.name | downcase }}{%- endif -%}
                             </legend>
 
                             <div class="cart-items__values">
@@ -464,7 +542,34 @@
                         {%- endfor -%}
                       {%- endunless -%}
                     </div>
+                    </details>
+                  {%- elsif meta_line != blank -%}
+                    <p class="cart-items__meta">
+                      <span class="cart-items__meta-text">{{ meta_line }}</span>
+                    </p>
                   {%- endif -%}
+
+                  {%- comment -%}
+                    Откуда едет вещь — по тегу склада (EU/US, см. warehouseByBrand
+                    на сервере). Срок — из политики доставки для США. В шторке
+                    строки нет: там на неё не хватает места.
+                  {%- endcomment -%}
+                  {%- unless context == 'drawer' -%}
+                    {%- liquid
+                      assign ships_from = ''
+                      if line_product.tags contains 'EU'
+                        assign ships_from = 'the EU'
+                      elsif line_product.tags contains 'US'
+                        assign ships_from = 'the US'
+                      endif
+                    -%}
+                    {%- if ships_from != blank -%}
+                      <p class="cart-items__ships">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>
+                        Ships from {{ ships_from }} · 5–10 business days to the US
+                      </p>
+                    {%- endif -%}
+                  {%- endunless -%}
 
                   {%- comment -%}
                     Свойства строки, план подписки и скидки заказа. Значения
@@ -517,9 +622,50 @@
                     {%- endif -%}
                   </div>
 
+                  {%- assign can_remove = item.instructions.can_remove | default: true, allow_false: true -%}
+                  {%- unless context == 'drawer' -%}
+                    <div class="cart-items__line-actions">
+                      {%- render 'wishlist-button', product: item.product, context: 'cart-line' -%}
+                      <button
+                        class="cart-items__remove-link"
+                        type="button"
+                        aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
+                        on:click="/onLineItemRemove/{{ item.index | plus: 1 }}"
+                        {% if can_remove == false %}
+                          hidden
+                        {% endif %}
+                      >
+                        {{- 'icon-delete.svg' | inline_asset_content -}}
+                        <span aria-hidden="true">Remove</span>
+                      </button>
+                    </div>
+                  {%- endunless -%}
                 </td>
+
                 {%- comment -%}
-                  Вишлист и удаление — столбиком в правом верхнем углу строки.
+                  Страница корзины на широком экране: цена отдельной колонкой
+                  справа, стопкой. На узком она стоит строкой под названием —
+                  та копия выше (класс --page) прячется по ширине контейнера,
+                  эта — наоборот. В шторке колонки нет вовсе.
+                {%- endcomment -%}
+                {%- unless context == 'drawer' -%}
+                  <td
+                    class="cart-items__price-cell"
+                    role="cell"
+                    headers="productInformation"
+                  >
+                    <span class="cart-items__price-current">{{ line_price | money }}</span>
+                    {%- if line_discount != blank -%}
+                      <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
+                      <s class="cart-items__price-compare">{{ line_compare | money }}</s>
+                      <span class="cart-items__discount">&#8722;{{ line_discount }}%</span>
+                    {%- endif -%}
+                  </td>
+                {%- endunless -%}
+
+                {%- comment -%}
+                  Шторка: удаление иконкой в правом верхнем углу строки.
+                  Вишлиста в шторке нет — так в утверждённом макете.
                   Сердце берём общим сниппетом темы, но с своим контекстом:
                   у 'card' оно absolute и в белом круге поверх фотографии,
                   а нам нужна голая иконка. Неизвестный контекст даёт класс,
@@ -529,19 +675,17 @@
                   Выбора количества в строке нет, как и на странице товара:
                   чтобы взять две штуки, товар добавляют дважды.
                 {%- endcomment -%}
+                {%- if context == 'drawer' -%}
                 <td
                   class="cart-items__actions"
                   role="cell"
                   headers="productInformation"
                 >
-                  {%- render 'wishlist-button', product: item.product, context: 'cart' -%}
-
                   <button
                     class="button cart-items__remove"
                     type="button"
                     aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
                     on:click="/onLineItemRemove/{{ item.index | plus: 1 }}"
-                    {% assign can_remove = item.instructions.can_remove | default: true, allow_false: true %}
                     {% if can_remove == false %}
                       hidden
                     {% endif %}
@@ -550,6 +694,7 @@
                     <span class="visually-hidden">{{ 'accessibility.remove' | t }}</span>
                   </button>
                 </td>
+                {%- endif -%}
                 <td
                   class="cart-items__error hidden"
                   role="cell"
@@ -573,6 +718,9 @@
             {% endfor %}
           </tbody>
         </table>
+        {%- unless context == 'drawer' -%}
+          <p class="cart-items__note">Items in your cart are not reserved. Popular sizes sell out quickly.</p>
+        {%- endunless -%}
         {% for item in cart.items %}
           {%- liquid
             assign cart_disclosure_unique_id = 'page-' | append: item.index
@@ -634,58 +782,56 @@
   }
 
   /*
-   * Строка — три колонки: фотография, содержимое и узкий столбец действий
-   * справа. Колонок количества и итога по строке больше нет, поэтому
-   * содержимое просто идёт сверху вниз, как на странице товара.
+   * Страница корзины (макет «Корзина Italian Edit», ноябрь 2026): фото,
+   * содержимое на всю ширину и цена отдельной колонкой справа. Действия
+   * («Save to wishlist», «Remove») — текстом внизу содержимого.
    *
-   * Колонка содержимого — не больше 12rem (192px). На 1fr она растягивалась
-   * на всю ширину, и сердце с корзиной уезжали к правому краю; 30rem и
-   * 20rem тоже оказались далеко. 12rem — впритык к самой длинной строке,
-   * «Italian Size WOMEN: IT42 | L» (≈183px); длинные названия и много
-   * размеров переносятся на следующие строки. Иконки сразу за текстом и у
-   * всех строк на одной оси. На телефоне и в шторке колонка и так уже.
-   *
-   * Фотография — до 14rem (224px) вместо исходных 7.5rem: на ПК она
-   * терялась рядом с текстом. Ширина считается от ширины корзины (15cqi),
-   * поэтому в шторке и на телефоне, где до потолка не доходит, размер
-   * прежний.
+   * Фото — 18% ширины списка, от 88 до 156px: на ПК крупно, на телефоне
+   * (список ≈358px) — около 88px, тексту остаётся место.
    */
   .cart-items__table-row {
     display: grid;
-    grid-template-columns: clamp(2.5rem, 15cqi, 14rem) minmax(0, 12rem) auto;
-    /* Без этого колонка auto растягивается на остаток строки, и иконки
-       встают посередине пустоты, а не сразу за текстом. */
-    justify-content: start;
+    grid-template-columns: clamp(5.5rem, 18cqi, 9.75rem) minmax(0, 1fr) auto;
     grid-template-areas:
-      'media details actions'
+      'media details price'
       'media error error';
-    column-gap: var(--gap-md);
+    column-gap: clamp(0.875rem, 3cqi, 1.75rem);
     align-items: start;
     padding-bottom: var(--cart-items-gap);
     margin-bottom: var(--margin-lg);
   }
 
-  /*
-   * Шторка корзины — своя раскладка.
-   *
-   * Иконки у правого края шторки: колонка текста снова 1fr. Это наоборот
-   * к странице корзины, где они стоят сразу за текстом, — в узкой шторке
-   * так просили: сердце и корзина под крестиком закрытия, по правой оси.
-   *
-   * Фото — 40% ширины (~176px в шторке на ПК) вместо общих 15% (~66px).
-   * Это предел: тексту остаётся ≈188px, а строка «Italian Size …» —
-   * ≈183px; крупнее — и она переносится. В узкой шторке (телефон) —
-   * 22% по той же причине.
-   * Страницу корзины правила не трогают.
-   */
-  .cart-drawer__items .cart-items__table-row {
-    grid-template-columns: clamp(2.5rem, 40cqi, 11rem) minmax(0, 1fr) auto;
+  /* Узкий список (телефон): цена уходит строкой под название. */
+  @container cart-items (max-width: 559.98px) {
+    .cart-items__table-row {
+      grid-template-columns: clamp(5.5rem, 27cqi, 6.5rem) minmax(0, 1fr);
+      grid-template-areas:
+        'media details'
+        'media error';
+    }
+
+    .cart-items__price-cell {
+      display: none;
+    }
   }
 
-  @container cart-items (max-width: 400px) {
-    .cart-drawer__items .cart-items__table-row {
-      grid-template-columns: clamp(2.5rem, 22cqi, 9rem) minmax(0, 1fr) auto;
+  @container cart-items (min-width: 560px) {
+    .cart-items__price-row--page {
+      display: none;
     }
+  }
+
+  /*
+   * Шторка корзины: фото, текст, иконка удаления у правого края.
+   * Фото — 26% ширины шторки, но не больше 7rem: размеры теперь спрятаны
+   * под «Change», и строке больше не нужна высота под ряды кнопок.
+   */
+  .cart-drawer__items .cart-items__table-row {
+    grid-template-columns: clamp(4.5rem, 26cqi, 7rem) minmax(0, 1fr) auto;
+    grid-template-areas:
+      'media details actions'
+      'media error error';
+    column-gap: var(--gap-md);
   }
 
   .cart-items__details {
@@ -835,8 +981,10 @@
     color: var(--ie-ink, #111);
   }
 
+  /* #767676, а не общий --ie-muted (#9a9a9a): тот на белом даёт 2.8:1,
+     зачёркнутая цена читалась с трудом. #767676 — 4.5:1. */
   .cart-items__details .cart-items__price-compare {
-    color: var(--ie-muted, #9a9a9a);
+    color: #767676;
   }
 
   .cart-items__details .cart-items__discount {
@@ -982,6 +1130,247 @@
   .cart-items__media {
     grid-area: media;
     padding: 0;
+  }
+
+  /* ---------- Макет корзины (ноябрь 2026): строка товара ---------- */
+
+  /* «Color: Gray · Size: 46 IT  Change» — строка-переключатель. */
+  .cart-items__details .cart-items__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    row-gap: 0.15rem;
+    margin-block-start: var(--margin-xs);
+    color: #595959;
+    letter-spacing: 0.02em;
+    list-style: none;
+  }
+
+  .cart-items__change > summary {
+    cursor: pointer;
+  }
+
+  .cart-items__change > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cart-items__details .cart-items__change-link {
+    color: var(--ie-ink, #111);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .cart-items__change-close,
+  .cart-items__change[open] .cart-items__change-open {
+    display: none;
+  }
+
+  .cart-items__change[open] .cart-items__change-close {
+    display: inline;
+  }
+
+  .cart-items__change .cart-items__options {
+    margin-block-start: 0.6rem;
+    padding: 0.75rem;
+    background: #f7f3ef;
+  }
+
+  .cart-items__change .cart-items__option-label {
+    color: #595959;
+  }
+
+  .cart-items__change .cart-items__value--box .cart-items__value-face {
+    min-width: 3rem;
+    min-height: 2.5rem;
+    background: #fff;
+  }
+
+  .cart-items__details .cart-items__ships {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: var(--margin-2xs, 0.35rem);
+    color: #595959;
+  }
+
+  .cart-items__ships svg {
+    flex: 0 0 auto;
+  }
+
+  /* «Save to wishlist» и «Remove» — текстом, капсом, в одну строку. */
+  .cart-items__line-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.5rem;
+    margin-block-start: var(--margin-md, 0.875rem);
+  }
+
+  .cart-items__line-actions .wishlist-button__control,
+  .cart-items__remove-link {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    cursor: pointer;
+    color: var(--ie-ink, #111);
+    font-family: var(--font-paragraph--family);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .cart-items__details .cart-items__line-actions .wishlist-button__control,
+  .cart-items__details .cart-items__line-actions .wishlist-button__text,
+  .cart-items__details .cart-items__remove-link,
+  .cart-items__details .cart-items__remove-link span {
+    font-size: 0.75rem;
+  }
+
+  .cart-items__remove-link {
+    color: #595959;
+  }
+
+  .cart-items__line-actions .wishlist-button__icon svg,
+  .cart-items__remove-link svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .cart-items__remove-link:hover,
+  .cart-items__line-actions .wishlist-button__control:hover {
+    color: var(--brand-accent, var(--ie-bordo, #4e070d));
+  }
+
+  /* Цена колонкой справа: наша, прежняя, процент — стопкой. */
+  .cart-items__price-cell {
+    grid-area: price;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    min-width: 7rem;
+    padding: 0;
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  .cart-items__price-cell .cart-items__price-current {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ie-ink, #111);
+  }
+
+  .cart-items__price-cell .cart-items__price-compare {
+    font-size: 0.875rem;
+    color: #767676;
+  }
+
+  .cart-items__price-cell .cart-items__discount {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-accent, var(--ie-bordo, #4e070d));
+  }
+
+  /* Страница корзины: линия над списком, ровные отступы между строками. */
+  .cart-page .cart-items__table {
+    border-top: 1px solid var(--ie-ink, #111);
+  }
+
+  .cart-page .cart-items .cart-items__table-row {
+    padding-block: 1.75rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid #ece7e3;
+  }
+
+  .cart-page .cart-items .cart-items__table-row:last-of-type {
+    border-bottom: 1px solid #ece7e3;
+    padding-block-end: 1.75rem;
+  }
+
+  .cart-page .cart-items__details .cart-items__vendor {
+    font-size: 1.125rem;
+  }
+
+  .cart-items__note {
+    margin-block-start: 1.25rem;
+    font-size: 0.8125rem;
+    color: #595959;
+  }
+
+  /* ---------- Пустая корзина ---------- */
+
+  .cart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .cart-empty__text {
+    max-width: 30rem;
+    margin: 0;
+    color: #595959;
+  }
+
+  .cart-empty__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-block-start: 0.5rem;
+  }
+
+  /* Обе кнопки одной ширины — так в макете. */
+  .cart-empty__button {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16.25rem;
+    max-width: 100%;
+    height: 3.25rem;
+    border: 1px solid var(--ie-ink, #111);
+    color: var(--ie-ink, #111);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .cart-empty__button--primary {
+    border-color: var(--brand-accent, var(--ie-bordo, #4e070d));
+    background: var(--brand-accent, var(--ie-bordo, #4e070d));
+    color: #fff;
+  }
+
+  .cart-empty__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.75rem;
+    margin-block-start: 1rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .cart-empty__links a {
+    color: #595959;
+    text-underline-offset: 4px;
+  }
+
+  .cart-empty__login {
+    font-size: 0.8125rem;
+    color: #595959;
   }
 
   .cart-items__media-container {

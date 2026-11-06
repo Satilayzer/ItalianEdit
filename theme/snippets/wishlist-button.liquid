@@ -1,0 +1,63 @@
+{%- doc -%}
+  Кнопка вишлиста. Одна разметка на три места — меняется только обличье.
+
+  Состояние НЕ рендерится на сервере: страницы кеширует CDN одними для
+  всех, а вишлист у каждого свой. Поэтому aria-pressed всегда уезжает
+  в false, а wishlist.js сразу после гидратации приводит его к истине.
+
+  На странице вишлиста отдельной кнопки удаления нет: там стоят те же
+  карточки витрины, и товар снимается повторным нажатием на это же сердце.
+
+  @param {object} product - Товар
+  @param {string} [context] - 'card' (сердце поверх карточки), 'product'
+    (кнопка с подписью на странице товара) или 'cart-line' (ссылка
+    «Save to wishlist» в строке корзины)
+{%- enddoc -%}
+
+{%- liquid
+  assign ctx = context | default: 'card'
+  assign label_off = 'Add ' | append: product.title | append: ' to wishlist'
+  assign label_on = 'Remove ' | append: product.title | append: ' from wishlist'
+
+  assign text_off = ''
+  assign text_on = ''
+  if ctx == 'product'
+    assign text_off = 'Add to wishlist'
+    assign text_on = 'In your wishlist'
+  elsif ctx == 'cart-line'
+    assign text_off = 'Save to wishlist'
+    assign text_on = 'Saved to wishlist'
+  endif
+-%}
+
+{%- if product != blank and product.handle != blank -%}
+  <wishlist-button
+    class="wishlist-button wishlist-button--{{ ctx }}"
+    data-handle="{{ product.handle | escape }}"
+    data-label-off="{{ label_off | escape }}"
+    data-label-on="{{ label_on | escape }}"
+    {%- if text_off != blank %}
+      data-text-off="{{ text_off }}"
+      data-text-on="{{ text_on }}"
+    {%- endif %}
+  >
+    <button
+      type="button"
+      class="wishlist-button__control"
+      aria-pressed="false"
+      aria-label="{{ label_off | escape }}"
+    >
+      <span class="wishlist-button__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l8.84 8.84 8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
+          />
+        </svg>
+      </span>
+
+      {%- if text_off != blank -%}
+        <span class="wishlist-button__text" data-wishlist-label>{{ text_off }}</span>
+      {%- endif -%}
+    </button>
+  </wishlist-button>
+{%- endif -%}
