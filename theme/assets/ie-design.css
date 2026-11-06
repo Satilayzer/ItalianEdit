@@ -585,6 +585,30 @@ cart-drawer-component .theme-drawer__badge {
 }
 
 /*
+ * Цена со скидкой: текущая, зачёркнутая и процент в одну строку по центру,
+ * цвета как в корзине (snippets/cart-products). На узкой карточке строка
+ * переносится целыми кусками, а не посреди суммы.
+ */
+.ie-card__price:has(.ie-card__discount) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: 0.5em;
+  row-gap: 0.15rem;
+}
+
+.ie-card__price-compare {
+  color: var(--ie-muted, #9a9a9a);
+  white-space: nowrap;
+}
+
+.ie-card__discount {
+  color: var(--brand-accent, var(--ie-bordo, #4e070d));
+  white-space: nowrap;
+}
+
+/*
  * Бренд — крупно и жирно. Регистр не трогаем ни у бренда, ни у названия:
  * показываем ровно так, как они записаны в карточке товара.
  */

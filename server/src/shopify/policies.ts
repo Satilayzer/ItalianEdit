@@ -35,7 +35,7 @@ export const CONTACT = {
   legalName: "Italian Edit",
   email: "hello@italian-edit.com",
   phone: "+1 727 463 1656",
-  address: "712 S Howard Ave, Tampa, FL 33606, United States",
+  address: "712 South Howard Ave, Apt 351, Tampa, FL 33606, United States",
   hours: "Monday to Friday, 9:00–18:00 (EST)",
 } as const;
 

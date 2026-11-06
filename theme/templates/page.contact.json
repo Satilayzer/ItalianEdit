@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
@@ -45,7 +36,7 @@
         "whatsapp_hours": "From Monday to Friday: 9:00–18:00 (EST)",
         "whatsapp_button": "Open WhatsApp",
         "whatsapp_qr": "shopify://shop_images/italian-edit-whatsapp-qr.png",
-        "footnote": "<p>By using WhatsApp, you confirm that you have read and understood our <a href=\"/policies/privacy-policy\">Privacy Policy</a>.</p><p>Call +1 727 580 66 02</p><p>From Monday to Friday: 9:00–18:00 (EST)</p>",
+        "footnote": "<p>By using WhatsApp, you confirm that you have read and understood our <a href=\"/policies/privacy-policy\">Privacy Policy</a>.</p><p>Call +1 727 580 66 02</p><p>From Monday to Friday: 9:00–18:00 (EST)</p><p>Italian Edit is operated by Italian Edit LLC, 712 South Howard Ave, Apt 351, Tampa, FL 33606, United States.</p>",
         "padding_top": 48,
         "padding_bottom": 72
       }

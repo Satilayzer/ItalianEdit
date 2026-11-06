@@ -56,11 +56,38 @@
       <span class="ie-card__vendor">{{ product.vendor }}</span>
     {%- endif -%}
     <span class="ie-card__title">{{ product.title }}</span>
+    {%- comment -%}
+      Цена, зачёркнутая и скидка — в том же порядке и цветах, что в корзине.
+      Зачёркнутую берём у того же варианта, чья цена показана: при разных
+      ценах по размерам это самый дешёвый (по возможности — в наличии),
+      иначе процент считался бы от чужой цены. Порог скидки общий для сайта —
+      snippets/ie-discount-percent: меньше 5% не показываем ни процент,
+      ни зачёркнутую.
+    {%- endcomment -%}
+    {%- liquid
+      assign price_variant = product.selected_or_first_available_variant
+      if product.price_varies
+        for v in product.variants
+          if v.price == product.price_min
+            assign price_variant = v
+            if v.available
+              break
+            endif
+          endif
+        endfor
+      endif
+      assign card_price = price_variant.price | default: product.price_min
+      assign card_compare = price_variant.compare_at_price
+      capture card_discount
+        render 'ie-discount-percent', compare_at: card_compare, price: card_price
+      endcapture
+      assign card_discount = card_discount | strip
+    -%}
     <span class="ie-card__price">
-      {%- if product.price_varies -%}
-        {{ product.price_min | money_without_trailing_zeros }}
-      {%- else -%}
-        {{ product.price | money_without_trailing_zeros }}
+      <span class="ie-card__price-current">{{ card_price | money_without_trailing_zeros }}</span>
+      {%- if card_discount != blank -%}
+        <s class="ie-card__price-compare">{{ card_compare | money_without_trailing_zeros }}</s>
+        <span class="ie-card__discount">&#8722;{{ card_discount }}%</span>
       {%- endif -%}
     </span>
   </span>
