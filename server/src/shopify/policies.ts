@@ -74,11 +74,12 @@ export const SHIPPING_POLICY = `
   </ul>
 
   <h2>Customs, Duties and Import Taxes</h2>
-  <p>Because orders may cross a border on their way to you, customs duties, import taxes
-  or handling fees can be charged by the authorities in your country. These charges are
-  set by your local authorities, are not included in the price you pay us, and are the
-  responsibility of the recipient. We cannot predict their amount in advance. If a parcel
-  is refused at customs and returned to us, the outbound shipping cost is not refundable.</p>
+  <p>For orders delivered to the United States, customs clearance is included: import
+  duties are already part of the price you pay us, so there is nothing more to pay on
+  delivery. For other destinations, customs duties, import taxes or handling fees may be
+  charged by the authorities in your country; these are set locally, are not included in
+  our price and are paid by the recipient. If a parcel is refused at customs and returned
+  to us, the outbound shipping cost is not refundable.</p>
 
   <h2>Tracking Your Order</h2>
   <p>A tracking number is sent by email once your parcel leaves the warehouse. Carriers
@@ -139,8 +140,10 @@ export const REFUND_POLICY = `
   <p>Once your return arrives and passes inspection, we issue the refund to your original
   payment method within ${TERMS.refundDays}. How quickly it appears on your statement
   depends on your bank. Original shipping costs are refunded only where the return is due
-  to our error or a faulty item. Customs duties already paid to your local authorities are
-  refunded by those authorities, not by us — keep your receipts and contact them directly.</p>
+  to our error or a faulty item. For orders to the United States, import duties are part
+  of the item price and are covered by the refund of that price. For other destinations,
+  duties you paid to your local authorities are refunded by those authorities, not by us —
+  keep your receipts and contact them directly.</p>
 
   <h2>Exchanges</h2>
   <p>We do not process direct exchanges. If you need a different size or colour, return the
