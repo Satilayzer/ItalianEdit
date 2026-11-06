@@ -481,10 +481,14 @@
     font-weight: 600;
   }
 
+  /* Тема растягивает .button-text на всю ширину кнопки (display: flex),
+     поэтому замок с надписью центруем явно — иначе они прижаты влево. */
   .cart__ctas .cart__checkout-button .button-text {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.6rem;
+    width: 100%;
   }
 
   .cart__ctas-divider {
