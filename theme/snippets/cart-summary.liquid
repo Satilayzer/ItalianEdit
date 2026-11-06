@@ -366,7 +366,7 @@
     <div
       class="
         additional-checkout-buttons
-        {% if accelerated_checkout_buttons_layout == 'vertical' %}additional-checkout-buttons--vertical{% endif %}
+        additional-checkout-buttons--horizontal
       "
     >
       {{ content_for_additional_checkout_buttons }}
@@ -509,23 +509,15 @@
   /*
    * Кнопки Shop Pay / PayPal / Apple Pay — в один ряд, а не друг под
    * другом во всю ширину: так основная кнопка «Check out» остаётся главной.
-   * Сами кнопки рисует Shopify; ряд задаём их обёртке.
+   * Сами кнопки Shopify рисует в закрытом shadow DOM, поэтому ряд включается
+   * не нашей сеткой, а штатным классом additional-checkout-buttons--horizontal
+   * (см. разметку выше); здесь — только высота и скругление.
    */
   .additional-checkout-buttons shopify-accelerated-checkout-cart {
     --shopify-accelerated-checkout-button-block-size: 44px;
     --shopify-accelerated-checkout-button-border-radius: 4px;
     --shopify-accelerated-checkout-row-gap: 8px;
 
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
-    gap: 8px;
-    width: 100%;
-  }
-
-  .additional-checkout-buttons shopify-accelerated-checkout-cart > * {
-    min-width: 0;
-    width: auto;
-    margin: 0;
   }
 
   .cart__view-cart {
