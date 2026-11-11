@@ -18,6 +18,7 @@ import { rewriteDescriptions } from "./shopify/rewriteDescriptions";
 import { expireNewProducts, NEW_TTL_DAYS } from "./shopify/expireNew";
 import { syncTdf, TDF_API_VERSION } from "./tdf/sync";
 import { forwardTdfOrders } from "./tdf/orders";
+import { syncTdfTracking, DEFAULT_TRACKING_SHEET_URL } from "./tdf/tracking";
 
 const config = loadConfig();
 const shopifyClient = config.shopify ? new ShopifyClient(config.shopify) : undefined;
@@ -354,6 +355,34 @@ if (config.shopify && config.tdfOrders) {
             `пробных ${stats.dryRun}, ошибок ${stats.failed}`
         );
       }
+    },
+  });
+}
+
+// Трек-номера TheDoubleF: поставщик ведёт статусы в общей Google-таблице
+// (их токен наши заказы не видит). 4 раза в день: строки с треком → отправка
+// с треком в нашем заказе. Первый проход — вскоре после старта, чтобы деплои
+// не откладывали его на 6 часов.
+if (config.shopify && process.env.TDF_TRACKING_ENABLED !== "false") {
+  const ours = new ShopifyClient({ ...config.shopify, apiVersion: TDF_API_VERSION });
+  const warned = new Set<string>();
+  const notifyCustomer = process.env.TDF_TRACKING_NOTIFY !== "false";
+  jobs.push({
+    name: "tdf-tracking",
+    intervalMs: 6 * 60 * 60_000,
+    firstRunMs: 5 * 60_000,
+    run: async () => {
+      const stats = await syncTdfTracking({
+        ours,
+        alert,
+        notifyCustomer,
+        warned,
+        sheetUrl: process.env.TDF_TRACKING_SHEET_URL || DEFAULT_TRACKING_SHEET_URL,
+      });
+      console.log(
+        `tdf-tracking: строк с треком ${stats.rows}, отправок создано ${stats.created}, ` +
+          `треков дописано ${stats.updated}, уже были ${stats.already}, проблем ${stats.problems}`
+      );
     },
   });
 }

@@ -230,7 +230,7 @@ export interface BuiltDraft {
 }
 
 /** Товар TheDoubleF: есть ID варианта поставщика или тег источника у товара. */
-function isTdfLine(item: OurLineItem): boolean {
+export function isTdfLine(item: OurLineItem): boolean {
   return Boolean(item.variant?.supplier?.value) || Boolean(item.variant?.product?.tags.includes(SOURCE_TAG));
 }
 
