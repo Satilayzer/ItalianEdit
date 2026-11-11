@@ -23,6 +23,10 @@
   assign open_column_span = false
   assign column_count = 0
   assign links_before_wrap = 10
+  # Italian Edit: у Designers группа длиннее 7 брендов идёт в два столбика (Women 10 → 5 + 5, Men 9 → 5 + 4), Top (6) — в один
+  if parent_link.handle == 'designers'
+    assign links_before_wrap = 7
+  endif
   assign max_menu_columns = grid_columns_count | default: 6
   assign max_menu_columns_tablet = grid_columns_count_tablet | default: 4
 
