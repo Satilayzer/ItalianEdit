@@ -427,11 +427,12 @@ cart-icon.header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
  *
  * Мостик теперь — сам пункт: нижний отступ на высоту полоски, съеденный
  * отрицательным полем, так что текст не сдвигается, а пункт тянется до
- * подменю. Safety box выключен.
+ * подменю. content-box — чтобы отступ шёл сверх высоты пункта (у темы
+ * height: 100%), а не съедал её: иначе ряд шапки рос на 8px. Safety box
+ * выключен.
  */
 .header .menu-list__list-item:not([slot='overflow']) {
-  height: auto;
-  align-self: stretch;
+  box-sizing: content-box;
   padding-bottom: var(--header-padding);
   margin-bottom: calc(-1 * var(--header-padding));
 }
