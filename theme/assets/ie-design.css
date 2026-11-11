@@ -425,24 +425,33 @@ cart-icon.header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
  * отдаёт пункту pointerleave — меню закрывается, хотя курсор на месте:
  * не открывалось по тексту, пряталось в полоске под ним.
  *
- * Мостик теперь — сам пункт: нижний отступ на высоту полоски, съеденный
- * отрицательным полем, так что текст не сдвигается, а пункт тянется до
- * подменю. content-box — чтобы отступ шёл сверх высоты пункта (у темы
- * height: 100%), а не съедал её: иначе ряд шапки рос на 8px. Safety box
- * выключен.
+ * Мостик теперь — настоящий элемент: пустой span.ie-menu-bridge внутри
+ * ссылки (blocks/_header-menu.liquid), абсолютно под текстом до верха
+ * подменю. На раскладку не влияет (отступ у пункта увеличивал ряд шапки
+ * на 8px). Полоска-::after пункта и safety box выключены.
  */
-.header .menu-list__list-item:not([slot='overflow']) {
-  box-sizing: content-box;
-  padding-bottom: var(--header-padding);
-  margin-bottom: calc(-1 * var(--header-padding));
-}
-
 .header .menu-list__list-item:not([slot='overflow'])::after {
   display: none;
 }
 
+.header .menu-list__link {
+  position: relative;
+}
+
 .header .menu-list__link::after {
   display: none !important;
+}
+
+.header .ie-menu-bridge {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: var(--header-padding);
+}
+
+[slot='overflow'] .ie-menu-bridge {
+  display: none;
 }
 
 /* Вторая строка шапки: категории слева, служебные ссылки справа. */

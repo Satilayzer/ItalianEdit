@@ -123,6 +123,8 @@
             ref="menuitem"
           >
             <span class="menu-list__link-title">{{- link.title -}}</span>
+            {%- comment -%} Italian Edit: мостик к подменю — настоящий элемент вместо ::after, см. ie-design.css {%- endcomment -%}
+            <span class="ie-menu-bridge" aria-hidden="true"></span>
           </a>
           {%- if link.links != blank -%}
             <div class="menu-list__submenu{{ background_color_classes }}" ref="submenu[]">
