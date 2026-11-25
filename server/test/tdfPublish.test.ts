@@ -4,13 +4,14 @@ import { parseBrandRegistry } from "../src/tdf/brands";
 import { evaluate } from "../src/tdf/rules";
 import { priceProduct } from "../src/tdf/productInput";
 import { compareAtCents, retailItalyUsdCents } from "../src/tdf/economics";
-import { autoPublishBrands, publishCandidates, publishProblems } from "../src/tdf/publish";
+import { autoPublishBrands, brandAllowed, publishCandidates, publishProblems } from "../src/tdf/publish";
 import type { IndexedProduct, IndexedVariant } from "../src/tdf/sync";
 
 const ENTRY = {
   id: "GG1/X-40",
   link: "https://vip.thedoublef.com/products/gg-loafer?variant=1",
   image_link: "https://cdn.shopify.com/a.jpg",
+  additional_images: "https://cdn.shopify.com/b.jpg",
   price: "800.00",
   availability: "in stock",
   brand: "GUCCI",
@@ -69,7 +70,23 @@ describe("автопубликация черновиков TheDoubleF", () => {
     expect(publishCandidates(new Map([[shop.key, shop]]), [e], new Set(["gucci"]))).toHaveLength(1);
   });
 
-  it("«*» пропускает любой бренд", () => {
+  it("«*» — только одобренные бренды реестра (HERO, SHOW)", () => {
+    const all = autoPublishBrands("*");
+    expect(brandAllowed(all, { supplierBrand: "GUCCI", displayName: "Gucci", status: "HERO" })).toBe(true);
+    expect(brandAllowed(all, { supplierBrand: "Sportmax", displayName: "Sportmax", status: "SHOW" })).toBe(true);
+    expect(brandAllowed(all, { supplierBrand: "X", displayName: "X", status: "DISCUSS" })).toBe(false);
+    expect(brandAllowed(all, { supplierBrand: "Y", displayName: "Y", status: "HIDE" })).toBe(false);
+  });
+
+  it("пометка review:* (мало фото, категория, сезон) — остаётся черновиком", () => {
+    const onePhoto = evaluate(feed({ additional_images: "" }), REGISTRY);
+    expect(onePhoto.reviewTags).toContain("review:photos");
+    const shop = shopFor(onePhoto);
+    expect(publishProblems(shop, onePhoto).map((p) => p.kind)).toContain("на проверке");
+    expect(publishCandidates(new Map([[shop.key, shop]]), [onePhoto], autoPublishBrands("*"))).toHaveLength(0);
+  });
+
+  it("«*» пропускает любой одобренный бренд", () => {
     const shop = shopFor(e);
     expect(publishCandidates(new Map([[shop.key, shop]]), [e], autoPublishBrands(undefined))).toHaveLength(1);
     expect(publishCandidates(new Map([[shop.key, shop]]), [e], autoPublishBrands("*"))).toHaveLength(1);

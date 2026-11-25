@@ -64,7 +64,7 @@ async function main() {
     if (p.status !== status) continue;
     const e = byKey.get(p.key);
     const brand = e?.brand.displayName ?? "";
-    if (brands.size > 0 && !brandAllowed(brands, brand)) continue;
+    if (brands.size > 0 && !(e && brandAllowed(brands, e.brand))) continue;
     checked++;
     const problems = publishProblems(p, e);
     for (const k of new Set(problems.map((x) => x.kind))) problemCount.set(k, (problemCount.get(k) ?? 0) + 1);

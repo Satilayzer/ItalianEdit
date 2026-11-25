@@ -1,8 +1,9 @@
 /**
  * Автопубликация черновиков TheDoubleF (решение 03.11.2026 — исключение из R19
- * для Gucci, Prada, Saint Laurent; с 25.11.2026 — для всех брендов).
+ * для Gucci, Prada, Saint Laurent; с 25.11.2026 — для всех одобренных брендов,
+ * HERO и SHOW в реестре).
  *
- * Черновик выходит на витрину, только если по каждому размеру всё сходится
+ * Черновик выходит на витрину, только если у него нет пометок review:* и по каждому размеру всё сходится
  * с текущим расчётом: цена v3.0, зачёркнутая цена (розница в Италии) выше цены,
  * себестоимость, цена не ниже безубыточности, есть остаток. Пошлина должна
  * считаться по HS-коду: если фид пришёл без кодов (так было 03.11.2026),
@@ -12,17 +13,18 @@
  * Google, Pinterest, Meta…). Нужны скоупы read_publications и write_publications.
  */
 import type { ShopifyClient } from "../shopify/client";
-import type { Evaluation } from "./rules";
+import { IMPORT_STATUSES, type Evaluation } from "./rules";
+import type { BrandEntry } from "./brands";
 import type { IndexedProduct } from "./sync";
 import { priceProduct, SOURCE_TAG } from "./productInput";
 import { compareAtCents, retailItalyUsdCents, DEFAULT_COSTS, type CostSettings } from "./economics";
 
-/** «*» — все бренды. */
+/** «*» — все одобренные бренды (HERO и SHOW в реестре брендов). */
 export const ALL_BRANDS = "*";
 export const DEFAULT_AUTO_PUBLISH_BRANDS = [ALL_BRANDS];
 
 /**
- * Бренды автопубликации, в нижнем регистре. По умолчанию «*» — все бренды;
+ * Бренды автопубликации, в нижнем регистре. По умолчанию «*» — все одобренные бренды;
  * TDF_AUTO_PUBLISH_BRANDS="Gucci,Prada" сужает список, "" выключает.
  */
 export function autoPublishBrands(raw: string | undefined = process.env.TDF_AUTO_PUBLISH_BRANDS): Set<string> {
@@ -30,9 +32,10 @@ export function autoPublishBrands(raw: string | undefined = process.env.TDF_AUTO
   return new Set(list.map((s) => s.trim().toLowerCase()).filter(Boolean));
 }
 
-/** Входит ли бренд в список автопубликации. */
-export function brandAllowed(brands: Set<string>, brand: string): boolean {
-  return brands.has(ALL_BRANDS) || brands.has(brand.toLowerCase());
+/** Бренд одобрен в реестре (HERO / SHOW) и входит в список автопубликации. */
+export function brandAllowed(brands: Set<string>, brand: BrandEntry): boolean {
+  if (!IMPORT_STATUSES.has(brand.status)) return false;
+  return brands.has(ALL_BRANDS) || brands.has(brand.displayName.toLowerCase());
 }
 
 export interface PublishProblem {
@@ -55,6 +58,9 @@ export function publishProblems(
     return out;
   }
   if (!e.include) add("не проходит правила импорта");
+  if (!IMPORT_STATUSES.has(e.brand.status)) add("бренд не одобрен", e.brand.status);
+  // review:* — фото, категория, сезон, пошлина, скидка: публикует только человек.
+  if (e.reviewTags.length > 0) add("на проверке", e.reviewTags.join(", "));
   if (!e.product.hsCode) add("нет HS-кода");
   const { costs, price } = priceProduct(e.product, e.category, settings);
   const target = price?.priceCents ?? null;
@@ -85,7 +91,7 @@ export function publishCandidates(
     return (
       shop.status === "DRAFT" &&
       !!e &&
-      brandAllowed(brands, e.brand.displayName) &&
+      brandAllowed(brands, e.brand) &&
       publishProblems(shop, e, settings).length === 0
     );
   });
