@@ -6,6 +6,7 @@
  *
  *   npx tsx scripts/tdf-publish-drafts.ts --brands "Gucci,Prada,Saint Laurent"           сухой прогон
  *   npx tsx scripts/tdf-publish-drafts.ts --brands "Gucci,Prada,Saint Laurent" --apply   в каналы + ACTIVE
+ *   npx tsx scripts/tdf-publish-drafts.ts --brands "*" --apply                           все бренды
  *   npx tsx scripts/tdf-publish-drafts.ts --status active                                та же сверка опубликованных
  *
  * Нужны SHOPIFY_* в server/.env; для --apply — скоупы read_publications и write_publications.
@@ -17,7 +18,7 @@ import { loadBrandRegistry } from "../src/tdf/brands";
 import { evaluate } from "../src/tdf/rules";
 import { priceProduct } from "../src/tdf/productInput";
 import { fetchIndex, TDF_API_VERSION } from "../src/tdf/sync";
-import { publishProblems, publishProducts } from "../src/tdf/publish";
+import { brandAllowed, publishProblems, publishProducts } from "../src/tdf/publish";
 import { ShopifyClient } from "../src/shopify/client";
 
 const args = process.argv.slice(2);
@@ -39,7 +40,7 @@ async function main() {
   if (!shop) throw new Error("Нужны SHOPIFY_SHOP и ключи в server/.env");
   const brands = new Set((opt("brands") ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean));
   const status = (opt("status") ?? "draft").toUpperCase();
-  if (brands.size === 0 && flag("apply")) throw new Error("--apply только с --brands \"Gucci,Prada\"");
+  if (brands.size === 0 && flag("apply")) throw new Error("--apply только с --brands \"Gucci,Prada\" или --brands \"*\"");
   if (flag("apply") && status !== "DRAFT") throw new Error("--apply публикует только черновики");
   const client = new ShopifyClient({
     shop,
@@ -63,7 +64,7 @@ async function main() {
     if (p.status !== status) continue;
     const e = byKey.get(p.key);
     const brand = e?.brand.displayName ?? "";
-    if (brands.size > 0 && !brands.has(brand.toLowerCase())) continue;
+    if (brands.size > 0 && !brandAllowed(brands, brand)) continue;
     checked++;
     const problems = publishProblems(p, e);
     for (const k of new Set(problems.map((x) => x.kind))) problemCount.set(k, (problemCount.get(k) ?? 0) + 1);

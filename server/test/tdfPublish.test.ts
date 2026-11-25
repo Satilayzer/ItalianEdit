@@ -57,8 +57,8 @@ function shopFor(e: ReturnType<typeof evaluate>, over: Partial<IndexedVariant> =
 describe("автопубликация черновиков TheDoubleF", () => {
   const e = evaluate(feed(), REGISTRY);
 
-  it("по умолчанию — Gucci, Prada, Saint Laurent; пустая переменная выключает", () => {
-    expect([...autoPublishBrands(undefined)]).toEqual(["gucci", "prada", "saint laurent"]);
+  it("по умолчанию — все бренды; список сужает, пустая переменная выключает", () => {
+    expect([...autoPublishBrands(undefined)]).toEqual(["*"]);
     expect(autoPublishBrands("").size).toBe(0);
     expect([...autoPublishBrands(" Gucci , Fendi ")]).toEqual(["gucci", "fendi"]);
   });
@@ -67,6 +67,12 @@ describe("автопубликация черновиков TheDoubleF", () => {
     const shop = shopFor(e);
     expect(publishProblems(shop, e)).toEqual([]);
     expect(publishCandidates(new Map([[shop.key, shop]]), [e], new Set(["gucci"]))).toHaveLength(1);
+  });
+
+  it("«*» пропускает любой бренд", () => {
+    const shop = shopFor(e);
+    expect(publishCandidates(new Map([[shop.key, shop]]), [e], autoPublishBrands(undefined))).toHaveLength(1);
+    expect(publishCandidates(new Map([[shop.key, shop]]), [e], autoPublishBrands("*"))).toHaveLength(1);
   });
 
   it("чужой бренд и уже активный товар не трогаем", () => {

@@ -1,6 +1,6 @@
 /**
  * Автопубликация черновиков TheDoubleF (решение 03.11.2026 — исключение из R19
- * для брендов из списка: по умолчанию Gucci, Prada, Saint Laurent).
+ * для Gucci, Prada, Saint Laurent; с 25.11.2026 — для всех брендов).
  *
  * Черновик выходит на витрину, только если по каждому размеру всё сходится
  * с текущим расчётом: цена v3.0, зачёркнутая цена (розница в Италии) выше цены,
@@ -17,12 +17,22 @@ import type { IndexedProduct } from "./sync";
 import { priceProduct, SOURCE_TAG } from "./productInput";
 import { compareAtCents, retailItalyUsdCents, DEFAULT_COSTS, type CostSettings } from "./economics";
 
-export const DEFAULT_AUTO_PUBLISH_BRANDS = ["Gucci", "Prada", "Saint Laurent"];
+/** «*» — все бренды. */
+export const ALL_BRANDS = "*";
+export const DEFAULT_AUTO_PUBLISH_BRANDS = [ALL_BRANDS];
 
-/** Бренды автопубликации, в нижнем регистре. TDF_AUTO_PUBLISH_BRANDS="" выключает. */
+/**
+ * Бренды автопубликации, в нижнем регистре. По умолчанию «*» — все бренды;
+ * TDF_AUTO_PUBLISH_BRANDS="Gucci,Prada" сужает список, "" выключает.
+ */
 export function autoPublishBrands(raw: string | undefined = process.env.TDF_AUTO_PUBLISH_BRANDS): Set<string> {
   const list = raw === undefined ? DEFAULT_AUTO_PUBLISH_BRANDS : raw.split(",");
   return new Set(list.map((s) => s.trim().toLowerCase()).filter(Boolean));
+}
+
+/** Входит ли бренд в список автопубликации. */
+export function brandAllowed(brands: Set<string>, brand: string): boolean {
+  return brands.has(ALL_BRANDS) || brands.has(brand.toLowerCase());
 }
 
 export interface PublishProblem {
@@ -75,7 +85,7 @@ export function publishCandidates(
     return (
       shop.status === "DRAFT" &&
       !!e &&
-      brands.has(e.brand.displayName.toLowerCase()) &&
+      brandAllowed(brands, e.brand.displayName) &&
       publishProblems(shop, e, settings).length === 0
     );
   });
