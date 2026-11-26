@@ -11,6 +11,7 @@
  * Итог — таблица по диапазонам закупки, как в отчёте по всему фиду.
  *
  *   npx tsx scripts/recent-google-prices.ts [--days 7] [--out recent-google-prices.csv]
+ *   npx tsx scripts/recent-google-prices.ts --all          все активные товары сайта
  *
  * Ответы Serper берутся из того же кэша, что у tdf-google-prices.ts
  * (data/google-prices-cache.jsonl): уже оплаченные запросы не повторяются.
@@ -30,7 +31,9 @@ const args = process.argv.slice(2);
 const opt = (name: string) => (args.includes(`--${name}`) ? args[args.indexOf(`--${name}`) + 1] : undefined);
 const KEY = process.env.SERPER_API_KEY;
 if (!KEY) throw new Error("Нужен SERPER_API_KEY");
+const ALL = args.includes("--all");
 const DAYS = Number(opt("days") ?? 7);
+const CONCURRENCY = 8;
 const CACHE = fileURLToPath(new URL("../data/google-prices-cache.jsonl", import.meta.url));
 
 interface Hit { title: string; source: string; price: number; link: string }
@@ -121,14 +124,14 @@ async function main() {
     apiVersion: TDF_API_VERSION,
   });
   const since = new Date(Date.now() - DAYS * 86_400_000).toISOString().slice(0, 10);
-  const query = `status:active published_at:>=${since}`;
-  type P = { title: string; vendor: string; publishedAt: string; tags: string[]; key: { value: string } | null; variants: { nodes: { price: string }[] } };
+  const query = ALL ? "status:active" : `status:active published_at:>=${since}`;
+  type P = { title: string; vendor: string; publishedAt: string; key: { value: string } | null; priceRangeV2: { minVariantPrice: { amount: string } } };
   const site: P[] = [];
   let after: string | null = null;
   for (;;) {
     const d: any = await client.graphql(
       `query($q:String,$after:String){ products(first:100, query:$q, after:$after, sortKey:PUBLISHED_AT, reverse:true){
-        nodes{ title vendor publishedAt tags key: metafield(namespace:"tdf", key:"product_key"){ value } variants(first:50){ nodes{ price } } }
+        nodes{ title vendor publishedAt key: metafield(namespace:"tdf", key:"product_key"){ value } priceRangeV2{ minVariantPrice{ amount } } }
         pageInfo{ hasNextPage endCursor } } }`,
       { q: query, after }
     );
@@ -136,15 +139,15 @@ async function main() {
     if (!d.products.pageInfo.hasNextPage) break;
     after = d.products.pageInfo.endCursor;
   }
-  console.log(`На сайт за ${DAYS} дн. (с ${since}) попало: ${site.length}`);
+  console.log(ALL ? `Активных товаров на сайте: ${site.length}` : `На сайт за ${DAYS} дн. (с ${since}) попало: ${site.length}`);
 
   const products = await fetchFeed(opt("feed") ?? process.env.TDF_FEED_URL ?? DEFAULT_FEED_URL);
   const registry = await loadBrandRegistry();
   const byKey = new Map(products.map((p) => [p.key, p]));
 
-  const rows: Row[] = [];
   const skipped: string[] = [];
   const seen = new Set<string>();
+  const jobs: { s: P; fp: (typeof products)[number] }[] = [];
   for (const s of site) {
     const fp = s.key ? byKey.get(s.key.value) : undefined;
     if (!fp) {
@@ -157,29 +160,52 @@ async function main() {
       continue;
     }
     seen.add(model);
-    const e = evaluate(fp, registry);
-    const { costs, price } = priceProduct(fp, e.category);
-    if (!costs) {
-      skipped.push(`${s.vendor} ${s.title} — не посчитать закупку`);
-      continue;
-    }
-    const brandName = e.brand?.displayName ?? s.vendor;
-    const q = `${brandName} ${fp.title}`;
-    const oursNow = Math.min(...s.variants.nodes.map((v) => Number(v.price)));
-    const hits = (await shopping(q)).filter((h) => h.price >= oursNow / 5 && h.price <= oursNow * 5);
-    const top = hits.slice(0, 3);
-    const brandWord = norm(brandName).split(" ")[0];
-    const branded = hits.filter((h) => norm(h.title).includes(brandWord)).slice(0, 3);
-    rows.push({
-      brand: brandName, title: fp.title, siteTitle: s.title, publishedAt: s.publishedAt.slice(0, 10),
-      purchase: costs.purchaseUsdCents / 100, markup: markupFor(costs.purchaseUsdCents).markupBp / 10_000,
-      ours: oursNow,
-      v3: price ? price.priceCents / 100 : null,
-      avg3: avg(top.map((h) => h.price)), bavg3: avg(branded.map((h) => h.price)), brandHits: branded.length, q, top,
-    });
+    jobs.push({ s, fp });
   }
+  const queries = new Set(jobs.map(({ s, fp }) => `${evaluate(fp, registry).brand?.displayName ?? s.vendor} ${fp.title}`));
+  const uncached = [...queries].filter((q) => !cache.has(q)).length;
+  console.log(`Моделей к сравнению: ${jobs.length}; запросов ${queries.size}, из них новых ${uncached} (~${uncached * 2} кредитов)`);
+  if (args.includes("--plan")) return;
+
+  const rows: Row[] = [];
+  let next = 0;
+  async function worker() {
+    for (;;) {
+      const i = next++;
+      if (i >= jobs.length) return;
+      const { s, fp } = jobs[i];
+      const e = evaluate(fp, registry);
+      const { costs, price } = priceProduct(fp, e.category);
+      if (!costs) {
+        skipped.push(`${s.vendor} ${s.title} — не посчитать закупку`);
+        continue;
+      }
+      const brandName = e.brand?.displayName ?? s.vendor;
+      const q = `${brandName} ${fp.title}`;
+      const oursNow = Number(s.priceRangeV2.minVariantPrice.amount);
+      const hits = (await shopping(q)).filter((h) => h.price >= oursNow / 5 && h.price <= oursNow * 5);
+      const top = hits.slice(0, 3);
+      const brandWord = norm(brandName).split(" ")[0];
+      const branded = hits.filter((h) => norm(h.title).includes(brandWord)).slice(0, 3);
+      rows.push({
+        brand: brandName, title: fp.title, siteTitle: s.title, publishedAt: s.publishedAt.slice(0, 10),
+        purchase: costs.purchaseUsdCents / 100, markup: markupFor(costs.purchaseUsdCents).markupBp / 10_000,
+        ours: oursNow,
+        v3: price ? price.priceCents / 100 : null,
+        avg3: avg(top.map((h) => h.price)), bavg3: avg(branded.map((h) => h.price)), brandHits: branded.length, q, top,
+      });
+      if (rows.length % 250 === 0) console.log(`${new Date().toISOString().slice(11, 19)} ${rows.length}/${jobs.length}, кредитов ${spent}`);
+    }
+  }
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
   console.log(`Сравнено: ${rows.length}; Serper: из кэша ${fromCache}, кредитов потрачено ${spent}`);
-  for (const s of skipped) console.log(`  пропуск: ${s}`);
+  const reasons = new Map<string, number>();
+  for (const x of skipped) {
+    const r = x.replace(/^.* — /, "").replace(/ модель \S+ ещё/, " модель ещё");
+    reasons.set(r, (reasons.get(r) ?? 0) + 1);
+  }
+  for (const [r, n] of reasons) console.log(`  пропуск: ${r} — ${n}`);
+  if (skipped.length <= 20) for (const x of skipped) console.log(`    ${x}`);
 
   // Таблица по диапазонам закупки.
   const pct = (x: number | null) => (x === null ? "—" : `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(x * 100).toFixed(1).replace(".", ",")}%`);
@@ -210,8 +236,8 @@ async function main() {
   table("Google: средняя первых трёх результатов", (r) => r.avg3);
   table("Google: средняя первых трёх результатов с брендом в названии", (r) => r.bavg3);
 
-  console.log("\nПо товарам:");
-  for (const r of [...rows].sort((a, b) => a.purchase - b.purchase))
+  if (rows.length <= 60) console.log("\nПо товарам:");
+  if (rows.length <= 60) for (const r of [...rows].sort((a, b) => a.purchase - b.purchase))
     console.log(`  ${r.publishedAt} ${r.brand} | ${r.title} | закупка $${r.purchase.toFixed(0)} +${r.markup * 100}% | наша $${r.ours} | топ-3 ${money(r.avg3)} (${pct(r.avg3 ? r.ours / r.avg3 - 1 : null)}) | с брендом ${money(r.bavg3)} [${r.brandHits}]`);
 
   const head = ["published", "brand", "feed_title", "site_title", "purchase_usd", "markup", "our_price_usd", "v3_price_usd",
